@@ -1,4 +1,4 @@
-package com.sudeshi.iorg.activity.model;
+package com.sudeshi.iorg.model;
 
 import java.io.Serializable;
 
