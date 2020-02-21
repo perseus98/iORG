@@ -12,13 +12,14 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.sudeshi.iorg.R;
 import com.sudeshi.iorg.adapter.DataItemAdapter;
@@ -53,7 +54,8 @@ public class CreateEventActivity extends AppCompatActivity {
     private Button btn_create_data;
     private EditText tv_name;
     private TextView tv_tag_text;
-    private ListView list_data_item;
+    private GridView list_data_item;
+    private RecyclerView recycle_data_list;
 
 
     @Override
@@ -63,6 +65,7 @@ public class CreateEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_event);
         dbHandler = new DBHandler(this);
         initView();
+
 
     }
 
@@ -82,6 +85,11 @@ public class CreateEventActivity extends AppCompatActivity {
                 captureImage();
             }
         });
+
+//        recycle_data_list = findViewById(R.id.recycle_data_list);
+//        recycle_data_list.setHasFixedSize(true);
+//        recycle_data_list.setLayoutManager(new LinearLayoutManager(this)
+//        );
 
         setPriority();
         getTagListForSpinner();
@@ -145,8 +153,7 @@ public class CreateEventActivity extends AppCompatActivity {
                     tv_name.getText().toString().trim(),
                     pic,
                     tv_date.getText().toString().trim(),
-                    Integer.parseInt(getPriority()),
-                    Integer.parseInt(getTagId())));
+                    Integer.parseInt(getPriority())));
 
             getData();
 

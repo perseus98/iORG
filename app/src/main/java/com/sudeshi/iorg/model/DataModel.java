@@ -11,13 +11,12 @@ public class DataModel implements Serializable {
     private long tag_id;
 
 
-    public DataModel(int id, String name, String pic_path, String date, int priority, long tag_id) {
+    public DataModel(int id, String name, String pic_path, String date, int priority) {
         this.id = id;
         this.name = name;
         this.pic_path = pic_path;
         this.date = date;
         this.priority = priority;
-        this.tag_id = tag_id;
     }
 
 

@@ -5,4 +5,10 @@
     <color name="colorAccent">#D81B60</color>
     <color name="colorBg">#fff</color>
     <color name="colorFg">#000</color>
+    <color name="colorLogoBg">#a49ecb</color>
+
+
+    <!--    SAVED COLOR SAMPLE-->
+    <color name="col1">#ea83ff</color>
+    <color name="col2">#440e51</color>
 </resources>

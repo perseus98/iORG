@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import androidx.annotation.Nullable;
 
 import com.sudeshi.iorg.model.DataModel;
+import com.sudeshi.iorg.model.MapTagModel;
 import com.sudeshi.iorg.model.TagModel;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class DBHandler extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(createTableTag());
         db.execSQL(createTableData());
+        db.execSQL(createMapTable());
     }
 
     @Override
@@ -40,6 +42,7 @@ public class DBHandler extends SQLiteOpenHelper {
 
         db.execSQL(createTableTag());
         db.execSQL(createTableData());
+        db.execSQL(createMapTable());
         onCreate(db);
     }
 
@@ -60,8 +63,15 @@ public class DBHandler extends SQLiteOpenHelper {
                 "\t\"name\"\tTEXT NOT NULL UNIQUE,\n" +
                 "\t\"pic_path\"\tTEXT NOT NULL UNIQUE,\n" +
                 "\t\"date\"\tTEXT NOT NULL,\n" +
-                "\t\"priority\"\tINTEGER NOT NULL DEFAULT 0,\n" +
-                "\t\"tag_id\"\tINTEGER NOT NULL DEFAULT 0\n" +
+                "\t\"priority\"\tINTEGER NOT NULL DEFAULT 0);";
+    }
+
+
+    private String createMapTable() {
+        return "CREATE TABLE \"map_tbl\" (\n" +
+                "\t\"id\"\tINTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                "\t\"tag_id\"\tINTEGER,\n" +
+                "\t\"data_id\"\tINTEGER\n" +
                 ");";
     }
 
@@ -83,7 +93,6 @@ public class DBHandler extends SQLiteOpenHelper {
     public List<TagModel> getTagList() {
 
         List<TagModel> tagModelList = new ArrayList<>();
-
 
         SQLiteDatabase db = getWritableDatabase();
         Cursor data = db.rawQuery("SELECT * FROM tag_tbl WHERE del_flag = 0", null);
@@ -112,7 +121,6 @@ public class DBHandler extends SQLiteOpenHelper {
         values.put("pic_path", dataModel.getPic_path());
         values.put("date", dataModel.getDate());
         values.put("priority", String.valueOf(dataModel.getPriority()));
-        values.put("tag_id", String.valueOf(dataModel.getTag_id()));
 
         newRowId = db.insert("data_tbl", null, values);
 
@@ -131,12 +139,46 @@ public class DBHandler extends SQLiteOpenHelper {
                     data.getString(1),
                     data.getString(2),
                     data.getString(3),
-                    data.getInt(4),
-                    data.getLong(5)
+                    data.getInt(4)
             ));
 
         }
         return dataModelList;
+    }
+
+
+    public long insertMapTagData(MapTagModel mapTagModel) {
+        // data_tbl ,
+        // id, name, pic_path, date, priority, tag_id
+
+        long newRowId = 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("tag_id", mapTagModel.getTag_id());
+        values.put("data_id", mapTagModel.getData_id());
+        newRowId = db.insert("map_tbl", null, values);
+
+        return newRowId;
+    }
+
+
+    public List<MapTagModel> getMapTagList(String data_id) {
+
+        List<MapTagModel> mapTagModelList = new ArrayList<>();
+        SQLiteDatabase db = getWritableDatabase();
+        Cursor data = db.rawQuery("SELECT  mt.tag_id,mt.data_id,t.name from map_tbl mt\n" +
+                "INNER JOIN tag_tbl t on t.id = mt.tag_id\n" +
+                "WHERE mt.data_id = " + data_id + " and t.del_flag = 0 ", null);
+
+        while (data.moveToNext()) {
+
+            mapTagModelList.add(new MapTagModel(data.getInt(0),
+                    data.getInt(1),
+                    data.getString(2)
+            ));
+
+        }
+        return mapTagModelList;
     }
 
 

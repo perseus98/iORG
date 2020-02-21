@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:src="@mipmap/ic_launcher"
-    android:background="@color/colorBg"
+    android:background="@color/colorLogoBg"
+    android:src="@drawable/logo_final"
     tools:context=".activity.SplashActivity">
 
 </ImageView>

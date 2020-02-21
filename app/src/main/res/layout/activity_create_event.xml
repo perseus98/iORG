@@ -78,17 +78,31 @@
             android:id="@+id/tv_tag_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:hint="DD-MM-YYYY"
             android:src="@mipmap/ic_launcher"
             android:textColor="@color/colorFg"
             android:textColorHint="@color/colorFg"
             android:textSize="14sp" />
 
-        <ListView
+        <!--        <androidx.core.widget.NestedScrollView-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content">-->
+
+        <!--          -->
+
+        <!--        </androidx.core.widget.NestedScrollView>-->
+
+        <GridView
             android:id="@+id/list_data_item"
             android:layout_width="match_parent"
-            android:layout_height="500dp" />
+            android:layout_height="match_parent"
+            android:numColumns="3"></GridView>
+
+
+        <!--        <androidx.recyclerview.widget.RecyclerView-->
+        <!--            android:id="@+id/recycle_data_list"-->
+        <!--            android:layout_width="match_parent"-->
+        <!--            android:layout_height="wrap_content" />-->
 
     </LinearLayout>
 

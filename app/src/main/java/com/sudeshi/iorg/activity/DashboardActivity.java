@@ -1,13 +1,16 @@
 package com.sudeshi.iorg.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.sudeshi.iorg.R;
 import com.sudeshi.iorg.db_config.DBHandler;
@@ -17,19 +20,22 @@ import java.util.List;
 
 public class DashboardActivity extends AppCompatActivity {
 
-    private ImageView image_create;
-    private ImageView image_save;
+    private CardView card_view_create;
+    private CardView card_view_add_tag;
     private TextView tv_tag_text;
     private DBHandler dbHandler;
+    private EditText et_tag_name;
+    private Button btn_add;
+    private Dialog dialog;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
-        image_create = findViewById(R.id.image_create);
+        card_view_create = findViewById(R.id.card_view_create);
         tv_tag_text = findViewById(R.id.tv_tag_text);
-        image_save = findViewById(R.id.image_save);
+        card_view_add_tag = findViewById(R.id.card_view_add_tag);
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -37,38 +43,54 @@ public class DashboardActivity extends AppCompatActivity {
             }
         };
 
-        image_create.setOnClickListener(clickListener);
+        card_view_create.setOnClickListener(clickListener);
         dbHandler = new DBHandler(this);
 
-        image_save.setOnClickListener(new View.OnClickListener() {
+        card_view_add_tag.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                for (int i = 0; i < 5; i++) {
-                    dbHandler.insertTag("Val" + i);
-                }
+
+                dialogDisplayACreateTag();
             }
         });
     }
 
+    private void dialogDisplayACreateTag() {
+
+        dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_layout_add_tag);
+
+        et_tag_name = dialog.findViewById(R.id.et_tag_name);
+        btn_add = dialog.findViewById(R.id.btn_add);
+
+        btn_add.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                validateField();
+            }
+        });
+
+        dialog.show();
+
+    }
+
+    private void validateField() {
+        if (et_tag_name.getText().toString().trim().isEmpty()) {
+            Toast.makeText(this, "Please enter tag", Toast.LENGTH_SHORT).show();
+        } else {
+            if (dbHandler.insertTag(et_tag_name.getText().toString().trim()) != -1) {
+                et_tag_name.setText("");
+                dialog.dismiss();
+                Toast.makeText(this, "Tag added successfully", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Sorry!!!!!", Toast.LENGTH_SHORT).show();
+            }
+
+        }
+    }
+
     private void createIntent() {
-
-//        try {
-//
-//
-//            for (int i = 0; i < 5; i++) {
-//
-//                createDataIntent(dbHandler.insertTag("Val" + i));
-//            }
-//
-//
-//        } catch (Exception e) {
-//            Toast.makeText(this, "" +
-//                    e.getMessage(), Toast.LENGTH_SHORT).show();
-//        }
-
-        //Toast.makeText(this, "aaya", Toast.LENGTH_SHORT).show();
         startActivity(new Intent(DashboardActivity.this, CreateEventActivity.class));
-
     }
 
 //    private void getTag() {
@@ -92,9 +114,8 @@ public class DashboardActivity extends AppCompatActivity {
 
 
             for (int i = 0; i < 5; i++) {
-                dbHandler.insertData(new DataModel(i, "name" + i, "path" + i, "date" + i, i, tagLastID));
+                dbHandler.insertData(new DataModel(i, "name" + i, "path" + i, "date" + i, i));
             }
-
 
 //            dbHandler.insertData(new DataModel(0, "name", "path", "date", 0, tagLastID));
 
@@ -104,11 +125,6 @@ public class DashboardActivity extends AppCompatActivity {
             Toast.makeText(this, "" +
                     e.getMessage(), Toast.LENGTH_SHORT).show();
         }
-
-        //Toast.makeText(this, "aaya", Toast.LENGTH_SHORT).show();
-        //startActivity(new Intent(DashboardActivity.this, CreateEventActivity.class));
-
-
     }
 
     private void getData() {
