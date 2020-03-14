@@ -1,9 +1,6 @@
 package com.sudeshi.iorgkt.db.model
 
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.ForeignKey
-import androidx.room.PrimaryKey
+import androidx.room.*
 
 @Entity(
     tableName = "table_map", foreignKeys = [
@@ -11,14 +8,17 @@ import androidx.room.PrimaryKey
             entity = Tag::class,
             parentColumns = ["id"],
             childColumns = ["tag_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.NO_ACTION,
+            onUpdate = ForeignKey.NO_ACTION
         ),
         ForeignKey(
             entity = Data::class,
             parentColumns = ["id"],
             childColumns = ["data_id"],
-            onDelete = ForeignKey.CASCADE
-        )]
+            onDelete = ForeignKey.NO_ACTION,
+            onUpdate = ForeignKey.NO_ACTION
+        )],
+    indices = [Index(value = ["id", "tag_id", "data_id"])]
 )
 data class Map(
     //Map = id, tag_id, data_id

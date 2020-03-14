@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
+    <!--    FOR COLOR PICKER-->
+    <color name="colorDUMMY">#6646AF</color>
+
+    <!-- MAIN RESOURCE -->
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+    <color name="colorBg">#fff</color>
+    <color name="colorFg">#000</color>
+    <color name="colorMainBg">#8777AC</color>
+    <color name="colorMainSecBg">#6646AF</color>
+    <color name="colorTextWhite">#FFFFFFFF</color>
+    <color name="colorTextBlack">#000000</color>
+
+
+    <!--    REFERENCE COLOR-->
+    <color name="colorLogoDesign">#ea83ff</color>
+    <color name="colorLogoFont">#440e51</color>
+
+
 </resources>

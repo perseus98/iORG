@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">iORGkt</string>
+    <string name="blank"> </string>
+    <string name="add_tag">Add Tag</string>
+    <string name="create">Create</string>
+    <string name="sam_desc">This is an Content Description</string>
+    <string name="label_text">This is Label Text</string>
 </resources>
