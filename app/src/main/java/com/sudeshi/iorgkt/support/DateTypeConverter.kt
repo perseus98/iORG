@@ -4,12 +4,9 @@ import androidx.room.TypeConverter
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-class Converter {
-    //TODO
-}
-
 object DateTypeConverter {
     private val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
     @TypeConverter
     @JvmStatic
     fun toOffsetDateTime(value: String?): OffsetDateTime? {
