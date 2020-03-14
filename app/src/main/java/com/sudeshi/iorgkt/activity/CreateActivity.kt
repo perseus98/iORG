@@ -12,6 +12,7 @@ import android.provider.MediaStore.EXTRA_OUTPUT
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import com.sudeshi.iorgkt.R
 import kotlinx.android.synthetic.main.activity_create.*
@@ -32,6 +33,12 @@ class CreateActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create)
+        btn_captureImg.setImageDrawable(
+            ContextCompat.getDrawable(
+                applicationContext, // Context
+                R.drawable.logo_camera_final // Drawable
+            )
+        )
         btn_captureImg.setOnClickListener {
             dispatchTakePictureIntent()
 //            Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
