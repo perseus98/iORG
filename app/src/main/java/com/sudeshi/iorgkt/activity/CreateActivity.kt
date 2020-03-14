@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
 import android.provider.MediaStore.EXTRA_OUTPUT
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -24,11 +23,9 @@ import java.util.*
 
 class CreateActivity : AppCompatActivity() {
 
-    lateinit var currentPhotoPath: String
-
-    val REQUEST_IMAGE_CAPTURE = 1
-    val REQUEST_TAKE_PHOTO = 1
-    val TAG: String = "CreateActivity"
+    private lateinit var currentPhotoPath: String
+    private val REQUEST_TAKE_PHOTO = 1
+//    val TAG: String = "CreateActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,27 +47,10 @@ class CreateActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_CANCELED) {
             if (requestCode == REQUEST_TAKE_PHOTO) {
-                try {
-                    val uri = intent.data
-                    var bitmap: Bitmap?
-
-                    try {
-//                        bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
-//                        bitmap = Images.Media(this.contentResolver, uri)
-                        bitmap = BitmapFactory.decodeFile(currentPhotoPath)
+//                    val uri = intent.data
+                val bitmap: Bitmap? = BitmapFactory.decodeFile(currentPhotoPath)
                         btn_captureImg.setImageBitmap(bitmap)
-                        Log.d(TAG, bitmap.toString())
-
-                    } catch (e: IOException) {
-                        e.printStackTrace()
-                    }
-
-//                    Log.d(TAG, photoURI.toString())
-//                    val imageBitmap = data?.extras?.get("data") as Bitmap
-                } catch (e: Exception) {
-
-                    Log.d(TAG, e.toString())
-                }
+//                        Log.d(TAG, bitmap.toString())
             }
 
         }
@@ -99,7 +79,6 @@ class CreateActivity : AppCompatActivity() {
                         "com.sudeshi.iorgkt.fileprovider",
                         it
                     )
-
                     takePictureIntent.putExtra(EXTRA_OUTPUT, photoURI)
                     startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
                 }
