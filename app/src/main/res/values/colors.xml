@@ -1,23 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--    FOR COLOR PICKER-->
-    <color name="colorDUMMY">#6646AF</color>
+    <color name="colorDUMMY">#AA00FF</color>
 
     <!-- MAIN RESOURCE -->
-    <color name="colorPrimary">#008577</color>
+    <!--    <color name="colorPrimary">#008577</color>-->
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorBg">#fff</color>
     <color name="colorFg">#000</color>
     <color name="colorMainBg">#8777AC</color>
     <color name="colorMainSecBg">#6646AF</color>
-    <color name="colorTextWhite">#FFFFFFFF</color>
-    <color name="colorTextBlack">#000000</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorBlack">#000000</color>
+    <color name="colorPrimary">#FFFFFFFF</color>
 
+    <!--    Layout Specific-->
+    <color name="colorCardBg">#81C784</color>
 
     <!--    REFERENCE COLOR-->
     <color name="colorLogoDesign">#ea83ff</color>
     <color name="colorLogoFont">#440e51</color>
 
+    <!--    EXP-->
+
+    <color name="exp1">#FF4D12D5</color>
+    <color name="exp2">#FF1A044C</color>
+
+    <!--    setting-->
+    <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
 
 </resources>
