@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorMainBg"
+    android:screenOrientation="portrait"
     tools:context=".activity.Dashboard">
 
     <LinearLayout
@@ -43,7 +44,7 @@
                     android:gravity="center"
                     android:src="@mipmap/ic_launcher"
                     android:text="@string/create"
-                    android:textColor="@color/colorTextWhite"
+                    android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -76,7 +77,7 @@
                     android:gravity="center"
                     android:src="@mipmap/ic_launcher"
                     android:text="@string/add_tag"
-                    android:textColor="@color/colorTextWhite"
+                    android:textColor="@color/colorWhite"
                     android:textSize="16sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>

@@ -14,5 +14,8 @@ class Dashboard : AppCompatActivity() {
         card_view_create.setOnClickListener {
             startActivity(Intent(this, CreateActivity::class.java))
         }
+        card_view_add_tag.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
     }
 }

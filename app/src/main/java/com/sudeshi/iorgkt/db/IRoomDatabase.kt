@@ -12,7 +12,7 @@ import com.sudeshi.iorgkt.db.model.Map
 import com.sudeshi.iorgkt.db.model.Tag
 
 @Database(entities = [Tag::class, Map::class, Data::class], version = 1, exportSchema = true)
-public abstract class IRoomDatabase : RoomDatabase() {
+abstract class IRoomDatabase : RoomDatabase() {
     abstract fun tagDao(): TagDAO
     abstract fun dataDao(): DataDAO
     abstract fun mapDao(): MapDAO
@@ -30,8 +30,10 @@ public abstract class IRoomDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     IRoomDatabase::class.java,
-                    "i_room_database"
-                ).build()
+                        "i_room_database"
+                    )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 return instance
             }

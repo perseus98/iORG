@@ -4,5 +4,16 @@
     <string name="add_tag">Add Tag</string>
     <string name="create">Create</string>
     <string name="sam_desc">This is an Content Description</string>
-    <string name="label_text">This is Label Text</string>
+    <string name="label_text">TEXT</string>
+    <string name="btnBack">BACK</string>
+    <string name="btnCreate">CREATE</string>
+    <string name="infoAbout">From the hardworking team of</string>
+    <string name="infAbout2">Copyright &#169; SUD3SHI </string>
+    <string name="unCate">Uncategorized</string>
+    <string name="btnClickExample">Specific Button Was Clicked</string>
+    <string name="snackBarBtn">VIEW</string>
+    <string name="hintNameField">NAME : </string>
+    <string name="hintCalanderField">DATE :</string>
+
+
 </resources>
