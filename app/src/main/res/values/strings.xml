@@ -14,6 +14,7 @@
     <string name="snackBarBtn">VIEW</string>
     <string name="hintNameField">NAME : </string>
     <string name="hintCalanderField">DATE :</string>
+    <string name="taskFailed"> Provided task failed successfully </string>
 
 
 </resources>

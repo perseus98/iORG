@@ -6,17 +6,28 @@ import java.time.OffsetDateTime
 
 @Entity(tableName = "table_data", indices = [Index(value = ["id"])])
 @TypeConverters(DateTypeConverter::class)
-data class Data(
+class Data(
+    arg_id: Long,
+    arg_name: String,
+    arg_path: String,
+    arg_date: OffsetDateTime,
+    arg_priority: Int
+) {
     //Data = id, name, pic_path, date, priority
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id: Int,
+    var id: Long = arg_id
     @ColumnInfo(name = "name")
-    val name: String,
+    var name: String = arg_name
     @ColumnInfo(name = "pic_path")
-    val pic_path: String,
+    var pic_path: String = arg_path
     @ColumnInfo(name = "date")
-    val date: OffsetDateTime,
+    var date: OffsetDateTime = arg_date
     @ColumnInfo(name = "priority")
-    val priority: Int
-)
+    var priority: Int = arg_priority
+
+    fun getDataId(): Long {
+        return id
+    }
+
+}
