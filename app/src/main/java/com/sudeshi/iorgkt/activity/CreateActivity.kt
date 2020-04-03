@@ -16,38 +16,42 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.sudeshi.iorgkt.R.color.colorWhite
 import com.sudeshi.iorgkt.R.drawable
 import com.sudeshi.iorgkt.R.layout
 import com.sudeshi.iorgkt.R.style.styledatepicker
+import com.sudeshi.iorgkt.support.openDateTimePicker
+import com.sudeshi.iorgkt.viewModel.DateViewModel
 import kotlinx.android.synthetic.main.activity_create.*
 import kotlinx.android.synthetic.main.activity_create.view.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
 class CreateActivity : AppCompatActivity() {
 
 
-    private lateinit var currentPhotoPath: String
+    private var currentPhotoPath: String? = null
     private val REQUEST_TAKE_PHOTO = 1
     private val currentTimeStamp: String =
         SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(Date())
-    private val currDateSDF: String =
-        SimpleDateFormat("dd/MM/yyyy::HH:mm:ss", Locale.US).format(Date())
-    private var dateTime: String =
-        DateTimeFormatter.ofPattern("dd/MM/yyyy::HH:mm:ss", Locale.ENGLISH)
-            .format(LocalDateTime.now())
-    private var dateTime2: OffsetDateTime =
-        OffsetDateTime.of(LocalDateTime.parse(currDateSDF), ZoneOffset.of("+05:30"))
-    val EXTRA_REPLY: String = "com.sudeshi.iorgkt.newData.REPLY"
 
+    //    private val currDateSDF: String = SimpleDateFormat("dd/MM/yyyy::HH:mm:ss", Locale.US).format(Date())
+//    private var dateTime: String = DateTimeFormatter.ofPattern("dd/MM/yyyy::HH:mm:ss", Locale.ENGLISH).format(LocalDateTime.now())
+//    private var dateTime2: OffsetDateTime =OffsetDateTime.of(LocalDateTime.parse("dd/MM/yyyy::HH:mm:ss"), ZoneOffset.of("+05:30"))
+    val EXTRA_REPLY: String = "com.sudeshi.iorgkt.newData.REPLY"
+    private lateinit var dateViewModel: DateViewModel
+    private var datePickerJob: Job? = null
+    private val uiScope = CoroutineScope(Dispatchers.Main.immediate)
     private var seekBarProgress = 0
 
 //    val TAG: String = "CreateActivity"
@@ -57,28 +61,37 @@ class CreateActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_create)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        dateViewModel = ViewModelProvider(this).get(DateViewModel::class.java)
+        dateViewModel.dateTimeText.observe(this, Observer<OffsetDateTime> { offsetDateTime ->
+            offsetDateTime?.let {
+                outlinedTextCalander?.editTextCalander?.setText(dateViewModel.getDateTime())
+            }
+//the call to setNewDateTime will refresh this value
+        })
+        btnBack.setOnClickListener {
+//            startActivity(Intent(this, MainActivity::class.java))
+//            Toast.makeText(applicationContext, currDateSDF, Toast.LENGTH_LONG).show()
+        }
+        btnCreate.setOnClickListener {
+            if (currentPhotoPath != null) {
+                val newDataMap: HashMap<String, Any?> = HashMap(
+                    mutableMapOf(
+                        "name" to (outlinedTextName?.editTextName?.text),
+                        "date" to OffsetDateTime.parse(outlinedTextCalander?.editTextCalander?.text),
+                        "path" to currentPhotoPath,
+                        "prty" to seekBarProgress
+                    )
+                )
+                val intent = Intent()
+                intent.putExtra(EXTRA_REPLY, newDataMap)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            } else
+                Toast.makeText(applicationContext, "PICTURE NOT FOUND", Toast.LENGTH_LONG).show()
+        }
         initContent()
 //        Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
 
-        btnBack.setOnClickListener {
-//            startActivity(Intent(this, MainActivity::class.java))
-            Toast.makeText(applicationContext, currDateSDF, Toast.LENGTH_LONG).show()
-        }
-        btnCreate.setOnClickListener {
-//            val newDataMap : HashMap<String,Any?> = HashMap(mutableMapOf(
-//                "name" to (outlinedTextName?.editTextName?.text),
-//                "date" to (outlinedTextCalander?.editTextCalander?.text),
-//                "path" to currentPhotoPath,
-//                "prty" to seekBarProgress
-//            ))
-//            val intent = Intent()
-//            intent.putExtra(EXTRA_REPLY,newDataMap)
-//            setResult(Activity.RESULT_OK, intent)
-//            finish()
-            Toast.makeText(applicationContext, dateTime, Toast.LENGTH_LONG).show()
-
-
-        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -110,9 +123,9 @@ class CreateActivity : AppCompatActivity() {
         outlinedTextName.editTextName?.setText("entry_$currentTimeStamp")
         outlinedTextName.editTextName?.setTextColor(getColor(colorWhite))
         outlinedTextCalander.editTextCalander.keyListener = null
-        outlinedTextCalander.editTextCalander?.setText(currDateSDF)
+//        outlinedTextCalander.editTextCalander?.setText(currDateSDF)
         outlinedTextCalander.editTextCalander?.setTextColor(getColor(colorWhite))
-        initCalanderDialog()
+//        initCalanderDialog()
 
         seekBarPriority?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
@@ -170,7 +183,6 @@ class CreateActivity : AppCompatActivity() {
         }
     }
 
-
     private fun dispatchTakePictureIntent() {
         Intent(ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             // Ensure that there's a camera activity to handle the intent
@@ -219,6 +231,24 @@ class CreateActivity : AppCompatActivity() {
     private fun initChipGroup() {
 //        chip.isClickable = true
 //        chip.isCheckable = false
+    }
+
+    override fun onStart() {
+        super.onStart()
+        outlinedTextCalander.editTextCalander.setOnClickListener {
+            datePickerJob = uiScope.launch {
+                dateViewModel.setNewDateTime(openDateTimePicker())
+//                data.setNewDateTime(context?.openDateTimePicker())
+//setNewDateTime is a setValue in a MutableLiveData
+            }
+        }
+
+    }
+
+    override fun onStop() {
+        super.onStop()
+        outlinedTextCalander.editTextCalander.setOnClickListener(null)
+        datePickerJob?.cancel()
     }
 
 }
