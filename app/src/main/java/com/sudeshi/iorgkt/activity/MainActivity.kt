@@ -15,9 +15,7 @@ import com.sudeshi.iorgkt.adapter.AdapterRecyclerView
 import com.sudeshi.iorgkt.db.model.Data
 import com.sudeshi.iorgkt.viewModel.DataViewModel
 import kotlinx.android.synthetic.main.activity_main.*
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
-import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
 
@@ -33,13 +31,13 @@ class MainActivity : AppCompatActivity() {
     private lateinit var dataViewModel: DataViewModel
 
 
-
-
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
+
 
 //        layoutManager = LinearLayoutManager(this)
 //        rv_main.layoutManager = layoutManager
@@ -73,16 +71,19 @@ class MainActivity : AppCompatActivity() {
             data?.let { data ->
                 var recvDataMap: HashMap<String, Any?> =
                     data.getSerializableExtra("com.sudeshi.iorgkt.newData.REPLY") as HashMap<String, Any?>
-                var dateTime2: OffsetDateTime = OffsetDateTime.of(
-                    LocalDateTime.parse(recvDataMap["date"] as CharSequence?),
-                    ZoneOffset.of("+05:30")
-                )
                 val newData = Data(
-                    0, recvDataMap["name"] as String,
-                    recvDataMap["path"] as String, dateTime2, recvDataMap["pri"] as Int
+                    0,
+                    recvDataMap["name"].toString(),
+                    recvDataMap["path"].toString(),
+                    recvDataMap["date"] as OffsetDateTime,
+                    recvDataMap["prty"] as Int
                 )
-                dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
                 dataViewModel.insert(newData)
+                Toast.makeText(
+                    applicationContext,
+                    R.string.dataInsSuccess,
+                    Toast.LENGTH_LONG
+                ).show()
                 Unit
             }
 
@@ -92,6 +93,7 @@ class MainActivity : AppCompatActivity() {
                 R.string.taskFailed,
                 Toast.LENGTH_LONG
             ).show()
+//            jujujuj
         }
     }
 
