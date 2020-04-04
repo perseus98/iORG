@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 
 class DataViewModel(application: Application) : AndroidViewModel(application) {
     private val dataRepository: DataRepository
-    private val allData: LiveData<List<Data>>
+    val allData: LiveData<List<Data>>
 
     init {
         val dataDao = IRoomDatabase.getDatabase(application).dataDao()

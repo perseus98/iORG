@@ -2,7 +2,6 @@ package com.sudeshi.iorgkt.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.DatePickerDialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
@@ -21,7 +20,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.sudeshi.iorgkt.R.color.colorWhite
 import com.sudeshi.iorgkt.R.drawable
 import com.sudeshi.iorgkt.R.layout
-import com.sudeshi.iorgkt.R.style.styledatepicker
 import com.sudeshi.iorgkt.support.openDateTimePicker
 import com.sudeshi.iorgkt.viewModel.DateViewModel
 import kotlinx.android.synthetic.main.activity_create.*
@@ -39,35 +37,56 @@ import java.util.*
 
 class CreateActivity : AppCompatActivity() {
 
-
     private var currentPhotoPath: String? = null
     private val REQUEST_TAKE_PHOTO = 1
     private val currentTimeStamp: String =
         SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(Date())
-
     //    private val currDateSDF: String = SimpleDateFormat("dd/MM/yyyy::HH:mm:ss", Locale.US).format(Date())
-//    private var dateTime: String = DateTimeFormatter.ofPattern("dd/MM/yyyy::HH:mm:ss", Locale.ENGLISH).format(LocalDateTime.now())
-//    private var dateTime2: OffsetDateTime =OffsetDateTime.of(LocalDateTime.parse("dd/MM/yyyy::HH:mm:ss"), ZoneOffset.of("+05:30"))
+    //    private var dateTime: String = DateTimeFormatter.ofPattern("dd/MM/yyyy::HH:mm:ss", Locale.ENGLISH).format(LocalDateTime.now())
+    //    private var dateTime2: OffsetDateTime =OffsetDateTime.of(LocalDateTime.parse("dd/MM/yyyy::HH:mm:ss"), ZoneOffset.of("+05:30"))
     val EXTRA_REPLY: String = "com.sudeshi.iorgkt.newData.REPLY"
     private lateinit var dateViewModel: DateViewModel
     private var datePickerJob: Job? = null
     private val uiScope = CoroutineScope(Dispatchers.Main.immediate)
     private var seekBarProgress = 0
-
 //    val TAG: String = "CreateActivity"
 
-    @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_create)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        initActConfig()
+        initActText()
+        initActViewModel()
+        initActBtn()
+        initActSeekbar()
+//        Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
+    }
+
+    @SuppressLint("SourceLockedOrientationActivity")
+    private fun initActConfig() {
+        this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
+
+    private fun initActViewModel() {
         dateViewModel = ViewModelProvider(this).get(DateViewModel::class.java)
-        dateViewModel.dateTimeText.observe(this, Observer<OffsetDateTime> { offsetDateTime ->
+        dateViewModel.dateTimeText.observe(this, Observer { offsetDateTime ->
             offsetDateTime?.let {
                 outlinedTextCalander?.editTextCalander?.setText(dateViewModel.getDateTime())
-            }
-//the call to setNewDateTime will refresh this value
+            } //the call to setNewDateTime will refresh this value
         })
+    }
+
+    private fun initActBtn() {
+        btn_captureImg.setImageDrawable(
+            ContextCompat.getDrawable(
+                applicationContext, // Context
+                drawable.ic_add_a_photo_black_100dp // Drawable
+            )
+        )
+        btn_captureImg.setOnClickListener {
+            dispatchTakePictureIntent()
+//            Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
+        }
         btnBack.setOnClickListener {
 //            startActivity(Intent(this, MainActivity::class.java))
 //            Toast.makeText(applicationContext, currDateSDF, Toast.LENGTH_LONG).show()
@@ -89,44 +108,17 @@ class CreateActivity : AppCompatActivity() {
             } else
                 Toast.makeText(applicationContext, "PICTURE NOT FOUND", Toast.LENGTH_LONG).show()
         }
-        initContent()
-//        Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
-
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_CANCELED) {
-            if (requestCode == REQUEST_TAKE_PHOTO) {
-//                    val uri = intent.data
-                val bitmap: Bitmap? = BitmapFactory.decodeFile(currentPhotoPath)
-                        btn_captureImg.setImageBitmap(bitmap)
-//                        Log.d(TAG, bitmap.toString())
-            }
-
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun initContent() {
-        btn_captureImg.setImageDrawable(
-            ContextCompat.getDrawable(
-                applicationContext, // Context
-                drawable.ic_add_a_photo_black_100dp // Drawable
-            )
-        )
-        btn_captureImg.setOnClickListener {
-            dispatchTakePictureIntent()
-//            Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
-
-        }
+    private fun initActText() {
         outlinedTextName.editTextName?.setText("entry_$currentTimeStamp")
         outlinedTextName.editTextName?.setTextColor(getColor(colorWhite))
         outlinedTextCalander.editTextCalander.keyListener = null
 //        outlinedTextCalander.editTextCalander?.setText(currDateSDF)
         outlinedTextCalander.editTextCalander?.setTextColor(getColor(colorWhite))
-//        initCalanderDialog()
+    }
 
+    private fun initActSeekbar() {
         seekBarPriority?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 seekBarProgress = progress
@@ -154,32 +146,18 @@ class CreateActivity : AppCompatActivity() {
                 ).show()
             }
         })
-//        code for chips
-
-
     }
 
-    @SuppressLint("SetTextI18n")
-    private fun initCalanderDialog() {
-        val cal = Calendar.getInstance()
-        val dateSetListener =
-            DatePickerDialog.OnDateSetListener { _, year, monthOfYear, dayOfMonth ->
-                cal.set(Calendar.YEAR, year)
-                cal.set(Calendar.MONTH, monthOfYear)
-                cal.set(Calendar.DAY_OF_MONTH, dayOfMonth)
-
-                val myFormat = "dd/MM/yyyy, HH:mm:ss" // mention the format you need
-                val sdf = SimpleDateFormat(myFormat, Locale.US)
-                outlinedTextCalander?.editTextCalander?.setText(sdf.format(cal.time))
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode != Activity.RESULT_CANCELED) {
+            if (requestCode == REQUEST_TAKE_PHOTO) {
+//                    val uri = intent.data
+                val bitmap: Bitmap? = BitmapFactory.decodeFile(currentPhotoPath)
+                btn_captureImg.setImageBitmap(bitmap)
+//                        Log.d(TAG, bitmap.toString())
             }
 
-        outlinedTextCalander.editTextCalander.setOnClickListener {
-            DatePickerDialog(
-                this@CreateActivity, styledatepicker, dateSetListener,
-                cal.get(Calendar.YEAR),
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.DAY_OF_MONTH)
-            ).show()
         }
     }
 
@@ -216,7 +194,6 @@ class CreateActivity : AppCompatActivity() {
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
-
         val storageDir: File? = filesDir
         return File.createTempFile(
             "JPEG_${currentTimeStamp}_", /* prefix */
@@ -226,11 +203,6 @@ class CreateActivity : AppCompatActivity() {
             // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
-    }
-
-    private fun initChipGroup() {
-//        chip.isClickable = true
-//        chip.isCheckable = false
     }
 
     override fun onStart() {

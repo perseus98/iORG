@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!--    FOR COLOR PICKER-->
-    <color name="colorDUMMY">#AA00FF</color>
+    <color name="colorDUMMY">#9E97AF</color>
 
     <!-- MAIN RESOURCE -->
     <!--    <color name="colorPrimary">#008577</color>-->
@@ -14,6 +14,8 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
     <color name="colorPrimary">#FFFFFFFF</color>
+    <color name="colorToolbarBg">#8777AC</color>
+    <color name="colorEFAB">#FF9E97AF</color>
 
     <!--    Layout Specific-->
     <color name="colorCardBg">#81C784</color>
