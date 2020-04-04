@@ -41,4 +41,10 @@
         <item name="colorPrimaryDark">@color/colorMainSecBg</item>
         <item name="colorAccent">@color/colorMainBg</item>
     </style>
+
+    <style name="styleEFAB" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
+        <item name="backgroundTint">@color/colorEFAB</item>
+        <item name="iconTint">@color/colorWhite</item>
+        <item name="android:textColor">@color/colorWhite</item>
+    </style>
 </resources>
