@@ -2,6 +2,7 @@ package com.sudeshi.iorgkt.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
@@ -17,6 +18,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.multidex.MultiDex
 import com.sudeshi.iorgkt.R.color.colorWhite
 import com.sudeshi.iorgkt.R.drawable
 import com.sudeshi.iorgkt.R.layout
@@ -51,6 +53,10 @@ class CreateActivity : AppCompatActivity() {
     private var seekBarProgress = 0
 //    val TAG: String = "CreateActivity"
 
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_create)

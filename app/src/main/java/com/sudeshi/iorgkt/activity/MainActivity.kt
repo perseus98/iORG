@@ -2,6 +2,7 @@ package com.sudeshi.iorgkt.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.multidex.MultiDex
 import androidx.recyclerview.widget.GridLayoutManager
 import com.sudeshi.iorgkt.R
 import com.sudeshi.iorgkt.adapter.DataRecyclerViewAdapter
@@ -37,6 +39,11 @@ class MainActivity : AppCompatActivity() {
     private var GRID_REV_LAYOUT: Boolean = true
     val dataListAdapter = DataRecyclerViewAdapter()
 
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
+    }
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

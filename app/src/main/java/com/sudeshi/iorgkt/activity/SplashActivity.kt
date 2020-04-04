@@ -1,15 +1,22 @@
 package com.sudeshi.iorgkt.activity
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
 import androidx.appcompat.app.AppCompatActivity
+import androidx.multidex.MultiDex
 import com.sudeshi.iorgkt.R
 
 class SplashActivity : AppCompatActivity() {
     private val timeOut: Long = 1000
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
+    }
 
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,5 +32,6 @@ class SplashActivity : AppCompatActivity() {
             }, timeOut
         )
     }
+
 
 }
