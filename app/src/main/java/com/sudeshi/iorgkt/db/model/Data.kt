@@ -1,7 +1,7 @@
 package com.sudeshi.iorgkt.db.model
 
 import androidx.room.*
-import com.sudeshi.iorgkt.support.DateTypeConverter
+import com.sudeshi.iorgkt.extension.DateTypeConverter
 import java.time.OffsetDateTime
 
 @Entity(tableName = "table_data", indices = [Index(value = ["id"])])
