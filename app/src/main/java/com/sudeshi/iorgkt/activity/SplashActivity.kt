@@ -23,8 +23,6 @@ class SplashActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
-
         Handler().postDelayed(
             {
                 startActivity(Intent(this, MainActivity::class.java))

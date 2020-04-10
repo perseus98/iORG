@@ -22,7 +22,7 @@ import androidx.multidex.MultiDex
 import com.sudeshi.iorgkt.R.color.colorWhite
 import com.sudeshi.iorgkt.R.drawable
 import com.sudeshi.iorgkt.R.layout
-import com.sudeshi.iorgkt.support.openDateTimePicker
+import com.sudeshi.iorgkt.extension.openDateTimePicker
 import com.sudeshi.iorgkt.viewModel.DateViewModel
 import kotlinx.android.synthetic.main.activity_create.*
 import kotlinx.android.synthetic.main.activity_create.view.*

@@ -1,4 +1,4 @@
-package com.sudeshi.iorgkt.support
+package com.sudeshi.iorgkt.extension
 
 import androidx.room.TypeConverter
 import java.time.OffsetDateTime
