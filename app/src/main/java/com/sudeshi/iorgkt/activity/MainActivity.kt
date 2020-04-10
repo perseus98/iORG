@@ -26,27 +26,20 @@ import com.sudeshi.iorgkt.extension.MainInterface
 import com.sudeshi.iorgkt.viewModel.DataViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import java.time.OffsetDateTime
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 
 class MainActivity : AppCompatActivity(), MainInterface {
     var NEW_CREATE_ACTIVITY_REQUEST_CODE: Int = 1
     private var doubleBackToExitPressedOnce: Boolean = false
-
-    //    private var adapter: RecyclerView.Adapter<RecyclerViewHolder.ViewHolder>? = null
-    var formmat1: DateTimeFormatter =
-        DateTimeFormatter.ofPattern("dd/MM/yyyy::HH:mm:ss", Locale.ENGLISH)
     private lateinit var dataViewModel: DataViewModel
     private var spanCount: Int = 2
     private var gridOrientation: Int = GridLayout.VERTICAL
     private var gridReverseLayout: Boolean = false
     private val dataListAdapter = RecyclerViewAdapter(this, this)
     var actionMode: ActionMode? = null
-
     companion object {
         var isMultiSelectOn = false
-        val TAG = "MainActivity"
     }
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -72,7 +65,6 @@ class MainActivity : AppCompatActivity(), MainInterface {
 //        dataListAdapter.setDataList(generateDummyData())
 //        currentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER
     }
-
     private fun initActToolbar() {
         toolBar.inflateMenu(R.menu.toolbar)
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
@@ -112,8 +104,8 @@ class MainActivity : AppCompatActivity(), MainInterface {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == NEW_CREATE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            data?.let { data ->
-                val recvDataMap: HashMap<String, Any?> =
+            data?.let {
+                @Suppress("UNCHECKED_CAST") val recvDataMap: HashMap<String, Any?> =
                     data.getSerializableExtra("com.sudeshi.iorgkt.newData.REPLY") as HashMap<String, Any?>
                 val newData = Data(
                     0,
@@ -139,21 +131,18 @@ class MainActivity : AppCompatActivity(), MainInterface {
             ).show()
         }
     }
-
     override fun mainInterface(size: Int) {
         if (actionMode == null) actionMode = startSupportActionMode(ActionModeCallback())
         if (size > 0) actionMode?.title = "$size"
         else actionMode?.finish()
     }
-
     inner class ActionModeCallback : ActionMode.Callback {
-        var shouldResetRecyclerView = true
+        private var shouldResetRecyclerView = true
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when (item?.itemId) {
                 R.id.action_delete -> {
                     shouldResetRecyclerView = false
-
-//                    RecyclerViewAdapter?.deleteSelectedIds()
+                    dataListAdapter.deleteSelectedIds()
                     actionMode?.title = "" //remove item count from action mode.
                     actionMode?.finish()
                     return true
@@ -175,7 +164,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
 
         override fun onDestroyActionMode(mode: ActionMode?) {
             if (shouldResetRecyclerView) {
-//                RecyclerViewAdapter?.selectedIds?.clear()
+                dataListAdapter.selectedIds.clear()
 //                RecyclerViewAdapter?.notifyDataSetChanged()
             }
             isMultiSelectOn = false

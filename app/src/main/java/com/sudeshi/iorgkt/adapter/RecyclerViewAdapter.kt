@@ -17,7 +17,7 @@ class RecyclerViewAdapter(val context: Context, val mainInterface: MainInterface
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), ViewHolderClickListener {
     private var dataList = listOf<Data>()
     var modelList: MutableList<Data> = ArrayList<Data>()
-    private val selectedIds: MutableList<Long> = ArrayList()
+    val selectedIds: MutableList<Long> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return RecyclerViewHolder(
