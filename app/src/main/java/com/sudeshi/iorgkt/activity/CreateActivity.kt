@@ -19,6 +19,7 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.multidex.MultiDex
+import com.sudeshi.iorgkt.R
 import com.sudeshi.iorgkt.R.color.colorWhite
 import com.sudeshi.iorgkt.R.drawable
 import com.sudeshi.iorgkt.R.layout
@@ -40,13 +41,10 @@ import java.util.*
 class CreateActivity : AppCompatActivity() {
 
     private var currentPhotoPath: String? = null
-    private val REQUEST_TAKE_PHOTO = 1
+    private val requestTakePic = 1
     private val currentTimeStamp: String =
         SimpleDateFormat("yyyyMMddHHmmss", Locale.US).format(Date())
-    //    private val currDateSDF: String = SimpleDateFormat("dd/MM/yyyy::HH:mm:ss", Locale.US).format(Date())
-    //    private var dateTime: String = DateTimeFormatter.ofPattern("dd/MM/yyyy::HH:mm:ss", Locale.ENGLISH).format(LocalDateTime.now())
-    //    private var dateTime2: OffsetDateTime =OffsetDateTime.of(LocalDateTime.parse("dd/MM/yyyy::HH:mm:ss"), ZoneOffset.of("+05:30"))
-    val EXTRA_REPLY: String = "com.sudeshi.iorgkt.newData.REPLY"
+    private val extraReply: String = "com.sudeshi.iorgkt.newData.REPLY"
     private lateinit var dateViewModel: DateViewModel
     private var datePickerJob: Job? = null
     private val uiScope = CoroutineScope(Dispatchers.Main.immediate)
@@ -91,11 +89,10 @@ class CreateActivity : AppCompatActivity() {
         )
         btn_captureImg.setOnClickListener {
             dispatchTakePictureIntent()
-//            Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
         }
         btnBack.setOnClickListener {
-//            startActivity(Intent(this, MainActivity::class.java))
-//            Toast.makeText(applicationContext, currDateSDF, Toast.LENGTH_LONG).show()
+            setResult(Activity.RESULT_CANCELED)
+            finish()
         }
         btnCreate.setOnClickListener {
             if (currentPhotoPath != null) {
@@ -107,9 +104,9 @@ class CreateActivity : AppCompatActivity() {
                         "prty" to seekBarProgress
                     )
                 )
-                val intent = Intent()
-                intent.putExtra(EXTRA_REPLY, newDataMap)
-                setResult(Activity.RESULT_OK, intent)
+                val intentToMain = Intent()
+                intentToMain.putExtra(extraReply, newDataMap)
+                setResult(Activity.RESULT_OK, intentToMain)
                 finish()
             } else
                 Toast.makeText(applicationContext, "PICTURE NOT FOUND", Toast.LENGTH_LONG).show()
@@ -117,33 +114,24 @@ class CreateActivity : AppCompatActivity() {
     }
 
     private fun initActText() {
-        outlinedTextName.editTextName?.setText("entry_$currentTimeStamp")
+        outlinedTextName.editTextName?.setText(
+            applicationContext.getString(
+                R.string.entryName,
+                currentTimeStamp
+            )
+        )//"entry_$currentTimeStamp"
         outlinedTextName.editTextName?.setTextColor(getColor(colorWhite))
         outlinedTextCalander.editTextCalander.keyListener = null
-//        outlinedTextCalander.editTextCalander?.setText(currDateSDF)
         outlinedTextCalander.editTextCalander?.setTextColor(getColor(colorWhite))
     }
 
     private fun initActSeekbar() {
         seekBarPriority?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 seekBarProgress = progress
-//                Toast.makeText(
-//                    applicationContext,
-//                    "Priority Level : $seekBarProgress",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-
             }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-//                Toast.makeText(
-//                    applicationContext,
-//                    "discrete seekbar touch started!",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-            }
-
             override fun onStopTrackingTouch(seekBar: SeekBar?) {
                 Toast.makeText(
                     applicationContext,
@@ -157,8 +145,7 @@ class CreateActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode != Activity.RESULT_CANCELED) {
-            if (requestCode == REQUEST_TAKE_PHOTO) {
-//                    val uri = intent.data
+            if (requestCode == requestTakePic) {
                 val bitmap: Bitmap? = BitmapFactory.decodeFile(currentPhotoPath)
                 btn_captureImg.setImageBitmap(bitmap)
 //                        Log.d(TAG, bitmap.toString())
@@ -169,29 +156,26 @@ class CreateActivity : AppCompatActivity() {
 
     private fun dispatchTakePictureIntent() {
         Intent(ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            // Ensure that there's a camera activity to handle the intent
             takePictureIntent.resolveActivity(packageManager)?.also {
-                // Create the File where the photo should go
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
-                    // Error occurred while creating the File
                     Toast.makeText(
                         applicationContext,
-                        "Counldn't create/take picture",
+                        "Couldn't create/take picture",
                         Toast.LENGTH_LONG
                     ).show()
                     null
                 }
                 // Continue only if the File was successfully created
-                photoFile?.also { it ->
+                photoFile?.also { 
                     val photoURI: Uri = FileProvider.getUriForFile(
                         this,
                         "com.sudeshi.iorgkt.fileprovider",
                         it
                     )
                     takePictureIntent.putExtra(EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO)
+                    startActivityForResult(takePictureIntent, requestTakePic)
                 }
             }
         }
@@ -206,7 +190,6 @@ class CreateActivity : AppCompatActivity() {
             ".jpg", /* suffix */
             storageDir /* directory */
         ).apply {
-            // Save a file: path for use with ACTION_VIEW intents
             currentPhotoPath = absolutePath
         }
     }
@@ -216,8 +199,6 @@ class CreateActivity : AppCompatActivity() {
         outlinedTextCalander.editTextCalander.setOnClickListener {
             datePickerJob = uiScope.launch {
                 dateViewModel.setNewDateTime(openDateTimePicker())
-//                data.setNewDateTime(context?.openDateTimePicker())
-//setNewDateTime is a setValue in a MutableLiveData
             }
         }
 

@@ -27,5 +27,8 @@
     <string name="getFilesFailed">Failed to get list of files</string>
     <string name="refresh">Refresh</string>
 
+    //Text Compiled
+    <string name="entryName">entry_%1$s</string>
+
 
 </resources>

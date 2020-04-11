@@ -19,10 +19,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.multidex.MultiDex
 import androidx.recyclerview.widget.GridLayoutManager
 import com.sudeshi.iorgkt.R
-import com.sudeshi.iorgkt.adapter.GridItemDecoration
 import com.sudeshi.iorgkt.adapter.RecyclerViewAdapter
 import com.sudeshi.iorgkt.db.model.Data
 import com.sudeshi.iorgkt.extension.MainInterface
+import com.sudeshi.iorgkt.itemDecoration.GridItemDecoration
 import com.sudeshi.iorgkt.viewModel.DataViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import java.time.OffsetDateTime
@@ -30,7 +30,7 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity(), MainInterface {
-    var NEW_CREATE_ACTIVITY_REQUEST_CODE: Int = 1
+    private var newCreateActivityRequestCode: Int = 1
     private var doubleBackToExitPressedOnce: Boolean = false
     private lateinit var dataViewModel: DataViewModel
     private var spanCount: Int = 2
@@ -62,8 +62,6 @@ class MainActivity : AppCompatActivity(), MainInterface {
             GridLayoutManager(this, spanCount, gridOrientation, gridReverseLayout)
         recyclerViewMain.addItemDecoration(GridItemDecoration(10, 2))
         recyclerViewMain.adapter = dataListAdapter
-//        dataListAdapter.setDataList(generateDummyData())
-//        currentLayoutManagerType = LayoutManagerType.GRID_LAYOUT_MANAGER
     }
     private fun initActToolbar() {
         toolBar.inflateMenu(R.menu.toolbar)
@@ -79,16 +77,15 @@ class MainActivity : AppCompatActivity(), MainInterface {
     }
     private fun initActViewModel() {
         dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
-        dataViewModel.allData.observe(this, Observer { datas ->
-            datas?.let { dataListAdapter.setDataList(it) }
+        dataViewModel.allData.observe(this, Observer {
+            it?.let { dataListAdapter.setDataList(it) }
         })
     }
     private fun initActBtn() {
         efab_create.setOnClickListener {
-//            startActivity(Intent(this, CreateActivity::class.java))
             startActivityForResult(
                 Intent(this, CreateActivity::class.java),
-                NEW_CREATE_ACTIVITY_REQUEST_CODE
+                newCreateActivityRequestCode
             )
         }
     }
@@ -103,7 +100,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == NEW_CREATE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == newCreateActivityRequestCode && resultCode == Activity.RESULT_OK) {
             data?.let {
                 @Suppress("UNCHECKED_CAST") val recvDataMap: HashMap<String, Any?> =
                     data.getSerializableExtra("com.sudeshi.iorgkt.newData.REPLY") as HashMap<String, Any?>
@@ -123,7 +120,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 Unit
             }
 
-        } else if (requestCode == NEW_CREATE_ACTIVITY_REQUEST_CODE && resultCode == Activity.RESULT_CANCELED) {
+        } else if (requestCode == newCreateActivityRequestCode && resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(
                 applicationContext,
                 R.string.taskTermination,
@@ -143,7 +140,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
                 R.id.action_delete -> {
                     shouldResetRecyclerView = false
                     dataListAdapter.deleteSelectedIds()
-                    actionMode?.title = "" //remove item count from action mode.
+                    actionMode?.title = ""
                     actionMode?.finish()
                     return true
                 }
@@ -165,7 +162,6 @@ class MainActivity : AppCompatActivity(), MainInterface {
         override fun onDestroyActionMode(mode: ActionMode?) {
             if (shouldResetRecyclerView) {
                 dataListAdapter.selectedIds.clear()
-//                RecyclerViewAdapter?.notifyDataSetChanged()
             }
             isMultiSelectOn = false
             actionMode = null

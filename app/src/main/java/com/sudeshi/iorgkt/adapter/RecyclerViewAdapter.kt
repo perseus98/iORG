@@ -11,12 +11,13 @@ import com.sudeshi.iorgkt.R
 import com.sudeshi.iorgkt.activity.MainActivity
 import com.sudeshi.iorgkt.db.model.Data
 import com.sudeshi.iorgkt.extension.MainInterface
+import com.sudeshi.iorgkt.viewHolder.RecyclerViewHolder
 import com.sudeshi.iorgkt.viewHolder.ViewHolderClickListener
 
-class RecyclerViewAdapter(val context: Context, val mainInterface: MainInterface) :
+class RecyclerViewAdapter(val context: Context, private val mainInterface: MainInterface) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), ViewHolderClickListener {
     private var dataList = listOf<Data>()
-    var modelList: MutableList<Data> = ArrayList<Data>()
+    private var modelList: MutableList<Data> = ArrayList()
     val selectedIds: MutableList<Long> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -63,7 +64,7 @@ class RecyclerViewAdapter(val context: Context, val mainInterface: MainInterface
         }
     }
 
-    fun addIDIntoSelectedIds(index: Int) {
+    private fun addIDIntoSelectedIds(index: Int) {
         val id = dataList[index].id
         if (selectedIds.contains(id))
             selectedIds.remove(id)

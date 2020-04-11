@@ -1,4 +1,4 @@
-package com.sudeshi.iorgkt.adapter
+package com.sudeshi.iorgkt.viewHolder
 
 import android.view.View
 import android.widget.FrameLayout
@@ -6,10 +6,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sudeshi.iorgkt.R.id
 import com.sudeshi.iorgkt.db.model.Data
-import com.sudeshi.iorgkt.viewHolder.ViewHolderClickListener
 import kotlinx.android.synthetic.main.layout_recyclerview_model.view.*
 
-class RecyclerViewHolder(itemView: View, var r_tap: ViewHolderClickListener) :
+class RecyclerViewHolder(itemView: View, private var r_tap: ViewHolderClickListener) :
     RecyclerView.ViewHolder(itemView), View.OnLongClickListener, View.OnClickListener {
     val recyclerViewModel: FrameLayout = itemView.findViewById(id.recyclerViewModel)
     fun bindView(data: Data) {
