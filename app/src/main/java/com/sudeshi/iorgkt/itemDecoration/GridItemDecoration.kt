@@ -1,4 +1,4 @@
-package com.sudeshi.iorgkt.adapter
+package com.sudeshi.iorgkt.itemDecoration
 
 import android.graphics.Rect
 import android.view.View

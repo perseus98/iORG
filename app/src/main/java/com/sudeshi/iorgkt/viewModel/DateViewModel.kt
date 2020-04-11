@@ -5,13 +5,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.format.DateTimeFormatter.ofLocalizedDateTime
+import java.time.format.FormatStyle
 
 class DateViewModel(application: Application) : AndroidViewModel(application) {
     var dateTimeText: MutableLiveData<OffsetDateTime> =
         MutableLiveData(OffsetDateTime.now(ZoneId.systemDefault()))
 
     fun getDateTime(): String? {
-        return dateTimeText.value.toString()
+        return dateTimeText.value?.format(ofLocalizedDateTime(FormatStyle.MEDIUM))
     }
 
     fun setNewDateTime(offsetDateRecvd: OffsetDateTime) {
