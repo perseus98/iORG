@@ -48,4 +48,11 @@
         <item name="iconTint">@color/colorWhite</item>
         <item name="android:textColor">@color/colorWhite</item>
     </style>
+
+    <style name="txtViewTheme">
+        <item name="android:textColor">@color/colorEFAB</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:layout_marginHorizontal">1dp</item>
+        <item name="android:layout_marginVertical">1dp</item>
+    </style>
 </resources>
