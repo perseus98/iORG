@@ -7,6 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="1dp"
     android:clickable="true"
+    android:backgroundTint="@color/colorWhite"
     android:orientation="horizontal">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -21,45 +22,45 @@
         <ImageView
             android:id="@+id/dataImage"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/app_name"
             android:scaleType="fitXY"
             android:src="@drawable/sample"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginHorizontal="2dp"
+            android:layout_marginVertical="2dp"
             tools:ignore="MissingConstraints" />
 
         <TextView
             android:id="@+id/dataTextViewName"
-            android:layout_width="match_parent"
+            style="@style/txtViewTheme"
             android:layout_height="wrap_content"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
-            app:layout_constraintStart_toStartOf="@id/dataImage"
-            app:layout_constraintTop_toBottomOf="@id/dataImage"
-            tools:text="Avengers" />
+            android:layout_width="wrap_content"
+            android:text="@string/create"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dataImage" />
 
         <TextView
             android:id="@+id/dataTextViewDate"
-            android:layout_width="match_parent"
+            style="@style/txtViewTheme"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/dataTextViewName"
-            app:layout_constraintTop_toBottomOf="@id/dataTextViewName"
-            tools:text="Views: 100" />
+            android:layout_width="wrap_content"
+            android:text="@string/create"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dataTextViewName" />
 
         <TextView
             android:id="@+id/dataTextViewPriority"
-            android:layout_width="match_parent"
+            style="@style/txtViewTheme"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:textColor="@android:color/black"
-            android:textSize="14sp"
-            app:layout_constraintStart_toStartOf="@id/dataTextViewDate"
-            app:layout_constraintTop_toBottomOf="@id/dataTextViewDate"
-            tools:text="Release Date: 16 Feb 2018" />
+            android:layout_width="wrap_content"
+            android:text="@string/create"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/dataTextViewDate" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </FrameLayout>
