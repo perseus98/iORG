@@ -24,7 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:contentDescription="@string/app_name"
-            android:scaleType="fitXY"
+            android:scaleType="centerInside"
             android:src="@drawable/sample"
             android:layout_marginHorizontal="2dp"
             android:layout_marginVertical="2dp"

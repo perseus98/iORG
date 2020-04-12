@@ -59,7 +59,7 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
         if (MainActivity.isMultiSelectOn) {
             addIDIntoSelectedIds(index)
         } else {
-            Toast.makeText(context, "Clicked Item @ Position ${index + 1}", Toast.LENGTH_SHORT)
+            Toast.makeText(context, "Clicked Item at Position ${index + 1}", Toast.LENGTH_SHORT)
                 .show()
         }
     }
@@ -79,7 +79,6 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
     fun deleteSelectedIds() {
         if (selectedIds.size < 1) return
         val selectedIdIteration = selectedIds.listIterator()
-
         while (selectedIdIteration.hasNext()) {
             val selectedItemID = selectedIdIteration.next()
             var indexOfModelList = 0
@@ -93,7 +92,6 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
                 }
                 indexOfModelList++
             }
-
             MainActivity.isMultiSelectOn = false
         }
     }

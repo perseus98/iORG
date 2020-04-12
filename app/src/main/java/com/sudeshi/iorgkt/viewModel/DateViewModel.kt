@@ -12,8 +12,12 @@ class DateViewModel(application: Application) : AndroidViewModel(application) {
     var dateTimeText: MutableLiveData<OffsetDateTime> =
         MutableLiveData(OffsetDateTime.now(ZoneId.systemDefault()))
 
-    fun getDateTime(): String? {
+    fun getDateTimeForTextView(): String? {
         return dateTimeText.value?.format(ofLocalizedDateTime(FormatStyle.MEDIUM))
+    }
+
+    fun getDateTimeForDB(): OffsetDateTime? {
+        return dateTimeText.value
     }
 
     fun setNewDateTime(offsetDateRecvd: OffsetDateTime) {

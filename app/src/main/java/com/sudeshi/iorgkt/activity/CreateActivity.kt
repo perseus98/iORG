@@ -34,7 +34,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
-import java.time.OffsetDateTime
 import java.util.*
 
 
@@ -49,7 +48,7 @@ class CreateActivity : AppCompatActivity() {
     private var datePickerJob: Job? = null
     private val uiScope = CoroutineScope(Dispatchers.Main.immediate)
     private var seekBarProgress = 0
-//    val TAG: String = "CreateActivity"
+    val tag: String = "CreateActivity"
 
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -75,7 +74,7 @@ class CreateActivity : AppCompatActivity() {
         dateViewModel = ViewModelProvider(this).get(DateViewModel::class.java)
         dateViewModel.dateTimeText.observe(this, Observer { offsetDateTime ->
             offsetDateTime?.let {
-                outlinedTextCalander?.editTextCalander?.setText(dateViewModel.getDateTime())
+                outlinedTextCalander?.editTextCalander?.setText(dateViewModel.getDateTimeForTextView())
             } //the call to setNewDateTime will refresh this value
         })
     }
@@ -91,6 +90,7 @@ class CreateActivity : AppCompatActivity() {
             dispatchTakePictureIntent()
         }
         btnBack.setOnClickListener {
+//            startActivity(Intent(this,MainActivity::class.java))
             setResult(Activity.RESULT_CANCELED)
             finish()
         }
@@ -99,7 +99,7 @@ class CreateActivity : AppCompatActivity() {
                 val newDataMap: HashMap<String, Any?> = HashMap(
                     mutableMapOf(
                         "name" to (outlinedTextName?.editTextName?.text),
-                        "date" to OffsetDateTime.parse(outlinedTextCalander?.editTextCalander?.text),
+                        "date" to dateViewModel.getDateTimeForDB(),
                         "path" to currentPhotoPath,
                         "prty" to seekBarProgress
                     )
@@ -119,7 +119,7 @@ class CreateActivity : AppCompatActivity() {
                 R.string.entryName,
                 currentTimeStamp
             )
-        )//"entry_$currentTimeStamp"
+        )
         outlinedTextName.editTextName?.setTextColor(getColor(colorWhite))
         outlinedTextCalander.editTextCalander.keyListener = null
         outlinedTextCalander.editTextCalander?.setTextColor(getColor(colorWhite))
