@@ -22,4 +22,8 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     fun insert(data: Data) = viewModelScope.launch {
         dataRepository.insert(data)
     }
+
+    fun deleteEntry(data: Data) = viewModelScope.launch {
+        dataRepository.delete(data)
+    }
 }

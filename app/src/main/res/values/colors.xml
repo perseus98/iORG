@@ -16,7 +16,7 @@
     <color name="colorPrimary">#FFFFFFFF</color>
     <color name="colorToolbarBg">#8777AC</color>
     <color name="colorEFAB">#FF9E97AF</color>
-    <color name="colorControlActivated">#50FF4081</color>
+    <color name="colorControlActivated">#7FFFFFFF</color>
 
     <!--    Layout Specific-->
     <color name="colorCardBg">#81C784</color>

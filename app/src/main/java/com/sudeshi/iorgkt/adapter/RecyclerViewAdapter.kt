@@ -16,8 +16,7 @@ import com.sudeshi.iorgkt.viewHolder.ViewHolderClickListener
 
 class RecyclerViewAdapter(val context: Context, private val mainInterface: MainInterface) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), ViewHolderClickListener {
-    private var dataList = listOf<Data>()
-    private var modelList: MutableList<Data> = ArrayList()
+    private var dataModelList: MutableList<Data> = ArrayList()
     val selectedIds: MutableList<Long> = ArrayList()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -27,12 +26,12 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
         )
     }
 
-    override fun getItemCount(): Int = dataList.size
+    override fun getItemCount(): Int = dataModelList.size
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, index: Int) {
         val dataViewHolder = viewHolder as RecyclerViewHolder
-        dataViewHolder.bindView(dataList[index])
-        val id = dataList[index].id
+        dataViewHolder.bindView(dataModelList[index])
+        val id = dataModelList[index].id
         if (selectedIds.contains(id)) {
             //if item is selected then,set foreground color of FrameLayout.
             viewHolder.recyclerViewModel.foreground =
@@ -43,8 +42,9 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
                 ColorDrawable(ContextCompat.getColor(context, android.R.color.transparent))
         }
     }
-    fun setDataList(dataList: List<Data>) {
-        this.dataList = dataList
+
+    fun setDataList(dataModelList: List<Data>) {
+        this.dataModelList = dataModelList as MutableList<Data>
         notifyDataSetChanged()
     }
 
@@ -65,7 +65,7 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
     }
 
     private fun addIDIntoSelectedIds(index: Int) {
-        val id = dataList[index].id
+        val id = dataModelList[index].id
         if (selectedIds.contains(id))
             selectedIds.remove(id)
         else
@@ -82,12 +82,13 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
         while (selectedIdIteration.hasNext()) {
             val selectedItemID = selectedIdIteration.next()
             var indexOfModelList = 0
-            val modelListIteration: MutableListIterator<Data> = modelList.listIterator()
+            val modelListIteration: MutableListIterator<Data> = dataModelList.listIterator()
             while (modelListIteration.hasNext()) {
                 val model = modelListIteration.next()
                 if (selectedItemID == model.id) {
                     modelListIteration.remove()
                     selectedIdIteration.remove()
+                    MainActivity.dataViewModel.deleteEntry(model)
                     notifyItemRemoved(indexOfModelList)
                 }
                 indexOfModelList++

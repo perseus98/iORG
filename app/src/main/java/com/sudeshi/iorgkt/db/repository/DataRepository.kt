@@ -9,4 +9,8 @@ class DataRepository(private val dataDAO: DataDAO) {
     suspend fun insert(data: Data) {
         dataDAO.insertMainData(data)
     }
+
+    suspend fun delete(data: Data) {
+        dataDAO.deleteDataEntry(data)
+    }
 }
