@@ -67,8 +67,8 @@ class MainActivity : AppCompatActivity(), MainInterface {
         toolBar.inflateMenu(R.menu.toolbar)
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             return@OnMenuItemClickListener when (item.itemId) {
-                R.id.action_refresh -> {
-                    Toast.makeText(this, "Refreshing...", Toast.LENGTH_SHORT).show()
+                R.id.action_filter -> {
+                    Toast.makeText(this, "TODO FILTER...", Toast.LENGTH_SHORT).show()
                     true
                 }
                 else -> false

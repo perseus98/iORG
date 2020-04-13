@@ -1,18 +1,16 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/exp2</item>
         <item name="colorAccent">@color/colorMainBg</item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionModeOverlay">true</item>
     </style>
+
 
     <!--    Button-->
     <style name="AppBtn">
@@ -50,7 +48,7 @@
     </style>
 
     <style name="txtViewTheme">
-        <item name="android:textColor">@color/colorEFAB</item>
+        <item name="android:textColor">@color/colorWhite</item>
         <item name="android:textSize">12sp</item>
         <item name="android:layout_marginHorizontal">1dp</item>
         <item name="android:layout_marginVertical">1dp</item>
