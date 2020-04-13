@@ -32,7 +32,6 @@ import java.util.*
 class MainActivity : AppCompatActivity(), MainInterface {
     private var newCreateActivityRequestCode: Int = 1
     private var doubleBackToExitPressedOnce: Boolean = false
-    private lateinit var dataViewModel: DataViewModel
     private var spanCount: Int = 2
     private var gridOrientation: Int = GridLayout.VERTICAL
     private var gridReverseLayout: Boolean = false
@@ -40,6 +39,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
     var actionMode: ActionMode? = null
     companion object {
         var isMultiSelectOn = false
+        lateinit var dataViewModel: DataViewModel
     }
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -138,9 +138,9 @@ class MainActivity : AppCompatActivity(), MainInterface {
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when (item?.itemId) {
                 R.id.action_delete -> {
-                    shouldResetRecyclerView = false
+                    shouldResetRecyclerView = true
                     dataListAdapter.deleteSelectedIds()
-                    actionMode?.title = ""
+                    actionMode?.title = "Selected Item Deleted"
                     actionMode?.finish()
                     return true
                 }
