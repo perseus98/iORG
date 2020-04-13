@@ -25,7 +25,7 @@
     <string name="dataInsSuccess">Entry Added Successfully</string>
     <string name="taskTermination">Task Terminated By User</string>
     <string name="getFilesFailed">Failed to get list of files</string>
-    <string name="refresh">Refresh</string>
+    <string name="filter">Filter List</string>
 
     //Text Compiled
     <string name="entryName">entry_%1$s</string>
