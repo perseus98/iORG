@@ -23,13 +23,16 @@
     <string name="btnClickExample">Specific Button Was Clicked</string>
     <string name="taskFailed"> Provided task failed successfully </string>
     <string name="dataInsSuccess">Entry Added Successfully</string>
-    <string name="taskTermination">Task Terminated By User</string>
+    <string name="taskTermination">Task entry create terminated by user</string>
     <string name="getFilesFailed">Failed to get list of files</string>
     <string name="filter">Filter List</string>
 
     //Text Compiled
     <string name="entryName">entry_%1$s</string>
     <string name="nav_drawer">This is our navigation drawer</string>
+    <string name="imgCapTerminated">Task image capture terminated by user</string>
+    <string name="picNotFound">PICTURE NOT FOUND</string>
+    <string name="exit">Exit</string>
 
 
 </resources>

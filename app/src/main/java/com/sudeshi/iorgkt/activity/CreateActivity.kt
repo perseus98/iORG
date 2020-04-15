@@ -48,6 +48,8 @@ class CreateActivity : AppCompatActivity() {
     private var datePickerJob: Job? = null
     private val uiScope = CoroutineScope(Dispatchers.Main.immediate)
     private var seekBarProgress = 0
+    private var entriesValid = false
+    private var picTaken = false
     val tag: String = "CreateActivity"
 
     override fun attachBaseContext(base: Context) {
@@ -95,7 +97,7 @@ class CreateActivity : AppCompatActivity() {
             finish()
         }
         btnCreate.setOnClickListener {
-            if (currentPhotoPath != null) {
+            if (currentPhotoPath != null && picTaken && entriesValid) {
                 val newDataMap: HashMap<String, Any?> = HashMap(
                     mutableMapOf(
                         "name" to (outlinedTextName?.editTextName?.text),
@@ -109,7 +111,11 @@ class CreateActivity : AppCompatActivity() {
                 setResult(Activity.RESULT_OK, intentToMain)
                 finish()
             } else
-                Toast.makeText(applicationContext, "PICTURE NOT FOUND", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    applicationContext,
+                    getString(R.string.picNotFound),
+                    Toast.LENGTH_LONG
+                ).show()
         }
     }
 
@@ -146,13 +152,20 @@ class CreateActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode != Activity.RESULT_CANCELED) {
-            if (requestCode == requestTakePic) {
-                val bitmap: Bitmap? = BitmapFactory.decodeFile(currentPhotoPath)
-                btn_captureImg.setImageBitmap(bitmap)
+        if (resultCode == Activity.RESULT_CANCELED && requestCode == requestTakePic) {
+            entriesValid = false
+            picTaken = false
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.imgCapTerminated),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (resultCode != Activity.RESULT_CANCELED && requestCode == requestTakePic) {
+            val bitmap: Bitmap? = BitmapFactory.decodeFile(currentPhotoPath)
+            btn_captureImg.setImageBitmap(bitmap)
+            entriesValid = true
+            picTaken = true
 //                        Log.d(TAG, bitmap.toString())
-            }
-
         }
     }
 
