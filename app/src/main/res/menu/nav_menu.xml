@@ -25,8 +25,8 @@
                 android:title="Update Profile" />
             <item
                 android:id="@+id/nav_logout"
-                android:icon="@drawable/sample"
-                android:title="Sign Out" />
+                android:icon="@drawable/ic_exit_to_app"
+                android:title="@string/exit" />
         </menu>
     </item>
 </menu>

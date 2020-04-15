@@ -31,6 +31,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_nav.*
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity(), MainInterface,
@@ -181,7 +182,6 @@ class MainActivity : AppCompatActivity(), MainInterface,
             shouldResetRecyclerView = true
         }
     }
-
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_profile -> {
@@ -197,7 +197,8 @@ class MainActivity : AppCompatActivity(), MainInterface,
                 Toast.makeText(this, "Update clicked", Toast.LENGTH_SHORT).show()
             }
             R.id.nav_logout -> {
-                Toast.makeText(this, "Sign out clicked", Toast.LENGTH_SHORT).show()
+                moveTaskToBack(true)
+                exitProcess(1)
             }
         }
         drawer_layout.closeDrawer(GravityCompat.START)
