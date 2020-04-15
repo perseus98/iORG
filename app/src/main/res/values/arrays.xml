@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="priority_colour">
+        <item>#990000FF</item>
+        <item>#99008000</item>
+        <item>#9940E0D0</item>
+        <item>#99FFFF00</item>
+        <item>#99FFC0CB</item>
+        <item>#99FF0000</item>
+    </array>
+</resources>

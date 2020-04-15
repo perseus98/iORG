@@ -126,6 +126,8 @@ class CreateActivity : AppCompatActivity() {
     }
 
     private fun initActSeekbar() {
+        seekBarPriority.max = 5
+        seekBarPriority.progress = 0
         seekBarPriority?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {
             }

@@ -29,6 +29,7 @@
 
     //Text Compiled
     <string name="entryName">entry_%1$s</string>
+    <string name="nav_drawer">This is our navigation drawer</string>
 
 
 </resources>

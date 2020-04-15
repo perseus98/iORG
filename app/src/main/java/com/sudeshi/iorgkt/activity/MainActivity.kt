@@ -11,13 +11,16 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.GridLayout
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.Toolbar
+import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.multidex.MultiDex
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.navigation.NavigationView
 import com.sudeshi.iorgkt.R
 import com.sudeshi.iorgkt.adapter.RecyclerViewAdapter
 import com.sudeshi.iorgkt.db.model.Data
@@ -25,11 +28,13 @@ import com.sudeshi.iorgkt.extension.MainInterface
 import com.sudeshi.iorgkt.itemDecoration.GridItemDecoration
 import com.sudeshi.iorgkt.viewModel.DataViewModel
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_nav.*
 import java.time.OffsetDateTime
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), MainInterface {
+class MainActivity : AppCompatActivity(), MainInterface,
+    NavigationView.OnNavigationItemSelectedListener {
     private var newCreateActivityRequestCode: Int = 1
     private var doubleBackToExitPressedOnce: Boolean = false
     private var spanCount: Int = 2
@@ -48,7 +53,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
     @SuppressLint("SourceLockedOrientationActivity")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_nav)
         initActConfig()
         initActToolbar()
         initActViewModel()
@@ -62,6 +67,13 @@ class MainActivity : AppCompatActivity(), MainInterface {
             GridLayoutManager(this, spanCount, gridOrientation, gridReverseLayout)
         recyclerViewMain.addItemDecoration(GridItemDecoration(10, 2))
         recyclerViewMain.adapter = dataListAdapter
+        setSupportActionBar(toolBar)
+        val actionBarDrawerToggle = ActionBarDrawerToggle(
+            this, drawer_layout, toolBar, 0, 0
+        )
+        drawer_layout.addDrawerListener(actionBarDrawerToggle)
+        actionBarDrawerToggle.syncState()
+        nav_view.setNavigationItemSelectedListener(this)
     }
     private fun initActToolbar() {
         toolBar.inflateMenu(R.menu.toolbar)
@@ -144,6 +156,7 @@ class MainActivity : AppCompatActivity(), MainInterface {
                     actionMode?.finish()
                     return true
                 }
+
             }
             return false
         }
@@ -160,12 +173,34 @@ class MainActivity : AppCompatActivity(), MainInterface {
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
-            if (shouldResetRecyclerView) {
+//            if (shouldResetRecyclerView) {
                 dataListAdapter.selectedIds.clear()
-            }
+//            }
             isMultiSelectOn = false
             actionMode = null
             shouldResetRecyclerView = true
         }
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_profile -> {
+                Toast.makeText(this, "Profile clicked", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_messages -> {
+                Toast.makeText(this, "Messages clicked", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_friends -> {
+                Toast.makeText(this, "Friends clicked", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_update -> {
+                Toast.makeText(this, "Update clicked", Toast.LENGTH_SHORT).show()
+            }
+            R.id.nav_logout -> {
+                Toast.makeText(this, "Sign out clicked", Toast.LENGTH_SHORT).show()
+            }
+        }
+        drawer_layout.closeDrawer(GravityCompat.START)
+        return true
     }
 }

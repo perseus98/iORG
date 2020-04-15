@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!--    FOR COLOR PICKER-->
-    <color name="colorDUMMY">#9E97AF</color>
+    <color name="colorDUMMY">#1AFFFFFF</color>
 
     <!-- MAIN RESOURCE -->
     <!--    <color name="colorPrimary">#008577</color>-->
@@ -18,20 +18,16 @@
     <color name="colorEFAB">#FF9E97AF</color>
     <color name="colorControlActivated">#805E40A5</color>
     <color name="colorRecyclerViewModelBg">#7FFFFFFF</color>
-
+    <color name="colorCreateImageViewBgTint">#99FFFFFF</color>
     <!--    Layout Specific-->
     <color name="colorCardBg">#81C784</color>
-
     <!--    REFERENCE COLOR-->
     <color name="colorLogoDesign">#ea83ff</color>
     <color name="colorLogoFont">#440e51</color>
-
     <!--    EXP-->
-
     <color name="exp1">#FF4D12D5</color>
     <color name="exp2">#FF1A044C</color>
-
     <!--    setting-->
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">#fff</color>
-
+    <!--    priority color reference-->
 </resources>
