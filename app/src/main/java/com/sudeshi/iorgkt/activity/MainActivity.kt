@@ -33,7 +33,6 @@ import java.time.OffsetDateTime
 import java.util.*
 import kotlin.system.exitProcess
 
-
 class MainActivity : AppCompatActivity(), MainInterface,
     NavigationView.OnNavigationItemSelectedListener {
     private var newCreateActivityRequestCode: Int = 1
@@ -42,10 +41,10 @@ class MainActivity : AppCompatActivity(), MainInterface,
     private var gridOrientation: Int = GridLayout.VERTICAL
     private var gridReverseLayout: Boolean = false
     private val dataListAdapter = RecyclerViewAdapter(this, this)
-    var actionMode: ActionMode? = null
     companion object {
         var isMultiSelectOn = false
         lateinit var dataViewModel: DataViewModel
+        var actionMode: ActionMode? = null
     }
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -132,7 +131,6 @@ class MainActivity : AppCompatActivity(), MainInterface,
                 ).show()
                 Unit
             }
-
         } else if (requestCode == newCreateActivityRequestCode && resultCode == Activity.RESULT_CANCELED) {
             Toast.makeText(
                 applicationContext,
@@ -153,11 +151,9 @@ class MainActivity : AppCompatActivity(), MainInterface,
                 R.id.action_delete -> {
                     shouldResetRecyclerView = true
                     dataListAdapter.deleteSelectedIds()
-                    actionMode?.title = "Selected Item Deleted"
                     actionMode?.finish()
                     return true
                 }
-
             }
             return false
         }
@@ -174,9 +170,13 @@ class MainActivity : AppCompatActivity(), MainInterface,
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
-//            if (shouldResetRecyclerView) {
-                dataListAdapter.selectedIds.clear()
-//            }
+            dataListAdapter.selectedIds.clear()
+            dataListAdapter.clearSelection()
+            Toast.makeText(
+                applicationContext,
+                getString(R.string.batchSelCancel),
+                Toast.LENGTH_SHORT
+            ).show()
             isMultiSelectOn = false
             actionMode = null
             shouldResetRecyclerView = true

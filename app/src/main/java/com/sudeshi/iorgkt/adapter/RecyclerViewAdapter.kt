@@ -27,6 +27,7 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
     }
 
     override fun getItemCount(): Int = dataModelList.size
+    fun getSelectedIdSize(): Int = selectedIds.size
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, index: Int) {
         val dataViewHolder = viewHolder as RecyclerViewHolder
@@ -48,16 +49,22 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
         notifyDataSetChanged()
     }
 
+    fun clearSelection() {
+        notifyDataSetChanged()
+    }
+
     override fun onLongTap(index: Int) {
         if (!MainActivity.isMultiSelectOn) {
             MainActivity.isMultiSelectOn = true
         }
         addIDIntoSelectedIds(index)
+        MainActivity.actionMode?.title = "" + getSelectedIdSize() + " items selected"
     }
 
     override fun onTap(index: Int) {
         if (MainActivity.isMultiSelectOn) {
             addIDIntoSelectedIds(index)
+            MainActivity.actionMode?.title = "" + getSelectedIdSize() + " items selected"
         } else {
             Toast.makeText(context, "Clicked Item at Position ${index + 1}", Toast.LENGTH_SHORT)
                 .show()
@@ -70,7 +77,6 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
             selectedIds.remove(id)
         else
             selectedIds.add(id)
-
         notifyItemChanged(index)
         if (selectedIds.size < 1) MainActivity.isMultiSelectOn = false
         mainInterface.mainInterface(selectedIds.size)
