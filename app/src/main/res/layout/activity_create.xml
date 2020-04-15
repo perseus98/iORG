@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/colorMainBg"
     android:screenOrientation="portrait"
+    android:theme="@style/Theme.MaterialComponents.Light"
     tools:context=".activity.CreateActivity">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -26,6 +27,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            android:backgroundTint="@color/colorCreateImageViewBgTint"
             tools:src="@drawable/ic_add_a_photo_black_100dp" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -54,6 +56,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/hintCalanderField"
+            app:hintTextColor="@color/colorWhite"
             app:layout_constraintBottom_toTopOf="@+id/seekBarPriority"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.501"
@@ -77,10 +80,8 @@
             android:layout_width="321dp"
             android:layout_height="22dp"
             android:layout_marginBottom="16dp"
-            android:max="10"
             android:maxHeight="3dp"
             android:minHeight="3dp"
-            android:progress="0"
             android:progressDrawable="@drawable/seekbar"
             android:thumbTint="@color/colorWhite"
             app:layout_constraintBottom_toTopOf="@+id/horizontalScrollViewChipGroup"
