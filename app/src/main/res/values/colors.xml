@@ -16,7 +16,7 @@
     <color name="colorPrimary">#FFFFFFFF</color>
     <color name="colorToolbarBg">#8777AC</color>
     <color name="colorEFAB">#FF9E97AF</color>
-    <color name="colorControlActivated">#805E40A5</color>
+    <color name="colorControlActivated">#B3FFFFFF</color>
     <color name="colorRecyclerViewModelBg">#7FFFFFFF</color>
     <color name="colorCreateImageViewBgTint">#99FFFFFF</color>
     <!--    Layout Specific-->

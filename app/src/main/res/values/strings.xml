@@ -33,6 +33,7 @@
     <string name="imgCapTerminated">Task image capture terminated by user</string>
     <string name="picNotFound">PICTURE NOT FOUND</string>
     <string name="exit">Exit</string>
+    <string name="batchSelCancel">Batch Selection Cancelled</string>
 
 
 </resources>
