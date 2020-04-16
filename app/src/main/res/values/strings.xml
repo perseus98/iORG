@@ -25,7 +25,7 @@
     <string name="dataInsSuccess">Entry Added Successfully</string>
     <string name="taskTermination">Task entry create terminated by user</string>
     <string name="getFilesFailed">Failed to get list of files</string>
-    <string name="filter">Filter List</string>
+    <string name="filter">Filter</string>
 
     //Text Compiled
     <string name="entryName">entry_%1$s</string>
@@ -34,6 +34,7 @@
     <string name="picNotFound">PICTURE NOT FOUND</string>
     <string name="exit">Exit</string>
     <string name="batchSelCancel">Batch Selection Cancelled</string>
+    <string name="appName">iORG</string>
 
 
 </resources>
