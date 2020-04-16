@@ -10,16 +10,18 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/Theme.App">
+        android:layout_height="wrap_content">
 
-        <androidx.appcompat.widget.Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolBar"
+            style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorEFAB"
             android:elevation="5dp"
-            app:title="iORG"
+            app:menu="@menu/toolbar"
+            app:navigationIcon="@drawable/ic_menu_nav"
+            app:title="@string/appName"
             app:titleTextColor="@color/colorWhite"
             app:layout_scrollFlags="scroll|enterAlways" />
     </com.google.android.material.appbar.AppBarLayout>

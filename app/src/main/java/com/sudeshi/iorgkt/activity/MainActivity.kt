@@ -76,7 +76,6 @@ class MainActivity : AppCompatActivity(), MainInterface,
         nav_view.setNavigationItemSelectedListener(this)
     }
     private fun initActToolbar() {
-        toolBar.inflateMenu(R.menu.toolbar)
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             return@OnMenuItemClickListener when (item.itemId) {
                 R.id.action_filter -> {
@@ -86,6 +85,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
                 else -> false
             }
         })
+        toolBar.showContextMenu()
     }
     private fun initActViewModel() {
         dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
