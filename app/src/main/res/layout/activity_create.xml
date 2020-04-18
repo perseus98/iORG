@@ -6,13 +6,27 @@
     android:layout_height="match_parent"
     android:background="@color/colorMainBg"
     android:screenOrientation="portrait"
-    android:theme="@style/Theme.MaterialComponents.Light"
+    android:theme="@style/AppTheme"
     tools:context=".activity.CreateActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolBarCreate"
+            style="@style/ToolbarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:menu="@menu/toolbar_create"
+            app:title="@string/creatEntry" />
+    </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         app:layout_anchor="@+id/relativeLayout"
         app:layout_anchorGravity="center">
 
@@ -21,20 +35,22 @@
             android:layout_width="266dp"
             android:layout_height="387dp"
             android:adjustViewBounds="true"
+            android:backgroundTint="@color/colorWhite"
             android:contentDescription="@string/sam_desc"
             android:scaleType="centerInside"
             app:layout_constraintBottom_toTopOf="@+id/outlinedTextName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:backgroundTint="@color/colorCreateImageViewBgTint"
+            app:layout_constraintVertical_bias="0.79"
             tools:src="@drawable/ic_add_a_photo_black_100dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/outlinedTextName"
             style="@style/MaterialTextField"
-            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:minWidth="50sp"
             android:hint="@string/hintNameField"
             app:layout_constraintBottom_toTopOf="@+id/outlinedTextCalander"
             app:layout_constraintEnd_toEndOf="parent"
@@ -44,6 +60,7 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/editTextName"
                 android:layout_width="wrap_content"
+                android:minWidth="50sp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
                 android:importantForAutofill="no"
@@ -111,6 +128,7 @@
                     style="@style/Widget.MaterialComponents.Chip.Entry"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:backgroundTint="@color/colorWhite"
                     android:checkable="false"
                     android:text="@string/unCate"
                     app:chipIcon="@drawable/logo_chp_uncategorized" />
@@ -120,42 +138,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/sam_desc"
+                    android:backgroundTint="@color/colorWhite"
                     app:chipIcon="@drawable/ic_add_a_photo_black_24dp" />
                 <!-- Chips can be declared here, or added dynamically. -->
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
-
-        <Button
-            android:id="@+id/btnCreate"
-            style="@style/AppBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/btnCreate"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/guideline"
-            app:layout_constraintTop_toBottomOf="@+id/horizontalScrollViewChipGroup" />
-
-        <Button
-            android:id="@+id/btnBack"
-            style="@style/AppBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/btnBack"
-            app:iconTint="#DD0000"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/guideline"
-            app:layout_constraintHorizontal_bias="0.28"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/horizontalScrollViewChipGroup" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            app:layout_constraintGuide_begin="216dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

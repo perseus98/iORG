@@ -28,13 +28,21 @@
     <string name="filter">Filter</string>
 
     //Text Compiled
-    <string name="entryName">entry_%1$s</string>
+    <string name="entryName">Entry_%1$s</string>
     <string name="nav_drawer">This is our navigation drawer</string>
     <string name="imgCapTerminated">Task image capture terminated by user</string>
     <string name="picNotFound">PICTURE NOT FOUND</string>
     <string name="exit">Exit</string>
     <string name="batchSelCancel">Batch Selection Cancelled</string>
     <string name="appName">iORG</string>
+    <string name="search">Search</string>
+    <string name="miscellaneous">Miscellaneous</string>
+    <string name="action_more">More</string>
+    <string name="action">Action</string>
+    <string name="takeValidPic">Please Take A Valid Picture</string>
+    <string name="enterValidName">Please Enter A Valid Name</string>
+    <string name="creatEntry">Create Entry</string>
+    <string name="done">Done</string>
 
 
 </resources>

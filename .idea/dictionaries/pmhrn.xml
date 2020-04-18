@@ -5,6 +5,7 @@
       <w>affff</w>
       <w>apptop</w>
       <w>calander</w>
+      <w>creat</w>
       <w>datepicker</w>
       <w>descrp</w>
       <w>desgin</w>
@@ -22,10 +23,12 @@
       <w>seekbar</w>
       <w>snackbar</w>
       <w>styledatepicker</w>
+      <w>styletool</w>
       <w>sudeshi</w>
       <w>textinput</w>
       <w>uncate</w>
       <w>uncategorized</w>
+      <w>vert</w>
     </words>
   </dictionary>
 </component>

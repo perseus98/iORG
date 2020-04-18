@@ -1,18 +1,4 @@
 <resources>
-
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light">
-        <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/exp2</item>
-        <item name="colorAccent">@color/colorMainBg</item>
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionModeOverlay">true</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="actionModeBackground">@color/colorWhite</item>
-    </style>
-
     <style name="Widget.App.ActionMode" parent="Widget.AppCompat.ActionMode">
         <item name="titleTextStyle">?attr/textAppearanceHeadline6</item>
         <item name="subtitleTextStyle">?attr/textAppearanceSubtitle1</item>
@@ -50,9 +36,9 @@
     </style>
 
     <style name="styleEFAB" parent="Widget.MaterialComponents.ExtendedFloatingActionButton.Icon">
-        <item name="backgroundTint">@color/colorEFAB</item>
-        <item name="iconTint">@color/colorWhite</item>
-        <item name="android:textColor">@color/colorWhite</item>
+        <item name="backgroundTint">@color/colorWhite</item>
+        <item name="iconTint">@color/colorMainBg</item>
+        <item name="android:textColor">@color/colorMainBg</item>
     </style>
 
     <style name="txtViewTheme">
@@ -60,6 +46,18 @@
         <item name="android:textSize">12sp</item>
         <item name="android:layout_marginHorizontal">1dp</item>
         <item name="android:layout_marginVertical">1dp</item>
+    </style>
+
+    <style name="CreateActBtn" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/colorWhite</item>
+        <item name="android:textColor">@color/colorMainBg</item>
+    </style>
+
+    <style name="ToolbarStyle" parent="Widget.MaterialComponents.Toolbar.Primary">
+        <item name="background">@color/colorWhite</item>
+        <item name="android:textColor">@color/colorMainBg</item>
+        <item name="elevation">5dp</item>
+        <item name="layout_scrollFlags">enterAlways|noScroll</item>
     </style>
 
 

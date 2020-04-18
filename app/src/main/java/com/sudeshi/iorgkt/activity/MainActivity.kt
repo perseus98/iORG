@@ -9,11 +9,13 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
@@ -30,11 +32,11 @@ import com.sudeshi.iorgkt.viewModel.DataViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_nav.*
 import java.time.OffsetDateTime
-import java.util.*
 import kotlin.system.exitProcess
 
+
 class MainActivity : AppCompatActivity(), MainInterface,
-    NavigationView.OnNavigationItemSelectedListener {
+    NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener {
     private var newCreateActivityRequestCode: Int = 1
     private var doubleBackToExitPressedOnce: Boolean = false
     private var spanCount: Int = 2
@@ -55,9 +57,9 @@ class MainActivity : AppCompatActivity(), MainInterface,
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_nav)
         initActConfig()
-        initActToolbar()
         initActViewModel()
         initActBtn()
+        initActToolbar()
     }
     @SuppressLint("SourceLockedOrientationActivity", "WrongConstant")
     private fun initActConfig() {
@@ -65,8 +67,10 @@ class MainActivity : AppCompatActivity(), MainInterface,
         isMultiSelectOn = false
         recyclerViewMain.layoutManager =
             GridLayoutManager(this, spanCount, gridOrientation, gridReverseLayout)
-        recyclerViewMain.addItemDecoration(GridItemDecoration(10, 2))
+        recyclerViewMain.addItemDecoration(GridItemDecoration(5, 2))
         recyclerViewMain.adapter = dataListAdapter
+    }
+    private fun initActToolbar() {
         setSupportActionBar(toolBar)
         val actionBarDrawerToggle = ActionBarDrawerToggle(
             this, drawer_layout, toolBar, 0, 0
@@ -74,8 +78,8 @@ class MainActivity : AppCompatActivity(), MainInterface,
         drawer_layout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
-    }
-    private fun initActToolbar() {
+        toolBar.inflateMenu(R.menu.toolbar)
+        toolBar.navigationIcon = resources.getDrawable(R.drawable.ic_menu_nav)
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             return@OnMenuItemClickListener when (item.itemId) {
                 R.id.action_filter -> {
@@ -85,7 +89,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
                 else -> false
             }
         })
-        toolBar.showContextMenu()
+
     }
     private fun initActViewModel() {
         dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
@@ -94,12 +98,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
         })
     }
     private fun initActBtn() {
-        efab_create.setOnClickListener {
-            startActivityForResult(
-                Intent(this, CreateActivity::class.java),
-                newCreateActivityRequestCode
-            )
-        }
+
     }
     override fun onBackPressed() {
         if (doubleBackToExitPressedOnce) {
@@ -146,6 +145,16 @@ class MainActivity : AppCompatActivity(), MainInterface,
     }
     inner class ActionModeCallback : ActionMode.Callback {
         private var shouldResetRecyclerView = true
+        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            val inflater = mode?.menuInflater
+            inflater?.inflate(R.menu.toolbar_cab, menu)
+            return true
+        }
+
+        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
+            menu?.findItem(R.id.action_delete)?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            return true
+        }
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
             when (item?.itemId) {
                 R.id.action_delete -> {
@@ -156,17 +165,6 @@ class MainActivity : AppCompatActivity(), MainInterface,
                 }
             }
             return false
-        }
-
-        override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-            val inflater = mode?.menuInflater
-            inflater?.inflate(R.menu.toolbar_cab, menu)
-            return true
-        }
-
-        override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
-            menu?.findItem(R.id.action_delete)?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            return true
         }
 
         override fun onDestroyActionMode(mode: ActionMode?) {
@@ -184,17 +182,11 @@ class MainActivity : AppCompatActivity(), MainInterface,
     }
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_profile -> {
-                Toast.makeText(this, "Profile clicked", Toast.LENGTH_SHORT).show()
+            R.id.nav_action_search -> {
+                Toast.makeText(this, "Search clicked", Toast.LENGTH_SHORT).show()
             }
-            R.id.nav_messages -> {
-                Toast.makeText(this, "Messages clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_friends -> {
-                Toast.makeText(this, "Friends clicked", Toast.LENGTH_SHORT).show()
-            }
-            R.id.nav_update -> {
-                Toast.makeText(this, "Update clicked", Toast.LENGTH_SHORT).show()
+            R.id.nav_action_filter -> {
+                Toast.makeText(this, "filter clicked", Toast.LENGTH_SHORT).show()
             }
             R.id.nav_logout -> {
                 moveTaskToBack(true)
@@ -203,5 +195,27 @@ class MainActivity : AppCompatActivity(), MainInterface,
         }
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
+    }
+
+    fun showMenu(v: View) {
+        PopupMenu(this, v).apply {
+            // MainActivity implements OnMenuItemClickListener
+            setOnMenuItemClickListener(this@MainActivity)
+            inflate(R.menu.main_act_menu)
+            show()
+        }
+    }
+
+    override fun onMenuItemClick(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.main_act_menu_create -> {
+                startActivityForResult(
+                    Intent(this, CreateActivity::class.java),
+                    newCreateActivityRequestCode
+                )
+                true
+            }
+            else -> false
+        }
     }
 }
