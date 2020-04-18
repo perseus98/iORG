@@ -14,6 +14,7 @@ import android.provider.MediaStore.EXTRA_OUTPUT
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
@@ -48,8 +49,8 @@ class CreateActivity : AppCompatActivity() {
     private var datePickerJob: Job? = null
     private val uiScope = CoroutineScope(Dispatchers.Main.immediate)
     private var seekBarProgress = 0
-    private var entriesValid = false
-    private var picTaken = false
+    private var picValid = false
+    private var nameValid = true
     val tag: String = "CreateActivity"
 
     override fun attachBaseContext(base: Context) {
@@ -60,18 +61,31 @@ class CreateActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(layout.activity_create)
         initActConfig()
+        initActToolbar()
         initActText()
         initActViewModel()
         initActBtn()
         initActSeekbar()
 //        Toast.makeText(applicationContext,"Picture Okk",Toast.LENGTH_LONG).show()
     }
-
     @SuppressLint("SourceLockedOrientationActivity")
     private fun initActConfig() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
+    private fun initActToolbar() {
+        setSupportActionBar(toolBarCreate)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        toolBarCreate.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener {
+            return@OnMenuItemClickListener when (it.itemId) {
+                R.id.action_done -> {
+                    Toast.makeText(this, "content...", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
+        })
+    }
     private fun initActViewModel() {
         dateViewModel = ViewModelProvider(this).get(DateViewModel::class.java)
         dateViewModel.dateTimeText.observe(this, Observer { offsetDateTime ->
@@ -80,7 +94,6 @@ class CreateActivity : AppCompatActivity() {
             } //the call to setNewDateTime will refresh this value
         })
     }
-
     private fun initActBtn() {
         btn_captureImg.setImageDrawable(
             ContextCompat.getDrawable(
@@ -91,34 +104,7 @@ class CreateActivity : AppCompatActivity() {
         btn_captureImg.setOnClickListener {
             dispatchTakePictureIntent()
         }
-        btnBack.setOnClickListener {
-//            startActivity(Intent(this,MainActivity::class.java))
-            setResult(Activity.RESULT_CANCELED)
-            finish()
-        }
-        btnCreate.setOnClickListener {
-            if (currentPhotoPath != null && picTaken && entriesValid) {
-                val newDataMap: HashMap<String, Any?> = HashMap(
-                    mutableMapOf(
-                        "name" to (outlinedTextName?.editTextName?.text),
-                        "date" to dateViewModel.getDateTimeForDB(),
-                        "path" to currentPhotoPath,
-                        "prty" to seekBarProgress
-                    )
-                )
-                val intentToMain = Intent()
-                intentToMain.putExtra(extraReply, newDataMap)
-                setResult(Activity.RESULT_OK, intentToMain)
-                finish()
-            } else
-                Toast.makeText(
-                    applicationContext,
-                    getString(R.string.picNotFound),
-                    Toast.LENGTH_LONG
-                ).show()
-        }
     }
-
     private fun initActText() {
         outlinedTextName.editTextName?.setText(
             applicationContext.getString(
@@ -153,8 +139,7 @@ class CreateActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_CANCELED && requestCode == requestTakePic) {
-            entriesValid = false
-            picTaken = false
+            picValid = false
             Toast.makeText(
                 applicationContext,
                 getString(R.string.imgCapTerminated),
@@ -163,8 +148,7 @@ class CreateActivity : AppCompatActivity() {
         } else if (resultCode != Activity.RESULT_CANCELED && requestCode == requestTakePic) {
             val bitmap: Bitmap? = BitmapFactory.decodeFile(currentPhotoPath)
             btn_captureImg.setImageBitmap(bitmap)
-            entriesValid = true
-            picTaken = true
+            picValid = true
 //                        Log.d(TAG, bitmap.toString())
         }
     }

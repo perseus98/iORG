@@ -6,24 +6,19 @@
     android:background="@color/colorMainBg"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
-    android:theme="@style/Theme.MaterialComponents">
+    android:theme="@style/AppTheme">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.MaterialToolbar
+            style="@style/ToolbarStyle"
             android:id="@+id/toolBar"
-            style="@style/Widget.MaterialComponents.Toolbar.Primary"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/colorEFAB"
-            android:elevation="5dp"
-            app:menu="@menu/toolbar"
-            app:navigationIcon="@drawable/ic_menu_nav"
+            android:layout_height="?attr/actionBarSize"
             app:title="@string/appName"
-            app:titleTextColor="@color/colorWhite"
-            app:layout_scrollFlags="scroll|enterAlways" />
+            app:menu="@menu/toolbar" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -41,12 +36,13 @@
         style="@style/styleEFAB"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:checkable="false"
         android:clickable="true"
-        android:text="@string/btnCreate"
-        app:icon="@drawable/ic_create_black_24dp"
+        android:onClick="showMenu"
+        android:text="@string/action"
+        app:icon="@drawable/ic_keyboard_arrow_up"
         android:layout_gravity="bottom|end"
         app:elevation="10dp" />
 

@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.App" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        Customize your theme here.
+        <item name="colorPrimary">@color/colorMainBg</item>
+        <item name="colorPrimaryDark">@color/colorMainSecBg</item>
+        <item name="colorAccent">@color/colorMainBg</item>
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
         <item name="windowActionModeOverlay">true</item>
-        <item name="actionModeStyle">@style/Widget.App.ActionMode</item>
-        <item name="actionModeCloseDrawable">@drawable/ic_clear</item>
-        <item name="actionBarTheme">@style/ThemeOverlay.MaterialComponents.Dark.ActionBar</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="actionModeBackground">@color/colorWhite</item>
+        <item name="android:actionMenuTextColor">@color/colorMainSecBg</item>
+
     </style>
 </resources>

@@ -12,6 +12,7 @@
     <color name="colorMainBg">#8777AC</color>
     <color name="colorMainSecBg">#6646AF</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteDark">#7E7E7E</color>
     <color name="colorBlack">#000000</color>
     <color name="colorPrimary">#FFFFFFFF</color>
     <color name="colorToolbarBg">#8777AC</color>
