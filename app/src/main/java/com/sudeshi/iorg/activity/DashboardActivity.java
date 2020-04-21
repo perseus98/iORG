@@ -34,7 +34,7 @@ public class DashboardActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
         card_view_create = findViewById(R.id.card_view_create);
-        tv_tag_text = findViewById(R.id.tv_tag_text);
+//        tv_tag_text = findViewById(R.id.tv_tag_text);
         card_view_add_tag = findViewById(R.id.card_view_add_tag);
         View.OnClickListener clickListener = new View.OnClickListener() {
             @Override

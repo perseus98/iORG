@@ -7,8 +7,7 @@
     <color name="colorFg">#000</color>
     <color name="colorLogoBg">#a49ecb</color>
 
-
     <!--    SAVED COLOR SAMPLE-->
-    <color name="col1">#ea83ff</color>
-    <color name="col2">#440e51</color>
+    <color name="colorLogoDesign">#ea83ff</color>
+    <color name="colorLogoFont">#440e51</color>
 </resources>

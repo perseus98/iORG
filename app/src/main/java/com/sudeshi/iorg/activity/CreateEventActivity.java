@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 public class CreateEventActivity extends AppCompatActivity {
 
@@ -75,7 +76,7 @@ public class CreateEventActivity extends AppCompatActivity {
         tv_date = findViewById(R.id.tv_date);
         btn_create_data = findViewById(R.id.btn_create_data);
         list_data_item = findViewById(R.id.list_data_item);
-        tv_tag_text = findViewById(R.id.tv_tag_text);
+//        tv_tag_text = findViewById(R.id.tv_tag_text);
         tv_name = findViewById(R.id.tv_name);
         spinner_tag = findViewById(R.id.spinner_tag);
         image_pic.setOnClickListener(new View.OnClickListener() {
@@ -93,35 +94,8 @@ public class CreateEventActivity extends AppCompatActivity {
 
         setPriority();
         getTagListForSpinner();
+        initCalander();
 
-        Calendar c = Calendar.getInstance();
-        final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        final Calendar myCalendar = Calendar.getInstance();
-        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
-
-            @Override
-            public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                  int dayOfMonth) {
-
-                myCalendar.set(Calendar.YEAR, year);
-                myCalendar.set(Calendar.MONTH, monthOfYear);
-                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                final String formattedDate = df.format(myCalendar.getTime());
-                tv_date.setText(formattedDate);
-            }
-
-        };
-
-        tv_date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                new DatePickerDialog(CreateEventActivity.this, date, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
-                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
-            }
-        });
 
         spinner_tag.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -143,6 +117,8 @@ public class CreateEventActivity extends AppCompatActivity {
         });
 
         getData();
+
+
     }
 
     private void createData() {
@@ -203,15 +179,12 @@ public class CreateEventActivity extends AppCompatActivity {
     }
 
     private void setPriority() {
-
         // Spinner Drop down elements
         final List<String> priority = new ArrayList<String>();
-        priority.add("0");
-        priority.add("1");
-        priority.add("2");
-        priority.add("3");
-        priority.add("4");
-        priority.add("5");
+        //priority.add("0");
+        for (int i = 0; i < 10; i++) {
+            priority.add("" + i);
+        }
         // Creating adapter for spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, priority);
         // Drop down layout style - list view with radio button
@@ -235,7 +208,7 @@ public class CreateEventActivity extends AppCompatActivity {
 
     private void getTagListForSpinner() {
 
-        tagModelList = dbHandler.getTagList();
+        tagModelList = dbHandler.getTagDataList();
         if (tagModelList.size() > 0) {
             TagSpinnerAdapter adapter = new TagSpinnerAdapter(this, tagModelList);
             spinner_tag.setAdapter(adapter);
@@ -268,6 +241,35 @@ public class CreateEventActivity extends AppCompatActivity {
             list_data_item.setAdapter(adapter);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    public void initCalander() {
+        final SimpleDateFormat df = new SimpleDateFormat("yyyy:MM:dd::HH:mm:ss", Locale.US);
+        final SimpleDateFormat df_name = new SimpleDateFormat("yyyyMMddHHmmss", Locale.US);
+
+        final Calendar myCalendar = Calendar.getInstance();
+        final DatePickerDialog.OnDateSetListener date = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                myCalendar.set(Calendar.YEAR, year);
+                myCalendar.set(Calendar.MONTH, monthOfYear);
+                myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                final String formattedDate = df.format(myCalendar.getTime());
+                tv_date.setText(formattedDate);
+            }
+        };
+        tv_date.setText(df.format(myCalendar.getTime()));
+        tv_date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new DatePickerDialog(CreateEventActivity.this, date, myCalendar
+                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                        myCalendar.get(Calendar.DAY_OF_MONTH)).show();
+            }
+        });
+
+//        Toast.makeText(this, ""+df_name.format(myCalendar.getTime()), Toast.LENGTH_LONG).show();
+        tv_name.setText(String.format("entry_%s", df_name.format(myCalendar.getTime())));
     }
 
 }
