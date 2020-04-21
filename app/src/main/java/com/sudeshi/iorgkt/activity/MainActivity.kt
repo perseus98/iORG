@@ -151,12 +151,12 @@ class MainActivity : AppCompatActivity(), MainInterface,
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
             val inflater = mode?.menuInflater
             inflater?.inflate(R.menu.toolbar_cab, menu)
-
             return true
         }
 
         override fun onPrepareActionMode(mode: ActionMode?, menu: Menu?): Boolean {
             menu?.findItem(R.id.action_delete)?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            efab_create.hide()
             return true
         }
         override fun onActionItemClicked(mode: ActionMode?, item: MenuItem?): Boolean {
@@ -174,11 +174,8 @@ class MainActivity : AppCompatActivity(), MainInterface,
         override fun onDestroyActionMode(mode: ActionMode?) {
             dataListAdapter.selectedIds.clear()
             dataListAdapter.clearSelection()
-            Toast.makeText(
-                applicationContext,
-                getString(R.string.batchSelCancel),
-                Toast.LENGTH_SHORT
-            ).show()
+//            Toast.makeText(applicationContext,getString(R.string.batchSelCancel),Toast.LENGTH_SHORT).show()
+            efab_create.show()
             isMultiSelectOn = false
             actionMode = null
             shouldResetRecyclerView = true

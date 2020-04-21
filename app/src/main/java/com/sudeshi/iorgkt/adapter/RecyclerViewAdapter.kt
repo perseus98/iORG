@@ -27,7 +27,7 @@ class RecyclerViewAdapter(val context: Context, private val mainInterface: MainI
     }
 
     override fun getItemCount(): Int = dataModelList.size
-    fun getSelectedIdSize(): Int = selectedIds.size
+    private fun getSelectedIdSize(): Int = selectedIds.size
 
     override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, index: Int) {
         val dataViewHolder = viewHolder as RecyclerViewHolder
