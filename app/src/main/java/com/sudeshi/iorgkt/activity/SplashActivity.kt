@@ -13,6 +13,11 @@ import com.sudeshi.iorgkt.R
 class SplashActivity : AppCompatActivity() {
     private val timeOut: Long = 1000
 
+    // TODO LIST
+//    search
+//    update
+//    Add tag
+//    ui
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         MultiDex.install(this)
