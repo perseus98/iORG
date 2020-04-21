@@ -9,13 +9,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.GridLayout
 import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
-import androidx.appcompat.widget.PopupMenu
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
@@ -36,7 +34,7 @@ import kotlin.system.exitProcess
 
 
 class MainActivity : AppCompatActivity(), MainInterface,
-    NavigationView.OnNavigationItemSelectedListener, PopupMenu.OnMenuItemClickListener {
+    NavigationView.OnNavigationItemSelectedListener {
     private var newCreateActivityRequestCode: Int = 1
     private var doubleBackToExitPressedOnce: Boolean = false
     private var spanCount: Int = 2
@@ -98,7 +96,12 @@ class MainActivity : AppCompatActivity(), MainInterface,
         })
     }
     private fun initActBtn() {
-
+        efab_create.setOnClickListener {
+            startActivityForResult(
+                Intent(this, CreateActivity::class.java),
+                newCreateActivityRequestCode
+            )
+        }
     }
     override fun onBackPressed() {
         if (doubleBackToExitPressedOnce) {
@@ -197,25 +200,8 @@ class MainActivity : AppCompatActivity(), MainInterface,
         return true
     }
 
-    fun showMenu(v: View) {
-        PopupMenu(this, v).apply {
-            // MainActivity implements OnMenuItemClickListener
-            setOnMenuItemClickListener(this@MainActivity)
-            inflate(R.menu.main_act_menu)
-            show()
-        }
-    }
-
-    override fun onMenuItemClick(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.main_act_menu_create -> {
-                startActivityForResult(
-                    Intent(this, CreateActivity::class.java),
-                    newCreateActivityRequestCode
-                )
-                true
-            }
-            else -> false
-        }
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        toolBar.inflateMenu(R.menu.toolbar)
+        return super.onPrepareOptionsMenu(menu)
     }
 }

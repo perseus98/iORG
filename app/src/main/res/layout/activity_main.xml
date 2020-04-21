@@ -13,12 +13,15 @@
         android:layout_height="wrap_content">
 
         <com.google.android.material.appbar.MaterialToolbar
-            style="@style/ToolbarStyle"
             android:id="@+id/toolBar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/appName"
-            app:menu="@menu/toolbar" />
+            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
+            android:backgroundTint="@color/colorWhite"
+            app:menu="@menu/toolbar"
+            app:navigationIcon="@drawable/ic_menu_nav"
+            app:titleTextColor="@color/colorMainBg" />
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -40,9 +43,8 @@
         android:layout_marginBottom="20dp"
         android:checkable="false"
         android:clickable="true"
-        android:onClick="showMenu"
-        android:text="@string/action"
-        app:icon="@drawable/ic_keyboard_arrow_up"
+        android:text="@string/create"
+        app:icon="@drawable/ic_add"
         android:layout_gravity="bottom|end"
         app:elevation="10dp" />
 
