@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
 import android.provider.MediaStore.EXTRA_OUTPUT
+import android.view.Menu
 import android.widget.SeekBar
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -79,7 +80,25 @@ class CreateActivity : AppCompatActivity() {
         toolBarCreate.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener {
             return@OnMenuItemClickListener when (it.itemId) {
                 R.id.action_done -> {
-                    Toast.makeText(this, "content...", Toast.LENGTH_SHORT).show()
+                    if (currentPhotoPath != null && picValid && nameValid) {
+                        val newDataMap: HashMap<String, Any?> = HashMap(
+                            mutableMapOf(
+                                "name" to (outlinedTextName?.editTextName?.text),
+                                "date" to dateViewModel.getDateTimeForDB(),
+                                "path" to currentPhotoPath,
+                                "prty" to seekBarProgress
+                            )
+                        )
+                        val intentToMain = Intent()
+                        intentToMain.putExtra(extraReply, newDataMap)
+                        setResult(Activity.RESULT_OK, intentToMain)
+                        finish()
+                    } else
+                        Toast.makeText(
+                            applicationContext,
+                            getString(R.string.picNotFound),
+                            Toast.LENGTH_LONG
+                        ).show()
                     true
                 }
                 else -> false
@@ -98,7 +117,7 @@ class CreateActivity : AppCompatActivity() {
         btn_captureImg.setImageDrawable(
             ContextCompat.getDrawable(
                 applicationContext, // Context
-                drawable.ic_add_a_photo_black_100dp // Drawable
+                drawable.ic_add_a_photo // Drawable
             )
         )
         btn_captureImg.setOnClickListener {
@@ -207,6 +226,11 @@ class CreateActivity : AppCompatActivity() {
         super.onStop()
         outlinedTextCalander.editTextCalander.setOnClickListener(null)
         datePickerJob?.cancel()
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        toolBarCreate.inflateMenu(R.menu.toolbar_create)
+        return super.onPrepareOptionsMenu(menu)
     }
 
 }
