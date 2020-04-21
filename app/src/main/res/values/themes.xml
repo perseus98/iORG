@@ -14,6 +14,5 @@
         <item name="android:actionMenuTextColor">@color/colorMainSecBg</item>
         <item name="titleTextColor">@color/colorMainBg</item>
         <item name="actionModeStyle">@style/ActionModeStyle</item>
-
     </style>
 </resources>
