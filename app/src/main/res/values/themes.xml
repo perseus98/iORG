@@ -2,7 +2,6 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
-        Customize your theme here.
         <item name="colorPrimary">@color/colorMainBg</item>
         <item name="colorPrimaryDark">@color/colorMainSecBg</item>
         <item name="colorAccent">@color/colorMainBg</item>
@@ -11,7 +10,10 @@
         <item name="windowActionModeOverlay">true</item>
         <item name="android:statusBarColor">@color/colorMainBg</item>
         <item name="actionModeBackground">@color/colorWhite</item>
+        <item name="actionModeCloseDrawable">@drawable/ic_clear</item>
         <item name="android:actionMenuTextColor">@color/colorMainSecBg</item>
+        <item name="titleTextColor">@color/colorMainBg</item>
+        <item name="actionModeStyle">@style/ActionModeStyle</item>
 
     </style>
 </resources>

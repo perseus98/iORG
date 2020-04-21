@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
         actionBarDrawerToggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
         toolBar.inflateMenu(R.menu.toolbar)
-        toolBar.navigationIcon = resources.getDrawable(R.drawable.ic_menu_nav)
+        toolBar.navigationIcon = getDrawable(R.drawable.ic_menu_nav)
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             return@OnMenuItemClickListener when (item.itemId) {
                 R.id.action_filter -> {
@@ -151,6 +151,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
             val inflater = mode?.menuInflater
             inflater?.inflate(R.menu.toolbar_cab, menu)
+
             return true
         }
 
