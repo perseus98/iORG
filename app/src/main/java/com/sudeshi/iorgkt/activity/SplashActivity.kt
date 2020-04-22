@@ -18,6 +18,7 @@ class SplashActivity : AppCompatActivity() {
 //    update
 //    Add tag
 //    ui
+    // credits
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
         MultiDex.install(this)
