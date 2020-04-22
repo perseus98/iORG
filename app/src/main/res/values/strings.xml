@@ -1,11 +1,11 @@
 <resources>
 
     // System
-    <string name="app_name">iORGkt</string>
+    <string name="app_name">iORG_pro</string>
     <string name="infoAbout">By the developers of </string>
     <string name="infAbout2">Copyright &#169; SUD3SHI </string>
 
-    // UI Intigrent
+    // UI Ingredients
     <string name="add_tag">Add Tag</string>
     <string name="create">Create</string>
     <string name="label_text">TEXT</string>
