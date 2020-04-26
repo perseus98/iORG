@@ -2,6 +2,7 @@ package com.sudeshi.iorgkt.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.SearchManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -14,6 +15,7 @@ import android.widget.Toast
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.view.ActionMode
+import androidx.appcompat.widget.SearchView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Observer
@@ -76,12 +78,16 @@ class MainActivity : AppCompatActivity(), MainInterface,
         drawer_layout.addDrawerListener(actionBarDrawerToggle)
         actionBarDrawerToggle.syncState()
         nav_view.setNavigationItemSelectedListener(this)
-        toolBar.inflateMenu(R.menu.toolbar)
+        toolBar.inflateMenu(R.menu.toolbar_main)
         toolBar.navigationIcon = getDrawable(R.drawable.ic_menu_nav)
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             return@OnMenuItemClickListener when (item.itemId) {
                 R.id.action_filter -> {
                     Toast.makeText(this, "TODO FILTER...", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.action_search -> {
+
                     true
                 }
                 else -> false
@@ -141,6 +147,40 @@ class MainActivity : AppCompatActivity(), MainInterface,
             ).show()
         }
     }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the options menu from XML
+        val inflater = menuInflater
+        inflater.inflate(R.menu.toolbar_main, menu)
+
+        // Get the SearchView and set the searchable configuration
+        val searchManager = getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        (menu.findItem(R.id.action_search).actionView as SearchView).apply {
+            // Assumes current activity is the searchable activity
+            setSearchableInfo(searchManager.getSearchableInfo(componentName))
+            setIconifiedByDefault(true) // Do not iconify the widget; expand it by default
+            isSubmitButtonEnabled = true
+            isQueryRefinementEnabled = true
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(query: String?): Boolean {
+                    if (query != null) {
+                        dataViewModel.searchEntry(query)
+                    }
+                    return true
+                }
+
+                override fun onQueryTextChange(newText: String?): Boolean {
+                    if (newText != null) {
+                        dataViewModel.searchEntry(newText)
+                    }
+                    return true
+                }
+            })
+        }
+
+        return true
+    }
+
     override fun mainInterface(size: Int) {
         if (actionMode == null) actionMode = startSupportActionMode(ActionModeCallback())
         if (size > 0) actionMode?.title = "$size"
@@ -150,7 +190,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
         private var shouldResetRecyclerView = true
         override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
             val inflater = mode?.menuInflater
-            inflater?.inflate(R.menu.toolbar_cab, menu)
+            inflater?.inflate(R.menu.toolbar_main_cab, menu)
             return true
         }
 
@@ -198,8 +238,9 @@ class MainActivity : AppCompatActivity(), MainInterface,
         return true
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        toolBar.inflateMenu(R.menu.toolbar)
-        return super.onPrepareOptionsMenu(menu)
-    }
+//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+//        toolBar.inflateMenu(R.menu.toolbar_main)
+//        return super.onPrepareOptionsMenu(menu)
+//    }
+
 }

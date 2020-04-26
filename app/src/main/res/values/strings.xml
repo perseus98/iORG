@@ -43,6 +43,7 @@
     <string name="enterValidName">Please Enter A Valid Name</string>
     <string name="creatEntry">Create Entry</string>
     <string name="done">Done</string>
+    <string name="search_entry">Search Entry</string>
 
 
 </resources>

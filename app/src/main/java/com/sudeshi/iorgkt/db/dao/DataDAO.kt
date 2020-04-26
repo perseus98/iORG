@@ -12,7 +12,9 @@ interface DataDAO {
     suspend fun insertMainData(data: Data)
     @Query("DELETE FROM table_data")
     suspend fun deleteAllData()
-
     @Delete
     suspend fun deleteDataEntry(data: Data)
+
+    @Query("SELECT * FROM TABLE_DATA where name like '%:srch_name%'")
+    fun searchDataEntry(srch_name: String): LiveData<List<Data>>
 }

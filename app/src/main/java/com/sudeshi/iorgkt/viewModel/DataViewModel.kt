@@ -26,4 +26,8 @@ class DataViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteEntry(data: Data) = viewModelScope.launch {
         dataRepository.delete(data)
     }
+
+    fun searchEntry(srch_name: String) = viewModelScope.launch {
+        dataRepository.searchItem(srch_name)
+    }
 }

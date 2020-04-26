@@ -13,4 +13,8 @@ class DataRepository(private val dataDAO: DataDAO) {
     suspend fun delete(data: Data) {
         dataDAO.deleteDataEntry(data)
     }
+
+    suspend fun searchItem(srch_name: String): LiveData<List<Data>> {
+        return dataDAO.searchDataEntry(srch_name)
+    }
 }
