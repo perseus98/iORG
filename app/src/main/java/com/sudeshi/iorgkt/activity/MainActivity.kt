@@ -8,6 +8,7 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.GridLayout
@@ -43,6 +44,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
     private var gridOrientation: Int = GridLayout.VERTICAL
     private var gridReverseLayout: Boolean = false
     private val dataListAdapter = RecyclerViewAdapter(this, this)
+    var isSearchViewVisible = false
     companion object {
         var isMultiSelectOn = false
         lateinit var dataViewModel: DataViewModel
@@ -97,9 +99,8 @@ class MainActivity : AppCompatActivity(), MainInterface,
     }
     private fun initActViewModel() {
         dataViewModel = ViewModelProvider(this).get(DataViewModel::class.java)
-        dataViewModel.allData.observe(this, Observer {
-            it?.let { dataListAdapter.setDataList(it) }
-        })
+        getItemsFromDb("")
+
     }
     private fun initActBtn() {
         efab_create.setOnClickListener {
@@ -163,22 +164,34 @@ class MainActivity : AppCompatActivity(), MainInterface,
             isQueryRefinementEnabled = true
             setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean {
+                    isSearchViewVisible = true
                     if (query != null) {
-                        dataViewModel.searchEntry(query)
+                        getItemsFromDb(query)
                     }
                     return true
                 }
 
                 override fun onQueryTextChange(newText: String?): Boolean {
+                    isSearchViewVisible = true
                     if (newText != null) {
-                        dataViewModel.searchEntry(newText)
+                        getItemsFromDb(newText)
                     }
                     return true
                 }
             })
         }
-
         return true
+    }
+
+    private fun getItemsFromDb(searchText: String) {
+        dataViewModel.searchForItems(desc = "%$searchText%")
+            .observe(this@MainActivity, Observer { list ->
+                list?.let {
+                    dataListAdapter.setDataList(it)
+                    Log.e("List = ", list.toString())
+                }
+            })
+
     }
 
     override fun mainInterface(size: Int) {
