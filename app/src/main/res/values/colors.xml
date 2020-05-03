@@ -10,8 +10,10 @@
     <color name="colorBg">#fff</color>
     <color name="colorFg">#000</color>
     <color name="colorMainBg">#8777AC</color>
+    <color name="colorMainBgLight">#958AAE</color>
     <color name="colorMainSecBg">#6646AF</color>
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteHalfTransparent">#66FFFFFF</color>
     <color name="colorWhiteDark">#7E7E7E</color>
     <color name="colorBlack">#000000</color>
     <color name="colorPrimary">#FFFFFFFF</color>

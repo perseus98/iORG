@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:layout_marginBottom="1dp"
     android:clickable="true"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -32,35 +32,29 @@
 
         <TextView
             android:id="@+id/dataTextViewName"
-            style="@style/txtViewTheme"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/create"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dataImage" />
+            style="@style/modelLayoutTxtViewTheme"
+            app:layout_constraintBottom_toBottomOf="@id/dataImage"
+            app:layout_constraintLeft_toLeftOf="@id/dataImage"
+            app:layout_constraintRight_toRightOf="@id/dataImage"
+            app:layout_constraintTop_toTopOf="@id/dataImage"
+            app:layout_constraintVertical_bias="0.86" />
 
         <TextView
             android:id="@+id/dataTextViewDate"
-            style="@style/txtViewTheme"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/create"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dataTextViewName" />
+            style="@style/modelLayoutTxtViewTheme"
+            app:layout_constraintBottom_toBottomOf="@id/dataImage"
+            app:layout_constraintLeft_toLeftOf="@id/dataImage"
+            app:layout_constraintRight_toRightOf="@id/dataImage"
+            app:layout_constraintTop_toTopOf="@id/dataImage"
+            app:layout_constraintVertical_bias="0.93" />
 
         <TextView
             android:id="@+id/dataTextViewPriority"
-            style="@style/txtViewTheme"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="@string/create"
-            app:layout_constraintHorizontal_bias="0.501"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/dataTextViewDate" />
+            style="@style/modelLayoutTxtViewTheme"
+            app:layout_constraintBottom_toBottomOf="@id/dataImage"
+            app:layout_constraintLeft_toLeftOf="@id/dataImage"
+            app:layout_constraintRight_toRightOf="@id/dataImage"
+            app:layout_constraintTop_toTopOf="@id/dataImage"
+            app:layout_constraintVertical_bias="1.0" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
