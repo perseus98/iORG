@@ -45,6 +45,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
     private var gridReverseLayout: Boolean = false
     private val dataListAdapter = RecyclerViewAdapter(this, this)
     var isSearchViewVisible = false
+    private var dataListOrder = "DESC"
     companion object {
         var isMultiSelectOn = false
         lateinit var dataViewModel: DataViewModel
