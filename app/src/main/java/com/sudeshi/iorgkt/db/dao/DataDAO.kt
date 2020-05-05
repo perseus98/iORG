@@ -15,6 +15,6 @@ interface DataDAO {
     @Delete
     suspend fun deleteDataEntry(data: Data)
 
-    @Query("SELECT * FROM table_data where name like :srch_name order by priority DESC")
+    @Query("SELECT * FROM table_data where name like :srch_name or date like :srch_name or priority like :srch_name order by priority DESC")
     fun searchDataEntry(srch_name: String): LiveData<List<Data>>
 }
