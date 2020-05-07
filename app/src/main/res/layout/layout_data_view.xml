@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/layout_data_vw">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:elevation="0dp">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbarDialog"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:paddingEnd="16dp"
+            android:paddingStart="6dp"
+            app:contentInsetStartWithNavigation="0dp"
+            style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
+            android:backgroundTint="@color/colorWhite"
+            app:navigationIcon="@drawable/ic_clear"
+            app:titleTextColor="@color/colorMainBg"/>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        >
+        <ImageView
+            android:id="@+id/layout_data_vw_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/sam_desc" />
+
+        <TextView
+            android:id="@+id/layout_data_vw_name"
+            style="@style/layoutDataViewText"
+            android:layout_marginBottom="100dp"/>
+        <TextView
+            android:id="@+id/layout_data_vw_date"
+            style="@style/layoutDataViewText"
+            android:layout_marginBottom="60dp"/>
+        <TextView
+            android:id="@+id/layout_data_vw_priority"
+            style="@style/layoutDataViewText"
+            android:layout_marginBottom="20dp"/>
+
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

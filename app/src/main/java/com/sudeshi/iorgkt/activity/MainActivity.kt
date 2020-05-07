@@ -43,13 +43,16 @@ class MainActivity : AppCompatActivity(), MainInterface,
     private var spanCount: Int = 2
     private var gridOrientation: Int = GridLayout.VERTICAL
     private var gridReverseLayout: Boolean = false
-    private val dataListAdapter = RecyclerViewAdapter(this, this)
+    private val dataListAdapter = RecyclerViewAdapter(this, this,this)
     var isSearchViewVisible = false
     private var dataListOrder = "DESC"
+    val fragmentManager = supportFragmentManager
+
     companion object {
         var isMultiSelectOn = false
         lateinit var dataViewModel: DataViewModel
         var actionMode: ActionMode? = null
+
     }
     override fun attachBaseContext(base: Context) {
         super.attachBaseContext(base)
@@ -86,11 +89,7 @@ class MainActivity : AppCompatActivity(), MainInterface,
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             return@OnMenuItemClickListener when (item.itemId) {
                 R.id.action_filter -> {
-                    Toast.makeText(this, "TODO FILTER...", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.action_search -> {
-
+//                    showDataDialog()
                     true
                 }
                 else -> false
@@ -251,7 +250,16 @@ class MainActivity : AppCompatActivity(), MainInterface,
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
+    fun showDataDialog() {
 
+
+//        val intentToDataDialog = Intent(baseContext, DataDialog::class.java)
+//            intentToDataDialog.putExtra("EXTRA_NAME", data.name)
+//            intentToDataDialog.putExtra("EXTRA_IMG", data.pic_path)
+//            intentToDataDialog.putExtra("EXTRA_DATE", data.date)
+//            intentToDataDialog.putExtra("EXTRA_PRIORITY", data.priority)
+//            startActivity(intentToDataDialog)
+    }
 //    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
 //        toolBar.inflateMenu(R.menu.toolbar_main)
 //        return super.onPrepareOptionsMenu(menu)
