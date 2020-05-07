@@ -1,4 +1,4 @@
-package com.sudeshi.iorgkt.activity
+package com.sudeshi.iorgkt.dialog
 
 import android.app.Dialog
 import android.content.res.TypedArray
@@ -17,7 +17,7 @@ import java.time.format.FormatStyle
 
 
 class DataDialog(tempData : Data) : DialogFragment() {
-    val tmpData = tempData
+    private val tmpData = tempData
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,12 +70,7 @@ class DataDialog(tempData : Data) : DialogFragment() {
         )
         layout_data_vw_priority.text = tmpData.priority.toString()
         val colors: TypedArray = resources.obtainTypedArray(R.array.priority_colour)
-//        val color: Int = colors.getColor(0,0)
         layout_data_vw.background = colors.getDrawable(tmpData.priority)
         colors.recycle()
-
-//        getDrawable(R.array.priority_colour[tempData.priority])
-//            priorityColorArray.getDrawable(tempData.priority)
-
     }
 }

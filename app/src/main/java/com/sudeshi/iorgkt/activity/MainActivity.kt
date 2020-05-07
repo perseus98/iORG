@@ -45,8 +45,6 @@ class MainActivity : AppCompatActivity(), MainInterface,
     private var gridReverseLayout: Boolean = false
     private val dataListAdapter = RecyclerViewAdapter(this, this,this)
     var isSearchViewVisible = false
-    private var dataListOrder = "DESC"
-    val fragmentManager = supportFragmentManager
 
     companion object {
         var isMultiSelectOn = false
@@ -89,7 +87,6 @@ class MainActivity : AppCompatActivity(), MainInterface,
         toolBar.setOnMenuItemClickListener(Toolbar.OnMenuItemClickListener { item ->
             return@OnMenuItemClickListener when (item.itemId) {
                 R.id.action_filter -> {
-//                    showDataDialog()
                     true
                 }
                 else -> false
@@ -250,19 +247,4 @@ class MainActivity : AppCompatActivity(), MainInterface,
         drawer_layout.closeDrawer(GravityCompat.START)
         return true
     }
-    fun showDataDialog() {
-
-
-//        val intentToDataDialog = Intent(baseContext, DataDialog::class.java)
-//            intentToDataDialog.putExtra("EXTRA_NAME", data.name)
-//            intentToDataDialog.putExtra("EXTRA_IMG", data.pic_path)
-//            intentToDataDialog.putExtra("EXTRA_DATE", data.date)
-//            intentToDataDialog.putExtra("EXTRA_PRIORITY", data.priority)
-//            startActivity(intentToDataDialog)
-    }
-//    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-//        toolBar.inflateMenu(R.menu.toolbar_main)
-//        return super.onPrepareOptionsMenu(menu)
-//    }
-
 }

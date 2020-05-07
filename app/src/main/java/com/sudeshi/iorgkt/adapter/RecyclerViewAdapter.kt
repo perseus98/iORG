@@ -1,16 +1,14 @@
 package com.sudeshi.iorgkt.adapter
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.sudeshi.iorgkt.R
-import com.sudeshi.iorgkt.activity.DataDialog
+import com.sudeshi.iorgkt.dialog.DataDialog
 import com.sudeshi.iorgkt.activity.MainActivity
 import com.sudeshi.iorgkt.db.model.Data
 import com.sudeshi.iorgkt.extension.MainInterface
@@ -18,11 +16,11 @@ import com.sudeshi.iorgkt.viewHolder.RecyclerViewHolder
 import com.sudeshi.iorgkt.viewHolder.ViewHolderClickListener
 
 
-internal class RecyclerViewAdapter(private val activity: AppCompatActivity, val context: Context, private val mainInterface: MainInterface) :
+internal class RecyclerViewAdapter(activity: AppCompatActivity, val context: Context, private val mainInterface: MainInterface) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), ViewHolderClickListener {
     private var dataModelList: MutableList<Data> = ArrayList()
     val selectedIds: MutableList<Long> = ArrayList()
-    val fragmentManager = activity.supportFragmentManager
+    private val fragmentManager = activity.supportFragmentManager
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return RecyclerViewHolder(
@@ -72,17 +70,10 @@ internal class RecyclerViewAdapter(private val activity: AppCompatActivity, val 
             MainActivity.actionMode?.title = "" + getSelectedIdSize() + " items selected"
         } else {
 //            Toast.makeText(context, "Clicked Item at Position ${index + 1}", Toast.LENGTH_SHORT).show()
-//            DataDialog.tempData = dataModelList[index]
-            val newFragment = DataDialog(dataModelList[index])
+            val newFragment =
+                DataDialog(dataModelList[index])
             // The device is using a large layout, so show the fragment as a dialog
             newFragment.show(fragmentManager, "dialog")
-//            val intentToDataDialog = Intent(this@MainActivity,DataDialog::class.java)
-//            intentToDataDialog.putExtra("EXTRA_NAME", dataModelList[index].name)
-//            intentToDataDialog.putExtra("EXTRA_IMG", dataModelList[index].pic_path)
-//            intentToDataDialog.putExtra("EXTRA_DATE", dataModelList[index].date)
-//            intentToDataDialog.putExtra("EXTRA_PRIORITY", dataModelList[index].priority)
-//            startActivity(intentToDataDialog)
-
         }
     }
 
@@ -117,9 +108,4 @@ internal class RecyclerViewAdapter(private val activity: AppCompatActivity, val 
             MainActivity.isMultiSelectOn = false
         }
     }
-
-//    fun getSelectedData(): Data {
-//
-//    }
-
 }
