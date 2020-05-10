@@ -8,12 +8,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.sudeshi.iorgkt.R
-import com.sudeshi.iorgkt.dialog.DataDialog
 import com.sudeshi.iorgkt.activity.MainActivity
 import com.sudeshi.iorgkt.db.model.Data
+import com.sudeshi.iorgkt.dialog.DataDialog
 import com.sudeshi.iorgkt.extension.MainInterface
 import com.sudeshi.iorgkt.viewHolder.RecyclerViewHolder
 import com.sudeshi.iorgkt.viewHolder.ViewHolderClickListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 
 
 internal class RecyclerViewAdapter(activity: AppCompatActivity, val context: Context, private val mainInterface: MainInterface) :
@@ -21,6 +25,8 @@ internal class RecyclerViewAdapter(activity: AppCompatActivity, val context: Con
     private var dataModelList: MutableList<Data> = ArrayList()
     val selectedIds: MutableList<Long> = ArrayList()
     private val fragmentManager = activity.supportFragmentManager
+    private var job : Job? = null
+    private val jobScope = CoroutineScope(Dispatchers.Main.immediate)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return RecyclerViewHolder(
@@ -70,10 +76,12 @@ internal class RecyclerViewAdapter(activity: AppCompatActivity, val context: Con
             MainActivity.actionMode?.title = "" + getSelectedIdSize() + " items selected"
         } else {
 //            Toast.makeText(context, "Clicked Item at Position ${index + 1}", Toast.LENGTH_SHORT).show()
-            val newFragment =
-                DataDialog(dataModelList[index])
-            // The device is using a large layout, so show the fragment as a dialog
-            newFragment.show(fragmentManager, "dialog")
+            job = jobScope.launch {
+                val newFragment =
+                    DataDialog(dataModelList[index])
+                // The device is using a large layout, so show the fragment as a dialog
+                newFragment.show(fragmentManager, "dialog")
+            }
         }
     }
 

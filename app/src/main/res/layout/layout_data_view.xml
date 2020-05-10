@@ -30,7 +30,7 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         >
-        <ImageView
+        <com.sudeshi.iorgkt.extension.MyImageView
             android:id="@+id/layout_data_vw_img"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
