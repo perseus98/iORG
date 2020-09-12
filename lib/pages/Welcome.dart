@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,7 @@ class WelcomePage extends StatefulWidget {
 
 class _WelcomePageState extends State<WelcomePage> {
   bool isSignedIn = false;
+  bool isSigningIn = false;
 
   // Set default `_initialized` and `_error` state to false
   bool _initialized = false;
@@ -76,7 +79,7 @@ class _WelcomePageState extends State<WelcomePage> {
   saveUserInfoToFirebase() async {
     final GoogleSignInAccount gCurrentAccount = googleSignIn.currentUser;
     DocumentSnapshot documentSnapshot =
-        await userReference.doc(gCurrentAccount.id).get();
+    await userReference.doc(gCurrentAccount.id).get();
 
     if (!documentSnapshot.exists) {
       userReference.doc(gCurrentAccount.id).set({
@@ -93,6 +96,9 @@ class _WelcomePageState extends State<WelcomePage> {
 
   loginUser() {
     googleSignIn.signIn();
+    setState(() {
+      isSigningIn = true;
+    });
   }
 
   logoutUser() {
@@ -120,20 +126,24 @@ class _WelcomePageState extends State<WelcomePage> {
     if (!_initialized) {
       return welcomeLoading();
     }
-    return isSignedIn ? HomePage() : buildWelcomePage();
+    return isSignedIn
+        ? HomePage()
+        : isSigningIn ? welcomeLoading() : buildWelcomePage();
   }
 
   Scaffold somethingWentWrong() {
     return Scaffold(
       body: Center(
-        child: Text(" ERROR"),
+        child: Text("INTERNET CONNECTION ERROR"),
       ),
     );
   }
 
   Scaffold welcomeLoading() {
     return Scaffold(
-      body: circularProgress(),
+      body: Center(
+        child: progressIndicator(),
+      ),
     );
   }
 
