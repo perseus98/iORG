@@ -1,6 +1,18 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:iorg_flutter/models/User.dart';
+import 'package:iorg_flutter/pages/HomePage.dart';
+import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+final GoogleSignIn googleSignIn = GoogleSignIn();
+final userReference = FirebaseFirestore.instance.collection("users");
+final DateTime timeStamp = DateTime.now();
+User currentUser;
 
 class WelcomePage extends StatefulWidget {
   @override
@@ -8,8 +20,124 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  bool isSignedIn = false;
+
+  // Set default `_initialized` and `_error` state to false
+  bool _initialized = false;
+  bool _error = false;
+
+  @override
+  void initState() {
+    initializeFlutterFire();
+    firstTimeCheck();
+    googleSignIn.onCurrentUserChanged.listen((googleSigninAccount) {
+      controlSignIn(googleSigninAccount);
+    }, onError: (gError) {
+      print("Sign In Auth Err");
+      print(gError);
+    });
+    googleSignIn
+        .signInSilently(suppressErrors: false)
+        .then((googleSigninAccount) {
+      controlSignIn(googleSigninAccount);
+    }).catchError((gError) {
+      print("Sign In silently Auth Err");
+      print(gError);
+    });
+    super.initState();
+  }
+
+  void firstTimeCheck() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool firstTime = prefs.getBool('first_time');
+    if (firstTime != null && !firstTime) {
+      // Not first time
+      print("Not first time");
+      loginUser();
+    } else {
+      // first time
+      print(" first time");
+    }
+  }
+
+  controlSignIn(GoogleSignInAccount signInAccount) async {
+    if (signInAccount != null) {
+      await saveUserInfoToFirebase();
+      setState(() {
+        isSignedIn = true;
+      });
+    } else {
+      setState(() {
+        isSignedIn = false;
+      });
+    }
+  }
+
+  saveUserInfoToFirebase() async {
+    final GoogleSignInAccount gCurrentAccount = googleSignIn.currentUser;
+    DocumentSnapshot documentSnapshot =
+        await userReference.doc(gCurrentAccount.id).get();
+
+    if (!documentSnapshot.exists) {
+      userReference.doc(gCurrentAccount.id).set({
+        "id": gCurrentAccount.id,
+        "profileName": gCurrentAccount.displayName,
+        "url": gCurrentAccount.photoUrl,
+        "email": gCurrentAccount.email,
+        "timestamp": timeStamp,
+      });
+      documentSnapshot = await userReference.doc(gCurrentAccount.id).get();
+    }
+    currentUser = User.fromDocument(documentSnapshot);
+  }
+
+  loginUser() {
+    googleSignIn.signIn();
+  }
+
+  logoutUser() {
+    googleSignIn.signOut();
+  }
+
+  void initializeFlutterFire() async {
+    try {
+      await Firebase.initializeApp();
+      setState(() {
+        _initialized = true;
+      });
+    } catch (e) {
+      setState(() {
+        _error = true;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_error) {
+      return somethingWentWrong();
+    }
+    if (!_initialized) {
+      return welcomeLoading();
+    }
+    return isSignedIn ? HomePage() : buildWelcomePage();
+  }
+
+  Scaffold somethingWentWrong() {
+    return Scaffold(
+      body: Center(
+        child: Text(" ERROR"),
+      ),
+    );
+  }
+
+  Scaffold welcomeLoading() {
+    return Scaffold(
+      body: circularProgress(),
+    );
+  }
+
+  Scaffold buildWelcomePage() {
     return Scaffold(
       body: SafeArea(
         top: true,
@@ -53,7 +181,9 @@ class _WelcomePageState extends State<WelcomePage> {
               ),
               SignInButton(
                 Buttons.Google,
-                onPressed: () {},
+                onPressed: () {
+                  loginUser();
+                },
               )
             ],
           ),
