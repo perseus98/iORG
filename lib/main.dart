@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/pages/Welcome.dart';
 
 import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/extension.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
         '/welcome': (BuildContext context) => WelcomePage(),
         // '/intro': (BuildContext context) => IntroScreen(),
         // '/setup': (BuildContext context) => AccountsSetupPage(),
-        // '/home': (BuildContext context) => HomePage(),
+        '/home': (BuildContext context) => HomePage(),
         // '/timeline': (BuildContext context) => TimeLinePage(),
         // '/notification': (BuildContext context) => NotificationsPage(),
         // '/saved': (BuildContext context) => SavedPage(),
