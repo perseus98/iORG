@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:iorg_flutter/pages/CreatePostPage.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
 import 'package:iorg_flutter/pages/WelcomePage.dart';
@@ -28,10 +31,20 @@ class MyApp extends StatelessWidget {
         accentColor: Theme.of(context).colorScheme.myAccentColor,
         textTheme: TextTheme(
           button: TextStyle(
+            fontSize: 10.0,
+            // color: Colors.white,
             color: Theme.of(context).colorScheme.myAccentColor,
           ),
           headline5: TextStyle(
-              fontSize: 30.0, color: Colors.white, fontWeight: FontWeight.w600),
+            fontSize: 30.0,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+          bodyText1: TextStyle(
+            fontSize: 10.0,
+            color: Colors.white,
+            fontWeight: FontWeight.w400,
+          ),
         ),
       ),
       initialRoute: '/init',
@@ -39,6 +52,7 @@ class MyApp extends StatelessWidget {
         '/init': (BuildContext context) => InitPage(),
         '/welcome': (BuildContext context) => WelcomePage(),
         '/home': (BuildContext context) => HomePage(),
+        '/create': (BuildContext context) => CreatePostPage(),
       },
     );
   }

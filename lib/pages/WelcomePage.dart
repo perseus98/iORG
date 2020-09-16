@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
@@ -19,6 +21,7 @@ class WelcomePage extends StatefulWidget {
 }
 
 class _WelcomePageState extends State<WelcomePage> {
+  DateTime backButtonPressedTime;
   bool firstInstance = false;
   bool signingIn = false;
   User _currentUserAuth;
@@ -35,7 +38,7 @@ class _WelcomePageState extends State<WelcomePage> {
     bool firstTime = prefs.getBool('first_time');
     if (firstTime != null && !firstTime) {
       print("Not first time");
-      loginUser();
+      // loginUser();
     } else {
       print(" first time");
       prefs.setBool('first_time', false);
@@ -47,9 +50,6 @@ class _WelcomePageState extends State<WelcomePage> {
     signInWithGoogle().then((value) {
       _currentUserAuth = value.user;
       saveUserInfoToFirebase(_currentUserAuth);
-      setState(() {
-        signingIn = true;
-      });
       print("loginComplete");
     }).catchError((onError) {
       print("SignInErrorHandlingBlock");
@@ -64,7 +64,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Future<UserCredential> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+    await googleUser.authentication;
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -74,7 +74,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
   saveUserInfoToFirebase(User _user) async {
     DocumentSnapshot documentSnapshot =
-        await userReference.doc(_user.uid).get();
+    await userReference.doc(_user.uid).get();
     if (!documentSnapshot.exists) {
       userReference.doc(_user.uid).set({
         "id": _user.uid,
@@ -85,11 +85,19 @@ class _WelcomePageState extends State<WelcomePage> {
       });
       print("New user entry added");
     }
+    // setState(() {
+    navigateToHome();
+    // });
     print("saveToFirebaseExecuted");
   }
 
   Future<void> executeAfterBuild() async {
-    if (_currentUserAuth != null) navigateToHome();
+    if (signingIn && _currentUserAuth != null) navigateToHome();
+    // if (firstInstance) {
+    //   setState(() {
+    //     firstInstance = true;
+    //   });
+    // }
   }
 
   @override
@@ -100,51 +108,56 @@ class _WelcomePageState extends State<WelcomePage> {
     }
     WidgetsBinding.instance.addPostFrameCallback((_) => executeAfterBuild());
     if (_currentUserAuth != null) return HomePage();
-    return Scaffold(
-        body: SafeArea(
-      top: true,
-      bottom: true,
-      child: Container(
-        margin: EdgeInsets.all(10.0),
-        padding: EdgeInsets.all(10.0),
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: firstInstance
-            ? buildWelcomePage()
-            : StreamBuilder(
-                stream: FirebaseAuth.instance.userChanges(),
-                builder: (context, snapshot) {
-                  Widget builderChild;
-                  if (snapshot.hasError) {
-                    print("Snapshot-Errors:");
-                    print(snapshot.error);
-                    builderChild = somethingWentWrong(snapshot.error);
-                  } else if (snapshot.connectionState ==
-                      ConnectionState.active) {
-                    User _user = snapshot.data;
-                    if (_user == null) {
-                      // Signed Out
-                      builderChild = buildWelcomePage();
+    print("instance");
+    print(firstInstance);
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+          body: SafeArea(
+        top: true,
+        bottom: true,
+        child: Container(
+          margin: EdgeInsets.all(10.0),
+          padding: EdgeInsets.all(10.0),
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: !firstInstance
+              ? buildWelcomePage()
+              : StreamBuilder(
+                  stream: FirebaseAuth.instance.userChanges(),
+                  builder: (context, snapshot) {
+                    Widget builderChild;
+                    if (snapshot.hasError) {
+                      print("Snapshot-Errors:");
+                      print(snapshot.error);
+                      builderChild = somethingWentWrong(snapshot.error);
+                    } else if (snapshot.connectionState ==
+                        ConnectionState.active) {
+                      User _user = snapshot.data;
+                      if (_user == null) {
+                        // Signed Out
+                        builderChild = buildWelcomePage();
+                      }
+                      builderChild = navigateLoading();
+                      // setState(() {
+                      _currentUserAuth = _user;
+                      // });
+                      // navigateToHome(_user);
+                    } else {
+                      builderChild = welcomeLoading();
                     }
-                    builderChild = navigateLoading();
-                    // setState(() {
-                    _currentUserAuth = _user;
-                    // });
-                    // navigateToHome(_user);
-                  } else {
-                    builderChild = welcomeLoading();
-                  }
-                  return Container(
-                    margin: EdgeInsets.all(10.0),
-                    padding: EdgeInsets.all(10.0),
-                    height: MediaQuery.of(context).size.height,
-                    width: MediaQuery.of(context).size.width,
-                    child: builderChild,
-                  );
-                },
-              ),
-      ),
-    ));
+                    return Container(
+                      margin: EdgeInsets.all(10.0),
+                      padding: EdgeInsets.all(10.0),
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      child: builderChild,
+                    );
+                  },
+                ),
+        ),
+      )),
+    );
   }
 
   Column buildWelcomePage() {
@@ -220,6 +233,8 @@ class _WelcomePageState extends State<WelcomePage> {
 
   Column navigateLoading() {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         progressIndicator(),
         Padding(
@@ -228,5 +243,27 @@ class _WelcomePageState extends State<WelcomePage> {
         ),
       ],
     );
+  }
+
+  Future<bool> onWillPop() async {
+    DateTime currentTime = DateTime.now();
+
+    //bifbackbuttonhasnotbeenpreedOrToasthasbeenclosed
+    //Statement 1 Or statement2
+    bool backButton = backButtonPressedTime == null ||
+        currentTime.difference(backButtonPressedTime) > Duration(seconds: 3);
+
+    if (backButton) {
+      backButtonPressedTime = currentTime;
+      Fluttertoast.showToast(
+          msg: "Double Click to exit app",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+      print("inside fun");
+      return false;
+    }
+    SystemNavigator.pop();
+    print("outside fun");
+    return true;
   }
 }

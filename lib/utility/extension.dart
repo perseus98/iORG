@@ -24,15 +24,15 @@ extension myOwnTextTheme on TextTheme {
       fontWeight: FontWeight.bold);
 
   TextStyle get myLinkBodyTextStyle => const TextStyle(
-      color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.bold);
+      color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.bold);
 
   TextStyle get myLinkTextStyle => const TextStyle(
         color: Colors.blue,
       );
 
   TextStyle get subBodyTitle => const TextStyle(
-        color: Colors.black,
-        fontSize: 13.0,
-        fontWeight: FontWeight.bold,
+    color: Colors.white,
+    fontSize: 13.0,
+    fontWeight: FontWeight.bold,
       );
 }

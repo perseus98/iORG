@@ -1,23 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PostModel {
-  final String id;
+  final String postId;
   final String postName;
   final String photoUrl;
   final String details;
   final String timeStamp;
 
   PostModel({
-    this.id,
+    this.postId,
     this.postName,
     this.photoUrl,
     this.details,
     this.timeStamp,
   });
 
-  factory PostModel.fromDocument(DocumentSnapshot doc) {
+  factory PostModel.fromDocSnap(DocumentSnapshot doc) {
     return PostModel(
-      id: doc.id,
+      postId: doc.id,
       details: doc.get('details'),
       photoUrl: doc.get('photoUrl'),
       postName: doc.get('postName'),

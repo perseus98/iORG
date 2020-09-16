@@ -1,6 +1,7 @@
-import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:iorg_flutter/main.dart';
 
@@ -10,6 +11,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  DateTime backButtonPressedTime;
   int currentIndex;
   User _currentUserAuth;
 
@@ -28,65 +30,43 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: GestureDetector(
-          onTap: _showMyDialog,
-          child: CircleAvatar(
-            child: _currentUserAuth != null
-                ? Image.network(
-                    _currentUserAuth.photoURL,
-                  )
-                : Icon(Icons.person),
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: GestureDetector(
+            onTap: _showMyDialog,
+            child: CircleAvatar(
+              child: _currentUserAuth != null
+                  ? Image.network(
+                      _currentUserAuth.photoURL,
+                    )
+                  : Icon(Icons.person),
+            ),
           ),
+          automaticallyImplyLeading: false,
+          title: Text(getApplicationTitle()),
+          actionsIconTheme: IconThemeData(size: 10.0),
+          actions: [Icon(Icons.filter_list), Icon(Icons.search)],
         ),
-        automaticallyImplyLeading: false,
-        title: Text(getApplicationTitle()),
-        actionsIconTheme: IconThemeData(size: 10.0),
-        actions: [Icon(Icons.filter_list), Icon(Icons.search)],
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: Icon(Icons.add),
-        backgroundColor: Colors.red,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BubbleBottomBar(
-        hasNotch: true,
-        fabLocation: BubbleBottomBarFabLocation.end,
-        opacity: .2,
-        currentIndex: currentIndex,
-        onTap: changePage,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        //border radius doesn't work when the notch is enabled.
-        elevation: 8,
-        items: <BubbleBottomBarItem>[
-          BubbleBottomBarItem(
-              backgroundColor: Colors.red,
-              icon: Icon(
-                Icons.dashboard,
-                color: Colors.black,
-              ),
-              activeIcon: Icon(
-                Icons.dashboard,
-                color: Colors.red,
-              ),
-              title: Text("Home")),
-          BubbleBottomBarItem(
-              backgroundColor: Colors.indigo,
-              icon: Icon(
-                Icons.archive,
-                color: Colors.black,
-              ),
-              activeIcon: Icon(
-                Icons.archive,
-                color: Colors.indigo,
-              ),
-              title: Text("Archive")),
-        ],
-      ),
-      body: Center(
-        child: Text(" Homepage "),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () {
+            Navigator.pushNamed(context, '/create');
+          },
+          icon: Icon(
+            Icons.add,
+            color: Theme.of(context).accentColor,
+          ),
+          label: Text(
+            "Create",
+            style: Theme.of(context).textTheme.button,
+          ),
+          elevation: 5.0,
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        body: Center(
+          child: Text(" Homepage "),
+        ),
       ),
     );
   }
@@ -118,5 +98,25 @@ class _HomePageState extends State<HomePage> {
         );
       },
     );
+  }
+
+  Future<bool> onWillPop() async {
+    DateTime currentTime = DateTime.now();
+
+    //bifbackbuttonhasnotbeenpreedOrToasthasbeenclosed
+    //Statement 1 Or statement2
+    bool backButton = backButtonPressedTime == null ||
+        currentTime.difference(backButtonPressedTime) > Duration(seconds: 3);
+
+    if (backButton) {
+      backButtonPressedTime = currentTime;
+      Fluttertoast.showToast(
+          msg: "Double Click to exit app",
+          backgroundColor: Colors.black,
+          textColor: Colors.white);
+      return false;
+    }
+    SystemNavigator.pop();
+    return true;
   }
 }
