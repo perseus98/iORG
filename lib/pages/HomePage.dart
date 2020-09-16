@@ -1,8 +1,8 @@
 import 'package:bubble_bottom_bar/bubble_bottom_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:iorg_flutter/main.dart';
-import 'package:iorg_flutter/pages/Welcome.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -11,12 +11,13 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int currentIndex;
+  User _currentUserAuth;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     currentIndex = 0;
+    _currentUserAuth = FirebaseAuth.instance.currentUser;
   }
 
   void changePage(int index) {
@@ -30,19 +31,18 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: () async {
-            await FirebaseAuth.instance.signOut();
-            Navigator.pop(context);
-          },
+          onTap: _showMyDialog,
           child: CircleAvatar(
-            child: Image.network(
-              currentUserAuth.photoURL,
-            ),
+            child: _currentUserAuth != null
+                ? Image.network(
+                    _currentUserAuth.photoURL,
+                  )
+                : Icon(Icons.person),
           ),
         ),
         automaticallyImplyLeading: false,
         title: Text(getApplicationTitle()),
-        actionsIconTheme: IconThemeData(size: 5.0),
+        actionsIconTheme: IconThemeData(size: 10.0),
         actions: [Icon(Icons.filter_list), Icon(Icons.search)],
       ),
       floatingActionButton: FloatingActionButton(
@@ -50,7 +50,7 @@ class _HomePageState extends State<HomePage> {
         child: Icon(Icons.add),
         backgroundColor: Colors.red,
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BubbleBottomBar(
         hasNotch: true,
         fabLocation: BubbleBottomBarFabLocation.end,
@@ -88,6 +88,35 @@ class _HomePageState extends State<HomePage> {
       body: Center(
         child: Text(" Homepage "),
       ),
+    );
+  }
+
+  Future<void> _showMyDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sign Out?'),
+          content: Text('Do you want to sign out now?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                await GoogleSignIn().signOut();
+                Navigator.pushNamed(context, '/welcome');
+              },
+            ),
+            FlatButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

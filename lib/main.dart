@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
-import 'package:iorg_flutter/pages/Welcome.dart';
+import 'package:iorg_flutter/pages/InitPage.dart';
+import 'package:iorg_flutter/pages/WelcomePage.dart';
 
 import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/extension.dart';
 
@@ -33,20 +34,11 @@ class MyApp extends StatelessWidget {
               fontSize: 30.0, color: Colors.white, fontWeight: FontWeight.w600),
         ),
       ),
-//      home: new SplashScreen(),
-      initialRoute: '/welcome',
+      initialRoute: '/init',
       routes: <String, WidgetBuilder>{
-        // '/splash': (BuildContext context) => SplashScreen(),
+        '/init': (BuildContext context) => InitPage(),
         '/welcome': (BuildContext context) => WelcomePage(),
-        // '/intro': (BuildContext context) => IntroScreen(),
-        // '/setup': (BuildContext context) => AccountsSetupPage(),
         '/home': (BuildContext context) => HomePage(),
-        // '/timeline': (BuildContext context) => TimeLinePage(),
-        // '/notification': (BuildContext context) => NotificationsPage(),
-        // '/saved': (BuildContext context) => SavedPage(),
-        // '/search': (BuildContext context) => SearchPage(),
-        // '/terms': (BuildContext context) => TermsAndCondition(),
-        // '/exp': (BuildContext context) => Experimental(),
       },
     );
   }
