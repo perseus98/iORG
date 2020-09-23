@@ -1,8 +1,10 @@
+import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
 
 class HomePage extends StatefulWidget {
@@ -10,21 +12,46 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   DateTime backButtonPressedTime;
-  int currentIndex;
   User _currentUserAuth;
+  int _bottomNavIndex = 0;
+
+  AnimationController _animationController;
+  Animation<double> animation;
+  CurvedAnimation curve;
 
   @override
   void initState() {
     super.initState();
-    currentIndex = 0;
     _currentUserAuth = FirebaseAuth.instance.currentUser;
+    _animationController = AnimationController(
+      duration: Duration(seconds: 1),
+      vsync: this,
+    );
+    curve = CurvedAnimation(
+      parent: _animationController,
+      curve: Interval(
+        0.5,
+        1.0,
+        curve: Curves.fastOutSlowIn,
+      ),
+    );
+    animation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(curve);
+
+    Future.delayed(
+      Duration(seconds: 1),
+      () => _animationController.forward(),
+    );
   }
 
   void changePage(int index) {
     setState(() {
-      currentIndex = index;
+      _bottomNavIndex = index;
     });
   }
 
@@ -34,36 +61,73 @@ class _HomePageState extends State<HomePage> {
       onWillPop: onWillPop,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: Colors.white,
           leading: GestureDetector(
             onTap: _showMyDialog,
             child: CircleAvatar(
               child: _currentUserAuth != null
                   ? Image.network(
                       _currentUserAuth.photoURL,
+                      fit: BoxFit.fill,
                     )
                   : Icon(Icons.person),
             ),
           ),
           automaticallyImplyLeading: false,
-          title: Text(getApplicationTitle()),
-          actionsIconTheme: IconThemeData(size: 10.0),
-          actions: [Icon(Icons.filter_list), Icon(Icons.search)],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Navigator.pushNamed(context, '/create');
-          },
-          icon: Icon(
-            Icons.add,
-            color: Theme.of(context).accentColor,
+          title: Text(
+            getApplicationTitle(),
+            style: TextStyle(color: Theme.of(context).accentColor),
           ),
-          label: Text(
-            "Create",
-            style: Theme.of(context).textTheme.button,
-          ),
-          elevation: 5.0,
+          actions: [
+            IconButton(
+              icon: Icon(Icons.info_outline),
+              color: Theme.of(context).accentColor,
+              onPressed: () => Navigator.pushNamed(context, '/experiment'),
+            ),
+            IconButton(
+              icon: Icon(Icons.filter_list),
+              color: Theme.of(context).accentColor,
+              onPressed: null,
+            ),
+            IconButton(
+              icon: Icon(Icons.search),
+              onPressed: null,
+            ),
+          ],
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        floatingActionButton: ScaleTransition(
+          scale: animation,
+          child: FloatingActionButton(
+            elevation: 8,
+            backgroundColor: Colors.white,
+            child: Icon(
+              Icons.add_photo_alternate,
+              color: Theme.of(context).accentColor,
+            ),
+            onPressed: () {
+              Navigator.pushNamed(context, '/create');
+            },
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: AnimatedBottomNavigationBar(
+          icons: [
+            Icons.dashboard,
+            Icons.archive,
+          ],
+          backgroundColor: Colors.white,
+          activeIndex: _bottomNavIndex,
+          activeColor: Theme.of(context).accentColor,
+          splashColor: Hexcolor('#998abd'),
+          inactiveColor: Colors.grey,
+          notchAndCornersAnimation: animation,
+          splashSpeedInMilliseconds: 300,
+          notchSmoothness: NotchSmoothness.defaultEdge,
+          gapLocation: GapLocation.center,
+          leftCornerRadius: 32,
+          rightCornerRadius: 32,
+          onTap: (index) => setState(() => _bottomNavIndex = index),
+        ),
         body: Center(
           child: Text(" Homepage "),
         ),
@@ -103,17 +167,16 @@ class _HomePageState extends State<HomePage> {
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
 
-    //bifbackbuttonhasnotbeenpreedOrToasthasbeenclosed
-    //Statement 1 Or statement2
     bool backButton = backButtonPressedTime == null ||
         currentTime.difference(backButtonPressedTime) > Duration(seconds: 3);
 
     if (backButton) {
       backButtonPressedTime = currentTime;
       Fluttertoast.showToast(
-          msg: "Double Click to exit app",
-          backgroundColor: Colors.black,
-          textColor: Colors.white);
+        msg: "Double Click to exit app",
+        backgroundColor: Colors.white,
+        textColor: Hexcolor(getAccentColorHexVal()),
+      );
       return false;
     }
     SystemNavigator.pop();

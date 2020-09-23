@@ -31,8 +31,8 @@ extension myOwnTextTheme on TextTheme {
       );
 
   TextStyle get subBodyTitle => const TextStyle(
-    color: Colors.white,
-    fontSize: 13.0,
-    fontWeight: FontWeight.bold,
+        color: Colors.white,
+        fontSize: 13.0,
+        fontWeight: FontWeight.bold,
       );
 }

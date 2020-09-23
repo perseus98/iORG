@@ -38,7 +38,7 @@ class _WelcomePageState extends State<WelcomePage> {
     bool firstTime = prefs.getBool('first_time');
     if (firstTime != null && !firstTime) {
       print("Not first time");
-      // loginUser();
+      loginUser();
     } else {
       print(" first time");
       prefs.setBool('first_time', false);
@@ -64,7 +64,7 @@ class _WelcomePageState extends State<WelcomePage> {
   Future<UserCredential> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
-    await googleUser.authentication;
+        await googleUser.authentication;
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -74,7 +74,7 @@ class _WelcomePageState extends State<WelcomePage> {
 
   saveUserInfoToFirebase(User _user) async {
     DocumentSnapshot documentSnapshot =
-    await userReference.doc(_user.uid).get();
+        await userReference.doc(_user.uid).get();
     if (!documentSnapshot.exists) {
       userReference.doc(_user.uid).set({
         "id": _user.uid,
@@ -93,11 +93,11 @@ class _WelcomePageState extends State<WelcomePage> {
 
   Future<void> executeAfterBuild() async {
     if (signingIn && _currentUserAuth != null) navigateToHome();
-    // if (firstInstance) {
-    //   setState(() {
-    //     firstInstance = true;
-    //   });
-    // }
+    if (firstInstance) {
+      setState(() {
+        firstInstance = true;
+      });
+    }
   }
 
   @override
