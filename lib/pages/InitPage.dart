@@ -19,10 +19,10 @@ class _InitPageState extends State<InitPage> {
 
   Future<UserCredential> _signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    print("GUser::::$googleUser");
+    // print("GUser::::$googleUser");
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
-    print("GAuth::::$googleAuth");
+    // print("GAuth::::$googleAuth");
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -69,6 +69,7 @@ class _InitPageState extends State<InitPage> {
               }
               if (snapshot.connectionState == ConnectionState.done) {
                 if (snapshot.data.user != null) {
+                  // print("snapshot.data.user ==> ${snapshot.data.user}");
                   return HomePage();
                 }
               }

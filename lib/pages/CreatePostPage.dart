@@ -9,6 +9,8 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:uuid/uuid.dart';
 
+import 'HomePage.dart';
+
 class CreatePostPage extends StatefulWidget {
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
@@ -46,7 +48,8 @@ class _CreatePostPageState extends State<CreatePostPage>
 
   double _bytesTransferred(StorageTaskSnapshot snapshot) {
     return snapshot.bytesTransferred.toDouble() /
-        snapshot.totalByteCount.toDouble();
+        snapshot.totalByteCount.toDouble() *
+        100;
   }
 
   @override
@@ -97,7 +100,6 @@ class _CreatePostPageState extends State<CreatePostPage>
   }
 
   _buildUploadingScreen() {
-    // print("UploadScreen_imgPath::::${_fbKey.currentState.value["image"][0].uri}");
     return StreamBuilder(
       stream: uploadImage(mapData["image"][0].uri),
       builder: (context, AsyncSnapshot<StorageTaskEvent> asyncSnapshot) {
@@ -111,9 +113,10 @@ class _CreatePostPageState extends State<CreatePostPage>
           switch (event.type) {
             case StorageTaskEventType.progress:
               {
+                setState(() {
+                  _progressBarValue = _bytesTransferred(snapshot);
+                });
                 _progressBarValue = _bytesTransferred(snapshot);
-                // subtitle =
-                //     Text('Event:${event.type}::${_bytesTransferred(snapshot)}');
                 print("uploadProgress::::$_progressBarValue");
               }
               break;
@@ -122,9 +125,6 @@ class _CreatePostPageState extends State<CreatePostPage>
               break;
             case StorageTaskEventType.success:
               {
-                // print(
-                //     'snapshot.ref.getDownloadURL() :: ${snapshot.ref
-                //         .getDownloadURL().runtimeType}');
                 if (mapData.isEmpty) {
                   print(" mapDAta :: null");
                 } else {
@@ -141,26 +141,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                       "details": mapData['details'],
                     });
                   });
-                  // snapshot.ref.getDownloadURL().then((value) => (){
-                  //   print("pic ::: ${value.runtimeType} :: $value");
-                  //
-                  // });
-                  // mapData.forEach((key, value) {
-                  //     print("$key <==> ${value.runtimeType} <==> $value");
-                  //   });
-                  // form att:::::
-                  // image ,    name,       deadline  , priority , details
-                  // "image",  "postName", "deadline", "priority", "details",
-                  // "postId", "ownerId", "timestamp"
-
-                  // print("picURl::$picUrl");
-
-                  // print("upload data saved");
-                  // _nameController.clear();
-                  // _detailsController.clear();
-                  // postId = Uuid().v4();
                   print("Cloud Save executed");
-                  // return HomePage();
+                  return HomePage();
                 }
               }
               break;

@@ -1,11 +1,14 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
+import 'package:iorg_flutter/pages/InitPage.dart';
 import 'package:iorg_flutter/pages/LoggedOut.dart';
 
 class HomePage extends StatefulWidget {
@@ -16,9 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   DateTime backButtonPressedTime;
-  User _currentUserAuth;
   int _bottomNavIndex = 0;
-
+  User _currentAuthUser;
   AnimationController _animationController;
   Animation<double> animation;
   CurvedAnimation curve;
@@ -26,7 +28,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    _currentUserAuth = FirebaseAuth.instance.currentUser;
+    _currentAuthUser = FirebaseAuth.instance.currentUser;
     _animationController = AnimationController(
       duration: Duration(seconds: 1),
       vsync: this,
@@ -58,44 +60,14 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
+    if (_currentAuthUser == null) {
+      return InitPage();
+    }
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.white,
-          leading: GestureDetector(
-            onTap: _showMyDialog,
-            child: CircleAvatar(
-              child: _currentUserAuth != null
-                  ? Image.network(
-                      _currentUserAuth.photoURL,
-                      fit: BoxFit.fill,
-                    )
-                  : Icon(Icons.person),
-            ),
-          ),
-          automaticallyImplyLeading: false,
-          title: Text(
-            getApplicationTitle(),
-            style: TextStyle(color: Theme.of(context).accentColor),
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.info_outline),
-              color: Theme.of(context).accentColor,
-              onPressed: () => Navigator.pushNamed(context, '/experiment'),
-            ),
-            IconButton(
-              icon: Icon(Icons.filter_list),
-              color: Theme.of(context).accentColor,
-              onPressed: null,
-            ),
-            IconButton(
-              icon: Icon(Icons.search),
-              onPressed: null,
-            ),
-          ],
-        ),
+        appBar: _appBar(context),
+        drawer: _drawer(context),
         floatingActionButton: ScaleTransition(
           scale: animation,
           child: FloatingActionButton(
@@ -148,6 +120,89 @@ class _HomePageState extends State<HomePage>
       ),
     );
   }
+
+  AppBar _appBar(BuildContext context) {
+    return AppBar(
+      backgroundColor: Colors.white,
+      leading: GestureDetector(
+        onTap: () => Scaffold.of(context).openDrawer(),
+        child: CachedNetworkImage(
+          height: AppBar().preferredSize.height * 0.9,
+          width: AppBar().preferredSize.height * 0.9,
+          placeholder: (context, url) => CircularProgressIndicator(),
+          imageUrl: _currentAuthUser.photoURL,
+        ),
+      ),
+      title: Text(
+        getApplicationTitle(),
+        style: TextStyle(color: Theme
+            .of(context)
+            .accentColor),
+      ),
+      actions: [
+        // IconButton(
+        //   icon: Icon(Icons.info_outline),
+        //   color: Theme.of(context).accentColor,
+        //   onPressed: () => Navigator.pushNamed(context, '/experiment'),
+        // ),
+        IconButton(
+          icon: Icon(Icons.filter_list),
+          color: Theme
+              .of(context)
+              .accentColor,
+          onPressed: null,
+        ),
+        IconButton(
+          icon: Icon(Icons.search, color: Theme
+              .of(context)
+              .accentColor,),
+          onPressed: null,
+        ),
+      ],
+    );
+  }
+
+  Drawer _drawer(BuildContext context) {
+    return Drawer(
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          DrawerHeader(
+            decoration: BoxDecoration(
+              color: Theme
+                  .of(context)
+                  .accentColor,
+            ),
+            child: Text(
+              getApplicationTitle(),
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 24,
+              ),
+            ),
+          ),
+          ListTile(
+            leading: Icon(Icons.message),
+            title: Text('Messages'),
+          ),
+          ListTile(
+            leading: Icon(Icons.account_circle),
+            title: Text('Profile'),
+          ),
+          ListTile(
+            leading: Icon(Icons.settings),
+            title: Text('Settings'),
+          ),
+          ListTile(
+            leading: FaIcon(FontAwesomeIcons.signOutAlt),
+            title: Text("Sign Out"),
+            onTap: _showMyDialog,
+          )
+        ],
+      ),
+    );
+  }
+
 
   Future<void> _showMyDialog() async {
     return showDialog<void>(

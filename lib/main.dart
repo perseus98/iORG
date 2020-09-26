@@ -10,7 +10,6 @@ import 'package:iorg_flutter/experiment.dart';
 import 'package:iorg_flutter/pages/CreatePostPage.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
-import 'package:iorg_flutter/pages/WelcomePage.dart';
 import 'package:statusbar/statusbar.dart';
 
 import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/extension.dart';
@@ -18,6 +17,7 @@ import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/ex
 final StorageReference storageReference =
     FirebaseStorage.instance.ref().child("Posted Pictures");
 final postReference = FirebaseFirestore.instance.collection("posts");
+final userReference = FirebaseFirestore.instance.collection("users");
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/init',
       routes: <String, WidgetBuilder>{
         '/init': (BuildContext context) => InitPage(),
-        '/welcome': (BuildContext context) => WelcomePage(),
+        // '/welcome': (BuildContext context) => WelcomePage(),
         '/home': (BuildContext context) => HomePage(),
         '/create': (BuildContext context) => CreatePostPage(),
         '/experiment': (BuildContext context) => ExperimentPage(),
