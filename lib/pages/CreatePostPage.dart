@@ -7,7 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
-import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:uuid/uuid.dart';
 
 class CreatePostPage extends StatefulWidget {
@@ -26,15 +25,16 @@ class _CreatePostPageState extends State<CreatePostPage>
       text: 'This entry was created on ${DateTime.now().toString()}');
   var _priority = 1.0;
   double _progressBarValue = 0;
-  bool _uploading = false;
   String postId = Uuid().v4();
   User _currentUserAuth;
   Map formVal;
   Uri _imgFilePath;
+  bool _uploading;
 
   @override
   void initState() {
     super.initState();
+    _uploading = false;
     _currentUserAuth = FirebaseAuth.instance.currentUser;
   }
 
@@ -53,7 +53,7 @@ class _CreatePostPageState extends State<CreatePostPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
+    return _uploading ? _buildUploadingScreen() : Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
           automaticallyImplyLeading: true,
@@ -63,120 +63,62 @@ class _CreatePostPageState extends State<CreatePostPage>
             IconButton(
               icon: Icon(
                 Icons.restore,
-                color: _uploading ? Colors.grey : Colors.white,
+                color: Colors.white,
               ),
-              onPressed: _uploading
-                  ? null
-                  : () {
-                      _fbKey.currentState.reset();
-                    },
+              onPressed: () {
+                _fbKey.currentState.reset();
+              },
             ),
             IconButton(
               icon: Icon(
                 Icons.check,
-                color: _uploading ? Colors.grey : Colors.white,
+                color: Colors.white,
               ),
               onPressed: () {
-                if (_fbKey.currentState.saveAndValidate() && !_uploading)
+                if (_fbKey.currentState.saveAndValidate())
                   setState(() {
-                    _imgFilePath = _fbKey.currentState.value["image"][0].uri;
                     _uploading = true;
+                    print("imgPath::::${_fbKey.currentState.value["image"][0]
+                        .uri}");
+                    print("runType::::${_fbKey.currentState.value["image"][0]
+                        .runtimeType}");
+                    // _imgFilePath = _fbKey.currentState.value["image"][0].uri;
                   });
                 print("TYpe::");
                 print("Check clicked");
-                // setState(() {
-                //   _uploading = true;
-                // });
               },
             ),
           ],
         ),
-        body: Stack(
-          children: [
-            buildForm(),
-            _imgFilePath != null
-                ? StreamBuilder(
-                    stream: uploadImage(_imgFilePath),
-                    builder: (context,
-                        AsyncSnapshot<StorageTaskEvent> asyncSnapshot) {
-                      Widget subtitle;
-                      if (asyncSnapshot.hasData) {
-                        final StorageTaskEvent event = asyncSnapshot.data;
-                        final StorageTaskSnapshot snapshot = event.snapshot;
-                        switch (event.type) {
-                          case StorageTaskEventType.progress:
-                            {
-                              _progressBarValue = _bytesTransferred(snapshot);
-                              subtitle = Text(
-                                  'Event:${event.type}::${_bytesTransferred(snapshot)}');
-                              print(event.type);
-                            }
-                            break;
-                          case StorageTaskEventType.success:
-                            {
-                              print(
-                                  'Download :: ${snapshot.ref.getDownloadURL().runtimeType}');
-                              formVal = _fbKey.currentState.value;
-                              postReference
-                                  .doc(_currentUserAuth.uid)
-                                  .collection("posts")
-                                  .doc(postId)
-                                  .set({
-                                "postId": postId,
-                                "ownerId": _currentUserAuth.uid,
-                                "url": snapshot.ref.getDownloadURL(),
-                                "postName": formVal["name"],
-                                "deadline": formVal["deadline"],
-                                "priority": formVal["priority"],
-                                "description": formVal["details"],
-                                "timestamp": DateTime.now(),
-                              });
-                              print("Task success");
-                              _nameController.clear();
-                              print('nameField :: ${_nameController.text}');
-                              _detailsController.clear();
-                              _fbKey.currentState.reset();
-                              _uploading = false;
-                              postId = Uuid().v4();
-                              // Navigator.pushNamed(context, '/home');
-                              subtitle = HomePage();
-                            }
-                            break;
-                          default:
-                        }
-                      } else {
-                        subtitle = Text('Starting...');
-                      }
-                      return Container(
-                        height: MediaQuery.of(context).size.height,
-                        width: MediaQuery.of(context).size.width,
-                        decoration: BoxDecoration(
-                          color: Color.fromARGB(200, 255, 255, 255),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(
-                              value: _progressBarValue,
-                              valueColor: AlwaysStoppedAnimation(Colors.blue),
-                              backgroundColor: Colors.grey,
-                              strokeWidth: 3.0,
-                            ),
-                            subtitle
-                          ],
-                        ),
-                      );
-                    },
-                  )
-                : Text(""),
-          ],
-        ));
+        body: buildForm());
   }
 
-  ListView buildForm() {
+  _buildUploadingScreen() {
+    print(
+        "UploadScreen_imgPath::::${_fbKey.currentState.value["image"][0].uri}");
+    return Scaffold(
+      body: Container(
+        child: Column(
+          children: [
+            Text(
+              "Uploading",
+              style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 50.0
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  buildForm() {
     return ListView(
-      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
+      padding: EdgeInsets.all(MediaQuery
+          .of(context)
+          .size
+          .width * 0.05),
       children: <Widget>[
         FormBuilder(
           key: _fbKey,
@@ -271,13 +213,11 @@ class _CreatePostPageState extends State<CreatePostPage>
       ],
     );
   }
-
   returnPriorityColor(double val) {
     return val == 1
         ? Colors.green
         : val == 2 ? Colors.yellow : val == 3 ? Colors.red : Colors.grey;
   }
-
   @override
   void dispose() {
     _nameController.dispose();
