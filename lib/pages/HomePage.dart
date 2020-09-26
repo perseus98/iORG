@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
+import 'package:iorg_flutter/pages/LoggedOut.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -129,7 +130,20 @@ class _HomePageState extends State<HomePage>
           onTap: (index) => setState(() => _bottomNavIndex = index),
         ),
         body: Center(
-          child: Text(" Homepage "),
+          child: IconButton(
+              icon: Icon(Icons.exit_to_app),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                print('GUserHM::::${GoogleSignIn().isSignedIn()}');
+                if (await GoogleSignIn().isSignedIn()) {
+                  await GoogleSignIn().signOut();
+                  print("GSignOUT");
+                } else {
+                  print("Didn'tGSignOUT");
+                }
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoggedOut()));
+              }),
         ),
       ),
     );
@@ -147,9 +161,9 @@ class _HomePageState extends State<HomePage>
             FlatButton(
               child: Text('Yes'),
               onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                await GoogleSignIn().signOut();
-                Navigator.pushNamed(context, '/welcome');
+                // await FirebaseAuth.instance.signOut();
+                // await GoogleSignIn().signOut();
+                // Navigator.pushNamed(context, '/welcome');
               },
             ),
             FlatButton(

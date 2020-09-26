@@ -1,7 +1,10 @@
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/experiment.dart';
 import 'package:iorg_flutter/pages/CreatePostPage.dart';
@@ -12,13 +15,9 @@ import 'package:statusbar/statusbar.dart';
 
 import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/extension.dart';
 
-String getApplicationTitle() {
-  return "iORG";
-}
-
-String getAccentColorHexVal() {
-  return "#8777ac";
-}
+final StorageReference storageReference =
+    FirebaseStorage.instance.ref().child("Posted Pictures");
+final postReference = FirebaseFirestore.instance.collection("posts");
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +26,11 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.light,
     statusBarColor: Hexcolor(getAccentColorHexVal()),
   ));
-  runApp(MyApp());
+  runApp(
+    Phoenix(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -71,4 +74,12 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+}
+
+String getApplicationTitle() {
+  return "iORG";
+}
+
+String getAccentColorHexVal() {
+  return "#8777ac";
 }
