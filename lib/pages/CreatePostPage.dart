@@ -28,6 +28,7 @@ class _CreatePostPageState extends State<CreatePostPage>
   String postId = Uuid().v4();
   User _currentUserAuth;
   bool _uploading;
+  Map<String, dynamic> mapData;
 
   @override
   void initState() {
@@ -76,23 +77,17 @@ class _CreatePostPageState extends State<CreatePostPage>
                   ),
                   onPressed: () {
                     if (_fbKey.currentState.saveAndValidate())
-                      // setState(() {
-                      // _uploading = true;
-                      // var formMap = HashMap.from(_fbKey.currentState.value);
-                      print(
-                          "imgPath::::${_fbKey.currentState.value["image"][0].uri}");
-                    print(
-                        "runType::::${_fbKey.currentState.value["image"][0].runtimeType}");
-                    print("fbType::::${_fbKey.currentState.value.runtimeType}");
-                    var formVal = new Map<String, dynamic>.from(
-                        _fbKey.currentState.value);
-                    formVal.forEach((key, value) {
-                      print("New $key :: New $value");
-                    });
+                      mapData = new Map<String, dynamic>.from(
+                          _fbKey.currentState.value);
+                    // mapData.forEach((key, value) {
+                    //   print("New $key :: New $value");
+                    // });
                     // _fbKey.currentState.value.map((key, value) => null)
                     // _imgFilePath = _fbKey.currentState.value["image"][0].uri;
-                    // });
-                    print("TYpe::");
+                    setState(() {
+                      _uploading = true;
+                    });
+                    // print("TYpe::");
                     print("Check clicked");
                   },
                 ),
@@ -104,9 +99,9 @@ class _CreatePostPageState extends State<CreatePostPage>
   _buildUploadingScreen() {
     // print("UploadScreen_imgPath::::${_fbKey.currentState.value["image"][0].uri}");
     return StreamBuilder(
-      stream: uploadImage(_fbKey.currentState.value["image"][0].uri),
+      stream: uploadImage(mapData["image"][0].uri),
       builder: (context, AsyncSnapshot<StorageTaskEvent> asyncSnapshot) {
-        Widget subtitle = Text("nulll");
+        Widget subtitle = Text("null");
         if (asyncSnapshot.hasError) {
           return buildUploadErrorHandler(asyncSnapshot.error);
         }
@@ -127,35 +122,46 @@ class _CreatePostPageState extends State<CreatePostPage>
               break;
             case StorageTaskEventType.success:
               {
-                print(
-                    'snapshot.ref.getDownloadURL() :: ${snapshot.ref
-                        .getDownloadURL()}');
-                if (_fbKey.currentState.value == null) {
-                  print(" fbVal :: nulll");
+                // print(
+                //     'snapshot.ref.getDownloadURL() :: ${snapshot.ref
+                //         .getDownloadURL().runtimeType}');
+                if (mapData.isEmpty) {
+                  print(" mapDAta :: null");
                 } else {
-                  print("fbVal:::::${_fbKey.currentState.value}");
-                } // formVal = _fbKey.currentState.value;
-                // postReference
-                //     .doc(_currentUserAuth.uid)
-                //     .collection("posts")
-                //     .doc(postId)
-                //     .set({
-                //   "postId": postId,
-                //   "ownerId": _currentUserAuth.uid,
-                //   "url": snapshot.ref.getDownloadURL(),
-                //   "postName": formVal["name"],
-                //   "deadline": formVal["deadline"],
-                //   "priority": formVal["priority"],
-                //   "description": formVal["details"],
-                //   "timestamp": DateTime.now(),
-                // });
-                print("upload data saved");
-                _nameController.clear();
-                print('nameField :: ${_nameController.text}');
-                _detailsController.clear();
-                _fbKey.currentState.reset();
-                postId = Uuid().v4();
-                // return HomePage();
+                  snapshot.ref.getDownloadURL().then((downloadURL) {
+                    print('picUrl == $downloadURL');
+                    postReference.doc(_currentUserAuth.uid).set({
+                      "postId": postId,
+                      "ownerId": _currentUserAuth.uid,
+                      "timestamp": DateTime.now(),
+                      "image": downloadURL,
+                      "postName": mapData['name'],
+                      "deadline": mapData['deadline'],
+                      "priority": mapData['priority'],
+                      "details": mapData['details'],
+                    });
+                  });
+                  // snapshot.ref.getDownloadURL().then((value) => (){
+                  //   print("pic ::: ${value.runtimeType} :: $value");
+                  //
+                  // });
+                  // mapData.forEach((key, value) {
+                  //     print("$key <==> ${value.runtimeType} <==> $value");
+                  //   });
+                  // form att:::::
+                  // image ,    name,       deadline  , priority , details
+                  // "image",  "postName", "deadline", "priority", "details",
+                  // "postId", "ownerId", "timestamp"
+
+                  // print("picURl::$picUrl");
+
+                  // print("upload data saved");
+                  // _nameController.clear();
+                  // _detailsController.clear();
+                  // postId = Uuid().v4();
+                  print("Cloud Save executed");
+                  // return HomePage();
+                }
               }
               break;
             default:
@@ -180,7 +186,7 @@ class _CreatePostPageState extends State<CreatePostPage>
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               CircularProgressIndicator(
-                value: _progressBarValue,
+                // value: _progressBarValue,
                 valueColor: AlwaysStoppedAnimation(Colors.blue),
                 backgroundColor: Colors.grey,
                 strokeWidth: 3.0,
