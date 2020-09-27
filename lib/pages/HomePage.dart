@@ -104,18 +104,7 @@ class _HomePageState extends State<HomePage>
         body: Center(
           child: IconButton(
               icon: Icon(Icons.exit_to_app),
-              onPressed: () async {
-                await FirebaseAuth.instance.signOut();
-                print('GUserHM::::${GoogleSignIn().isSignedIn()}');
-                if (await GoogleSignIn().isSignedIn()) {
-                  await GoogleSignIn().signOut();
-                  print("GSignOUT");
-                } else {
-                  print("Didn'tGSignOUT");
-                }
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoggedOut()));
-              }),
+              onPressed: () async {}),
         ),
       ),
     );
@@ -146,16 +135,19 @@ class _HomePageState extends State<HomePage>
         //   onPressed: () => Navigator.pushNamed(context, '/experiment'),
         // ),
         IconButton(
-          icon: Icon(Icons.filter_list),
-          color: Theme
-              .of(context)
-              .accentColor,
+          icon: Icon(Icons.sort,
+            color: Theme
+                .of(context)
+                .accentColor,
+          ),
           onPressed: null,
         ),
         IconButton(
-          icon: Icon(Icons.search, color: Theme
-              .of(context)
-              .accentColor,),
+          icon: Icon(Icons.search,
+            color: Theme
+                .of(context)
+                .accentColor,
+          ),
           onPressed: null,
         ),
       ],
@@ -196,7 +188,7 @@ class _HomePageState extends State<HomePage>
           ListTile(
             leading: FaIcon(FontAwesomeIcons.signOutAlt),
             title: Text("Sign Out"),
-            onTap: _showMyDialog,
+            onTap: _signOutDialog,
           )
         ],
       ),
@@ -204,7 +196,7 @@ class _HomePageState extends State<HomePage>
   }
 
 
-  Future<void> _showMyDialog() async {
+  Future<void> _signOutDialog() async {
     return showDialog<void>(
       context: context,
       barrierDismissible: true,
@@ -216,9 +208,16 @@ class _HomePageState extends State<HomePage>
             FlatButton(
               child: Text('Yes'),
               onPressed: () async {
-                // await FirebaseAuth.instance.signOut();
-                // await GoogleSignIn().signOut();
-                // Navigator.pushNamed(context, '/welcome');
+                await FirebaseAuth.instance.signOut();
+                print('GUserHomePageCheck::::${GoogleSignIn().isSignedIn()}');
+                if (await GoogleSignIn().isSignedIn()) {
+                  await GoogleSignIn().signOut();
+                  print("GSignOUT");
+                } else {
+                  print("Didn'tGSignOUT");
+                }
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => LoggedOut()));
               },
             ),
             FlatButton(

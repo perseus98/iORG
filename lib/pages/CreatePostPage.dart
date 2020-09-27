@@ -103,7 +103,7 @@ class _CreatePostPageState extends State<CreatePostPage>
     return StreamBuilder(
       stream: uploadImage(mapData["image"][0].uri),
       builder: (context, AsyncSnapshot<StorageTaskEvent> asyncSnapshot) {
-        Widget subtitle = Text("null");
+        Widget subtitle = Text("Uploading, Please wait...");
         if (asyncSnapshot.hasError) {
           return buildUploadErrorHandler(asyncSnapshot.error);
         }
@@ -113,9 +113,9 @@ class _CreatePostPageState extends State<CreatePostPage>
           switch (event.type) {
             case StorageTaskEventType.progress:
               {
-                setState(() {
-                  _progressBarValue = _bytesTransferred(snapshot);
-                });
+                // setState(() {
+                //   _progressBarValue = _bytesTransferred(snapshot);
+                // });
                 _progressBarValue = _bytesTransferred(snapshot);
                 print("uploadProgress::::$_progressBarValue");
               }
@@ -130,16 +130,21 @@ class _CreatePostPageState extends State<CreatePostPage>
                 } else {
                   snapshot.ref.getDownloadURL().then((downloadURL) {
                     print('picUrl == $downloadURL');
-                    postReference.doc(_currentUserAuth.uid).set({
-                      "postId": postId,
-                      "ownerId": _currentUserAuth.uid,
-                      "timestamp": DateTime.now(),
-                      "image": downloadURL,
-                      "postName": mapData['name'],
-                      "deadline": mapData['deadline'],
-                      "priority": mapData['priority'],
-                      "details": mapData['details'],
-                    });
+                    postReference
+                        .doc(postId)
+                        .set({
+                          "postId": postId,
+                          "ownerId": _currentUserAuth.uid,
+                          "timestamp": DateTime.now(),
+                          "image": downloadURL,
+                          "postName": mapData['name'],
+                          "deadline": mapData['deadline'],
+                          "priority": mapData['priority'],
+                          "details": mapData['details'],
+                        })
+                        .then((value) => print("Post Added"))
+                        .catchError(
+                            (error) => print("Failed to add post: $error"));
                   });
                   print("Cloud Save executed");
                   return HomePage();
@@ -173,7 +178,10 @@ class _CreatePostPageState extends State<CreatePostPage>
                 backgroundColor: Colors.grey,
                 strokeWidth: 3.0,
               ),
-              subtitle
+              Padding(
+                padding: EdgeInsets.only(left: 10.0),
+                child: subtitle,
+              ),
             ],
           ),
         );

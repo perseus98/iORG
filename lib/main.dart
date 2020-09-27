@@ -14,6 +14,9 @@ import 'package:statusbar/statusbar.dart';
 
 import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/extension.dart';
 
+/// Requires that a Firestore emulator is running locally.
+/// See https://firebase.flutter.dev/docs/firestore/usage#emulator-usage
+bool usingEmulator = false;
 final StorageReference storageReference =
     FirebaseStorage.instance.ref().child("Posted Pictures");
 final postReference = FirebaseFirestore.instance.collection("posts");
@@ -21,6 +24,10 @@ final userReference = FirebaseFirestore.instance.collection("users");
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  if (usingEmulator) {
+    FirebaseFirestore.instance.settings = Settings(
+        host: 'localhost:8080', sslEnabled: false, persistenceEnabled: false);
+  }
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
     systemNavigationBarColor: Hexcolor(getAccentColorHexVal()),
     systemNavigationBarIconBrightness: Brightness.light,
