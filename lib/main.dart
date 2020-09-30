@@ -90,3 +90,9 @@ String getApplicationTitle() {
 String getAccentColorHexVal() {
   return "#8777ac";
 }
+
+returnPriorityColor(double val) {
+  return val == 1
+      ? Colors.green
+      : val == 2 ? Colors.yellow : val == 3 ? Colors.red : Colors.grey;
+}

@@ -178,8 +178,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                 backgroundColor: Colors.grey,
                 strokeWidth: 3.0,
               ),
-              Padding(
-                padding: EdgeInsets.only(left: 10.0),
+              Flexible(
                 child: subtitle,
               ),
             ],
@@ -306,12 +305,6 @@ class _CreatePostPageState extends State<CreatePostPage>
             )),
       ),
     );
-  }
-
-  returnPriorityColor(double val) {
-    return val == 1
-        ? Colors.green
-        : val == 2 ? Colors.yellow : val == 3 ? Colors.red : Colors.grey;
   }
 
   @override

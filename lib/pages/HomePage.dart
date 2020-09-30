@@ -1,5 +1,6 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,8 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
 import 'package:iorg_flutter/pages/LoggedOut.dart';
+import 'package:iorg_flutter/widgets/PostWidget.dart';
+import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -24,6 +27,7 @@ class _HomePageState extends State<HomePage>
   AnimationController _animationController;
   Animation<double> animation;
   CurvedAnimation curve;
+  GlobalKey<ScaffoldState> _homePageGlobalKey = GlobalKey();
 
   @override
   void initState() {
@@ -63,48 +67,38 @@ class _HomePageState extends State<HomePage>
     if (_currentAuthUser == null) {
       return InitPage();
     }
+    Query query = postReference.orderBy('timestamp', descending: true);
+
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
+        key: _homePageGlobalKey,
         appBar: _appBar(context),
         drawer: _drawer(context),
-        floatingActionButton: ScaleTransition(
-          scale: animation,
-          child: FloatingActionButton(
-            elevation: 8,
-            backgroundColor: Colors.white,
-            child: Icon(
-              Icons.add_photo_alternate,
-              color: Theme.of(context).accentColor,
-            ),
-            onPressed: () {
-              Navigator.pushNamed(context, '/create');
-            },
-          ),
-        ),
+        floatingActionButton: _scaleTransition(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: AnimatedBottomNavigationBar(
-          icons: [
-            Icons.dashboard,
-            Icons.archive,
-          ],
-          backgroundColor: Colors.white,
-          activeIndex: _bottomNavIndex,
-          activeColor: Theme.of(context).accentColor,
-          splashColor: Hexcolor('#998abd'),
-          inactiveColor: Colors.grey,
-          notchAndCornersAnimation: animation,
-          splashSpeedInMilliseconds: 300,
-          notchSmoothness: NotchSmoothness.defaultEdge,
-          gapLocation: GapLocation.center,
-          leftCornerRadius: 32,
-          rightCornerRadius: 32,
-          onTap: (index) => setState(() => _bottomNavIndex = index),
-        ),
-        body: Center(
-          child: IconButton(
-              icon: Icon(Icons.exit_to_app),
-              onPressed: () async {}),
+        bottomNavigationBar: _animatedBottomNavigationBar(),
+        body: StreamBuilder<QuerySnapshot>(
+          stream: query.snapshots(),
+          builder: (context, stream) {
+            if (stream.connectionState == ConnectionState.waiting) {
+              return Center(child: progressIndicator());
+            }
+            if (stream.hasError) {
+              return Center(child: Text(stream.error.toString()));
+            }
+            if (stream.hasData) {
+              QuerySnapshot querySnapshot = stream.data;
+              return ListView.builder(
+                itemCount: querySnapshot.size,
+                itemBuilder: (context, index) =>
+                    PostWidget(querySnapshot.docs[index]),
+              );
+            }
+            return Center(
+              child: Text("Create data to see, currently cloud is empty"),
+            );
+          },
         ),
       ),
     );
@@ -113,15 +107,37 @@ class _HomePageState extends State<HomePage>
   AppBar _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
-      leading: GestureDetector(
-        onTap: () => Scaffold.of(context).openDrawer(),
-        child: CachedNetworkImage(
-          height: AppBar().preferredSize.height * 0.9,
-          width: AppBar().preferredSize.height * 0.9,
-          placeholder: (context, url) => CircularProgressIndicator(),
-          imageUrl: _currentAuthUser.photoURL,
+      leading:
+      // IconButton(icon: Icon(Icons.menu,color: Theme.of(context).accentColor,), onPressed: ()=>Scaffold.of(context).op,)
+      GestureDetector(
+        onTap: () => _homePageGlobalKey.currentState.openDrawer(),
+        child: Container(
+          height: AppBar().preferredSize.height,
+          width: AppBar().preferredSize.height,
+          decoration: BoxDecoration(
+            color: Color(0xff7c94b6),
+            image: DecorationImage(
+              image: NetworkImage(_currentAuthUser.photoURL,),
+              fit: BoxFit.scaleDown,
+            ),
+            borderRadius: BorderRadius.all(
+                Radius.circular(AppBar().preferredSize.height / 2)),
+            border: Border.all(
+              color: Theme
+                  .of(context)
+                  .accentColor,
+              width: 4.0,
+            ),
+          ),
+          // radius: 3.0,
+          // backgroundColor: Theme.of(context).accentColor,
+          // backgroundImage: NetworkImage(_currentAuthUser.photoURL,),
+          // onBackgroundImageError: (exception,stacktrace){
+          //   print('ProfilePictureException::::$exception');
+          // },
         ),
-      ),
+      )
+      ,
       title: Text(
         getApplicationTitle(),
         style: TextStyle(color: Theme
@@ -195,6 +211,47 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  ScaleTransition _scaleTransition() {
+    return ScaleTransition(
+      scale: animation,
+      child: FloatingActionButton(
+        elevation: 8,
+        backgroundColor: Colors.white,
+        child: Icon(
+          Icons.add_photo_alternate,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, '/create');
+        },
+      ),
+    );
+  }
+
+  AnimatedBottomNavigationBar _animatedBottomNavigationBar() {
+    return AnimatedBottomNavigationBar(
+      icons: [
+        Icons.dashboard,
+        Icons.archive,
+      ],
+      backgroundColor: Colors.white,
+      activeIndex: _bottomNavIndex,
+      activeColor: Theme
+          .of(context)
+          .accentColor,
+      splashColor: Hexcolor('#998abd'),
+      inactiveColor: Colors.grey,
+      notchAndCornersAnimation: animation,
+      splashSpeedInMilliseconds: 300,
+      notchSmoothness: NotchSmoothness.defaultEdge,
+      gapLocation: GapLocation.center,
+      leftCornerRadius: 32,
+      rightCornerRadius: 32,
+      onTap: (index) => setState(() => _bottomNavIndex = index),
+    );
+  }
 
   Future<void> _signOutDialog() async {
     return showDialog<void>(
