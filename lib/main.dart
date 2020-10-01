@@ -93,6 +93,7 @@ String getAccentColorHexVal() {
 
 returnPriorityColor(double val) {
   return val == 1
-      ? Colors.green
-      : val == 2 ? Colors.yellow : val == 3 ? Colors.red : Colors.grey;
+      ? Colors.green[200]
+      : val == 2 ? Colors.yellow[200] : val == 3 ? Colors.red[200] : Colors
+      .grey[200];
 }

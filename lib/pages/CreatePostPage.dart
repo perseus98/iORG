@@ -22,9 +22,13 @@ class _CreatePostPageState extends State<CreatePostPage>
   final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final ValueChanged _onChanged = (val) => print(val);
   final _nameController =
-      TextEditingController(text: 'ENTRY_${DateTime.now().toString()}');
+  TextEditingController(text: 'ENTRY_${DateTime
+      .now()
+      .microsecondsSinceEpoch}');
   final _detailsController = TextEditingController(
-      text: 'This entry was created on ${DateTime.now().toString()}');
+      text: 'This entry was created on ${DateTime
+          .now()
+          .microsecondsSinceEpoch}');
   var _priority = 1.0;
   double _progressBarValue = 0;
   String postId = Uuid().v4();

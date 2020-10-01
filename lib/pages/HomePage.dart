@@ -1,5 +1,4 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +9,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
-import 'package:iorg_flutter/pages/LoggedOut.dart';
 import 'package:iorg_flutter/widgets/PostWidget.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -92,7 +91,7 @@ class _HomePageState extends State<HomePage>
               return ListView.builder(
                 itemCount: querySnapshot.size,
                 itemBuilder: (context, index) =>
-                    PostWidget(querySnapshot.docs[index]),
+                    PostWidget(querySnapshot.docs[index], true),
               );
             }
             return Center(
@@ -265,16 +264,12 @@ class _HomePageState extends State<HomePage>
             FlatButton(
               child: Text('Yes'),
               onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.remove('authAvail');
+                prefs.remove('authStrings');
                 await FirebaseAuth.instance.signOut();
-                print('GUserHomePageCheck::::${GoogleSignIn().isSignedIn()}');
-                if (await GoogleSignIn().isSignedIn()) {
-                  await GoogleSignIn().signOut();
-                  print("GSignOUT");
-                } else {
-                  print("Didn'tGSignOUT");
-                }
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => LoggedOut()));
+                await GoogleSignIn().signOut();
+                Navigator.pushNamed(context, '/init');
               },
             ),
             FlatButton(

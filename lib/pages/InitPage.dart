@@ -19,7 +19,7 @@ class InitPage extends StatefulWidget {
 class _InitPageState extends State<InitPage> {
   DateTime backButtonPressedTime;
   bool _authValue = false;
-  bool _manualSignIn = false;
+  bool _manualSignIn = true;
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
