@@ -145,6 +145,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                           "deadline": mapData['deadline'],
                           "priority": mapData['priority'],
                           "details": mapData['details'],
+                          'archive': false,
                         })
                         .then((value) => print("Post Added"))
                         .catchError(

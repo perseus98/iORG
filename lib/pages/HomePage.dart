@@ -1,6 +1,7 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -11,9 +12,12 @@ import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
 import 'package:iorg_flutter/widgets/PostWidget.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
+import 'package:multi_select_item/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
+  HomePage({Key key}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -27,11 +31,14 @@ class _HomePageState extends State<HomePage>
   Animation<double> animation;
   CurvedAnimation curve;
   GlobalKey<ScaffoldState> _homePageGlobalKey = GlobalKey();
+  MultiSelectController multiSelectController = new MultiSelectController();
 
   @override
   void initState() {
     super.initState();
     _currentAuthUser = FirebaseAuth.instance.currentUser;
+    multiSelectController.disableEditingWhenNoneSelected = true;
+
     _animationController = AnimationController(
       duration: Duration(seconds: 1),
       vsync: this,
@@ -48,16 +55,15 @@ class _HomePageState extends State<HomePage>
       begin: 0,
       end: 1,
     ).animate(curve);
-
     Future.delayed(
       Duration(seconds: 1),
       () => _animationController.forward(),
     );
   }
 
-  void changePage(int index) {
+  void selectAll() {
     setState(() {
-      _bottomNavIndex = index;
+      multiSelectController.toggleAll();
     });
   }
 
@@ -66,8 +72,10 @@ class _HomePageState extends State<HomePage>
     if (_currentAuthUser == null) {
       return InitPage();
     }
-    Query query = postReference.orderBy('timestamp', descending: true);
-
+    Query query = postReference.where(
+        'ownerId', isEqualTo: _currentAuthUser.uid).orderBy(
+        'timestamp', descending: true);
+    print('Selected ${multiSelectController.selectedIndexes} : ');
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
@@ -78,6 +86,7 @@ class _HomePageState extends State<HomePage>
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: _animatedBottomNavigationBar(),
         body: StreamBuilder<QuerySnapshot>(
+          // key: UniqueKey(),
           stream: query.snapshots(),
           builder: (context, stream) {
             if (stream.connectionState == ConnectionState.waiting) {
@@ -90,12 +99,71 @@ class _HomePageState extends State<HomePage>
               QuerySnapshot querySnapshot = stream.data;
               return ListView.builder(
                 itemCount: querySnapshot.size,
-                itemBuilder: (context, index) =>
-                    PostWidget(querySnapshot.docs[index], true),
+                itemBuilder: (context, index) {
+                  multiSelectController.set(querySnapshot.size);
+                  return Dismissible(
+                    key: ObjectKey(querySnapshot.docs[index]),
+                    direction: DismissDirection.horizontal,
+                    onDismissed: (direction) {
+                      if (direction == DismissDirection.startToEnd) {
+                        Scaffold.of(context)
+                            .showSnackBar(SnackBar(
+                            content: Text("Entry Archived")));
+                      }
+                      if (direction == DismissDirection.endToStart) {
+                        String _tmpId = querySnapshot.docs[index]['postId'];
+                        deleteEntry(context, _tmpId);
+                      }
+                    },
+                    background: Container(
+                      width: MediaQuery
+                          .of(context)
+                          .size
+                          .width,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Flexible(
+                            flex: 1,
+                            child: Icon(
+                              Icons.archive, size: 50.0, color: Colors.green,),
+                          ),
+                          Flexible(
+                            flex: 10,
+                            child: Text(""),
+                          ),
+                          Flexible(
+                            flex: 1,
+                            child: Icon(Icons.delete_outline, size: 50.0,
+                                color: Colors.red),
+                          ),
+                        ],
+                      ),
+                    ),
+                    secondaryBackground: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.blue[100]
+                      ),
+                    ),
+                    child: MultiSelectItem(
+                      isSelecting: multiSelectController.isSelecting,
+                      onSelected: () {
+                        setState(() {
+                          multiSelectController.toggle(index);
+                          // print('Selected ${multiSelectController.selectedIndexes}');
+                        });
+                      },
+                      child: PostWidget(querySnapshot.docs[index],
+                          multiSelectController.isSelected(index), true),
+                    ),
+                  )
+                  // PostWidget(querySnapshot.docs[index], true)
+                      ;
+                },
               );
             }
             return Center(
-              child: Text("Create data to see, currently cloud is empty"),
+              child: Text("Create data to see, currently cloud is empty",),
             );
           },
         ),
@@ -106,9 +174,20 @@ class _HomePageState extends State<HomePage>
   AppBar _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
-      leading:
-      // IconButton(icon: Icon(Icons.menu,color: Theme.of(context).accentColor,), onPressed: ()=>Scaffold.of(context).op,)
-      GestureDetector(
+      leading: multiSelectController.isSelecting
+          ? IconButton(
+          icon: Icon(
+            Icons.clear,
+            color: Theme
+                .of(context)
+                .accentColor,
+          ),
+          onPressed: () {
+            setState(() {
+              multiSelectController.deselectAll();
+            });
+          })
+          : GestureDetector(
         onTap: () => _homePageGlobalKey.currentState.openDrawer(),
         child: Container(
           height: AppBar().preferredSize.height,
@@ -116,7 +195,9 @@ class _HomePageState extends State<HomePage>
           decoration: BoxDecoration(
             color: Color(0xff7c94b6),
             image: DecorationImage(
-              image: NetworkImage(_currentAuthUser.photoURL,),
+              image: NetworkImage(
+                _currentAuthUser.photoURL,
+              ),
               fit: BoxFit.scaleDown,
             ),
             borderRadius: BorderRadius.all(
@@ -135,38 +216,65 @@ class _HomePageState extends State<HomePage>
           //   print('ProfilePictureException::::$exception');
           // },
         ),
-      )
-      ,
+      ),
       title: Text(
-        getApplicationTitle(),
+        multiSelectController.isSelecting
+            ? ' ${multiSelectController.selectedIndexes.length} Selected '
+            : getApplicationTitle(),
         style: TextStyle(color: Theme
             .of(context)
             .accentColor),
       ),
-      actions: [
-        // IconButton(
-        //   icon: Icon(Icons.info_outline),
-        //   color: Theme.of(context).accentColor,
-        //   onPressed: () => Navigator.pushNamed(context, '/experiment'),
-        // ),
-        IconButton(
-          icon: Icon(Icons.sort,
-            color: Theme
-                .of(context)
-                .accentColor,
-          ),
-          onPressed: null,
-        ),
-        IconButton(
-          icon: Icon(Icons.search,
-            color: Theme
-                .of(context)
-                .accentColor,
-          ),
-          onPressed: null,
-        ),
-      ],
+      actions: multiSelectController.isSelecting
+          ? contextActions()
+          : normalActions(),
     );
+  }
+
+  List<Widget> normalActions() {
+    return List<Widget>.from([
+      IconButton(
+        icon: Icon(
+          Icons.sort,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: null,
+      ),
+      IconButton(
+        icon: Icon(
+          Icons.search,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: null,
+      ),
+    ]);
+  }
+
+  List<Widget> contextActions() {
+    return List<Widget>.from([
+      IconButton(
+        icon: Icon(
+          Icons.delete_forever,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: null,
+      ),
+      IconButton(
+        icon: Icon(
+          Icons.select_all,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: selectAll,
+      ),
+    ]);
   }
 
   Drawer _drawer(BuildContext context) {
@@ -207,6 +315,38 @@ class _HomePageState extends State<HomePage>
           )
         ],
       ),
+    );
+  }
+
+  Future<void> _signOutDialog() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sign Out?'),
+          content: Text('Do you want to sign out now?'),
+          actions: <Widget>[
+            FlatButton(
+              child: Text('Yes'),
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                prefs.remove('authAvail');
+                prefs.remove('authStrings');
+                await FirebaseAuth.instance.signOut();
+                await GoogleSignIn().signOut();
+                Navigator.pushNamed(context, '/init');
+              },
+            ),
+            FlatButton(
+              child: Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -252,43 +392,25 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  Future<void> _signOutDialog() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Sign Out?'),
-          content: Text('Do you want to sign out now?'),
-          actions: <Widget>[
-            FlatButton(
-              child: Text('Yes'),
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.remove('authAvail');
-                prefs.remove('authStrings');
-                await FirebaseAuth.instance.signOut();
-                await GoogleSignIn().signOut();
-                Navigator.pushNamed(context, '/init');
-              },
-            ),
-            FlatButton(
-              child: Text('No'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
 
     bool backButton = backButtonPressedTime == null ||
         currentTime.difference(backButtonPressedTime) > Duration(seconds: 3);
+
+    //block app from quitting when selecting
+    // if (multiSelectController.isSelecting) {
+    //   setState(() {
+    //     multiSelectController.deselectAll();
+    //   });
+    //   return false;
+    // }
+
+    // var before = !multiSelectController.isSelecting;
+    // setState(() {
+    //   multiSelectController.deselectAll();
+    // });
+    // return before;
 
     if (backButton) {
       backButtonPressedTime = currentTime;
@@ -301,5 +423,43 @@ class _HomePageState extends State<HomePage>
     }
     SystemNavigator.pop();
     return true;
+  }
+
+  void changePage(int index) {
+    setState(() {
+      _bottomNavIndex = index;
+    });
+  }
+
+  Future<void> deleteEntry(BuildContext context, String postId) {
+    return postReference
+        .doc(postId)
+        .delete()
+        .then((value) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text("Entry Deleted")));
+      print("Entry Deleted");
+    })
+        .catchError((error) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text("Err:: $error")));
+      print("Failed to delete user: $error");
+    });
+  }
+
+  Future<void> archiveEntry(BuildContext context, String postId) {
+    return postReference
+        .doc(postId)
+        .update({'archive': true})
+        .then((value) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text("Entry Archived")));
+      print("Entry Archived");
+    })
+        .catchError((error) {
+      Scaffold.of(context)
+          .showSnackBar(SnackBar(content: Text("Err:: $error")));
+      print("Failed to archive entry: $error");
+    });
   }
 }

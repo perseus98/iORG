@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/experiment.dart';
+import 'package:iorg_flutter/pages/ArchivePage.dart';
 import 'package:iorg_flutter/pages/CreatePostPage.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
@@ -74,8 +75,8 @@ class MyApp extends StatelessWidget {
       initialRoute: '/init',
       routes: <String, WidgetBuilder>{
         '/init': (BuildContext context) => InitPage(),
-        // '/welcome': (BuildContext context) => WelcomePage(),
         '/home': (BuildContext context) => HomePage(),
+        '/archive': (BuildContext context) => ArchivePage(),
         '/create': (BuildContext context) => CreatePostPage(),
         '/experiment': (BuildContext context) => ExperimentPage(),
       },

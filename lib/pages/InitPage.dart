@@ -157,7 +157,10 @@ class _InitPageState extends State<InitPage> {
                   thickness: 1.0,
                   color: Colors.white70,
                 ),
-                widget,
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: widget,
+                ),
               ],
             ),
           ),

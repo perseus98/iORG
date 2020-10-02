@@ -1,15 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:iorg_flutter/main.dart';
 import 'package:intl/intl.dart';
+import 'package:iorg_flutter/main.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class PostWidget extends StatelessWidget {
   final DocumentSnapshot snapshot;
   final bool miniVersion;
+  final bool isSelected;
 
-  PostWidget(this.snapshot, this.miniVersion);
+  PostWidget(this.snapshot, this.isSelected, this.miniVersion);
 
   Map<String, dynamic> get post {
     // 'postId','ownerId','timestamp','image','postName','deadline','priority','details',
@@ -25,7 +26,11 @@ class PostWidget extends StatelessWidget {
     return Container(
       margin: EdgeInsets.all(3.0),
       padding: EdgeInsets.all(5.0),
-      color: returnPriorityColor(post['priority']),
+      decoration: BoxDecoration(
+        color:
+            isSelected ? Colors.black : returnPriorityColor(post['priority']),
+      ),
+      // foregroundDecoration:  isSelected ? BoxDecoration(color: Colors.black) : new BoxDecoration(),
       child: Row(
         children: [
           Flexible(
@@ -53,7 +58,18 @@ class PostWidget extends StatelessWidget {
   }
 
   Widget buildFullPost() {
-    return Container();
+    return
+      Container()
+    //   SimpleDialog(
+    //   title: Text("Full Post"),
+    //   children: [
+    //     SimpleDialogOption(
+    //       padding: EdgeInsets.all(3.0),
+    //       child: ,
+    //     )
+    //   ],
+    // )
+        ;
   }
 
   Widget get postImage {
