@@ -159,6 +159,8 @@ class _InitPageState extends State<InitPage> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
+                  // decoration: BoxDecoration(color: Colors.blue),
+                  alignment: Alignment.center,
                   child: widget,
                 ),
               ],
@@ -175,8 +177,9 @@ class _InitPageState extends State<InitPage> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         progressIndicator(),
+        Text(" "),
         Expanded(
-          child: Text(str),
+          child: Text(str, style: TextStyle(color: Colors.white),),
         ),
       ],
     );

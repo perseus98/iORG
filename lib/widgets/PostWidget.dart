@@ -7,10 +7,9 @@ import 'package:timeago/timeago.dart' as timeago;
 
 class PostWidget extends StatelessWidget {
   final DocumentSnapshot snapshot;
-  final bool miniVersion;
   final bool isSelected;
 
-  PostWidget(this.snapshot, this.isSelected, this.miniVersion);
+  PostWidget(this.snapshot, this.isSelected);
 
   Map<String, dynamic> get post {
     // 'postId','ownerId','timestamp','image','postName','deadline','priority','details',
@@ -19,10 +18,10 @@ class PostWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return miniVersion ? buildMiniVersion() : buildFullPost();
+    return buildMiniVersion(context);
   }
 
-  Widget buildMiniVersion() {
+  Widget buildMiniVersion(BuildContext context) {
     return Container(
       margin: EdgeInsets.all(3.0),
       padding: EdgeInsets.all(5.0),
@@ -55,21 +54,6 @@ class PostWidget extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Widget buildFullPost() {
-    return
-      Container()
-    //   SimpleDialog(
-    //   title: Text("Full Post"),
-    //   children: [
-    //     SimpleDialogOption(
-    //       padding: EdgeInsets.all(3.0),
-    //       child: ,
-    //     )
-    //   ],
-    // )
-        ;
   }
 
   Widget get postImage {

@@ -5,15 +5,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
-import 'package:iorg_flutter/pages/InitPage.dart';
+import 'package:iorg_flutter/pages/PreviewImage.dart';
 import 'package:iorg_flutter/widgets/PostWidget.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
 import 'package:multi_select_item/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -21,6 +21,8 @@ class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
+
+enum postFields { timestamp, postName, deadline, priority }
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
@@ -32,11 +34,14 @@ class _HomePageState extends State<HomePage>
   CurvedAnimation curve;
   GlobalKey<ScaffoldState> _homePageGlobalKey = GlobalKey();
   MultiSelectController multiSelectController = new MultiSelectController();
+  postFields _selectedPostField = postFields.timestamp;
+  bool _selectedDesc = true;
 
   @override
   void initState() {
     super.initState();
     _currentAuthUser = FirebaseAuth.instance.currentUser;
+
     multiSelectController.disableEditingWhenNoneSelected = true;
 
     _animationController = AnimationController(
@@ -69,13 +74,25 @@ class _HomePageState extends State<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    if (_currentAuthUser == null) {
-      return InitPage();
+    Query query = postReference
+        .where('ownerId', isEqualTo: _currentAuthUser.uid)
+        .where('archive', isEqualTo: false);
+
+    switch (_selectedPostField) {
+      case postFields.postName:
+        query = query.orderBy('postName', descending: _selectedDesc);
+        break;
+      case postFields.deadline:
+        query = query.orderBy('deadline', descending: _selectedDesc);
+        break;
+      case postFields.timestamp:
+        query = query.orderBy('timestamp', descending: _selectedDesc);
+        break;
+      case postFields.priority:
+        query = query.orderBy('priority', descending: _selectedDesc);
+        break;
     }
-    Query query = postReference.where(
-        'ownerId', isEqualTo: _currentAuthUser.uid).orderBy(
-        'timestamp', descending: true);
-    print('Selected ${multiSelectController.selectedIndexes} : ');
+
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(
@@ -106,64 +123,44 @@ class _HomePageState extends State<HomePage>
                     direction: DismissDirection.horizontal,
                     onDismissed: (direction) {
                       if (direction == DismissDirection.startToEnd) {
-                        Scaffold.of(context)
-                            .showSnackBar(SnackBar(
-                            content: Text("Entry Archived")));
+                        archiveEntry(
+                            context, querySnapshot.docs[index]['postId']);
                       }
                       if (direction == DismissDirection.endToStart) {
-                        String _tmpId = querySnapshot.docs[index]['postId'];
-                        deleteEntry(context, _tmpId);
+                        deleteEntry(
+                            context, querySnapshot.docs[index]['postId']);
                       }
                     },
-                    background: Container(
-                      width: MediaQuery
-                          .of(context)
-                          .size
-                          .width,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Flexible(
-                            flex: 1,
-                            child: Icon(
-                              Icons.archive, size: 50.0, color: Colors.green,),
-                          ),
-                          Flexible(
-                            flex: 10,
-                            child: Text(""),
-                          ),
-                          Flexible(
-                            flex: 1,
-                            child: Icon(Icons.delete_outline, size: 50.0,
-                                color: Colors.red),
-                          ),
-                        ],
-                      ),
-                    ),
-                    secondaryBackground: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.blue[100]
-                      ),
-                    ),
-                    child: MultiSelectItem(
-                      isSelecting: multiSelectController.isSelecting,
-                      onSelected: () {
-                        setState(() {
-                          multiSelectController.toggle(index);
-                          // print('Selected ${multiSelectController.selectedIndexes}');
-                        });
+                    background: editBackground(),
+                    secondaryBackground: deleteSecondaryBackground(),
+                    child: InkWell(
+                      splashColor: Colors.purple[300],
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => PreviewImage(
+                                    snapshot: querySnapshot.docs[index],
+                                  )),
+                        );
+                        print("${querySnapshot.docs[index].id} clicked");
                       },
                       child: PostWidget(querySnapshot.docs[index],
-                          multiSelectController.isSelected(index), true),
+                          multiSelectController.isSelected(index)),
                     ),
                   )
-                  // PostWidget(querySnapshot.docs[index], true)
+                  // )
                       ;
                 },
               );
             }
             return Center(
-              child: Text("Create data to see, currently cloud is empty",),
+              child: Text(
+                "Create data to see, currently cloud is empty",
+                style: TextStyle(
+                    color: Colors.red
+                ),
+              ),
             );
           },
         ),
@@ -190,8 +187,8 @@ class _HomePageState extends State<HomePage>
           : GestureDetector(
         onTap: () => _homePageGlobalKey.currentState.openDrawer(),
         child: Container(
-          height: AppBar().preferredSize.height,
-          width: AppBar().preferredSize.height,
+          height: (AppBar().preferredSize.height / 2),
+          width: (AppBar().preferredSize.height / 2),
           decoration: BoxDecoration(
             color: Color(0xff7c94b6),
             image: DecorationImage(
@@ -201,7 +198,7 @@ class _HomePageState extends State<HomePage>
               fit: BoxFit.scaleDown,
             ),
             borderRadius: BorderRadius.all(
-                Radius.circular(AppBar().preferredSize.height / 2)),
+                Radius.circular((AppBar().preferredSize.height / 4))),
             border: Border.all(
               color: Theme
                   .of(context)
@@ -209,12 +206,6 @@ class _HomePageState extends State<HomePage>
               width: 4.0,
             ),
           ),
-          // radius: 3.0,
-          // backgroundColor: Theme.of(context).accentColor,
-          // backgroundImage: NetworkImage(_currentAuthUser.photoURL,),
-          // onBackgroundImageError: (exception,stacktrace){
-          //   print('ProfilePictureException::::$exception');
-          // },
         ),
       ),
       title: Text(
@@ -226,55 +217,9 @@ class _HomePageState extends State<HomePage>
             .accentColor),
       ),
       actions: multiSelectController.isSelecting
-          ? contextActions()
-          : normalActions(),
+          ? contextActions(context)
+          : normalActions(context),
     );
-  }
-
-  List<Widget> normalActions() {
-    return List<Widget>.from([
-      IconButton(
-        icon: Icon(
-          Icons.sort,
-          color: Theme
-              .of(context)
-              .accentColor,
-        ),
-        onPressed: null,
-      ),
-      IconButton(
-        icon: Icon(
-          Icons.search,
-          color: Theme
-              .of(context)
-              .accentColor,
-        ),
-        onPressed: null,
-      ),
-    ]);
-  }
-
-  List<Widget> contextActions() {
-    return List<Widget>.from([
-      IconButton(
-        icon: Icon(
-          Icons.delete_forever,
-          color: Theme
-              .of(context)
-              .accentColor,
-        ),
-        onPressed: null,
-      ),
-      IconButton(
-        icon: Icon(
-          Icons.select_all,
-          color: Theme
-              .of(context)
-              .accentColor,
-        ),
-        onPressed: selectAll,
-      ),
-    ]);
   }
 
   Drawer _drawer(BuildContext context) {
@@ -297,25 +242,210 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           ListTile(
-            leading: Icon(Icons.message),
-            title: Text('Messages'),
+            leading: Icon(
+              Icons.message,
+              color: Theme
+                  .of(context)
+                  .accentColor,
+            ),
+            title: Text(
+              'Messages',
+              style: TextStyle(
+                color: Theme
+                    .of(context)
+                    .accentColor,
+              ),
+            ),
           ),
           ListTile(
-            leading: Icon(Icons.account_circle),
-            title: Text('Profile'),
+            leading: Icon(
+              Icons.account_circle,
+              color: Theme
+                  .of(context)
+                  .accentColor,
+            ),
+            title: Text(
+              'Profile',
+              style: TextStyle(
+                color: Theme
+                    .of(context)
+                    .accentColor,
+              ),
+            ),
           ),
           ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
+            leading: Icon(
+              Icons.settings,
+              color: Theme
+                  .of(context)
+                  .accentColor,
+            ),
+            title: Text(
+              'Settings',
+              style: TextStyle(
+                color: Theme
+                    .of(context)
+                    .accentColor,
+              ),
+            ),
+            onTap: () => Navigator.pushNamed(context, '/controller'),
           ),
           ListTile(
-            leading: FaIcon(FontAwesomeIcons.signOutAlt),
-            title: Text("Sign Out"),
+            leading: Icon(Icons.exit_to_app),
+            title: Text(
+              "Sign Out",
+              style: TextStyle(
+                color: Theme
+                    .of(context)
+                    .accentColor,
+              ),
+            ),
             onTap: _signOutDialog,
           )
         ],
       ),
     );
+  }
+
+  List<Widget> normalActions(context) {
+    return List<Widget>.from([
+      IconButton(
+        icon: Icon(
+          Icons.sort,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: () {
+          // _homePageGlobalKey.currentState.showSnackBar(SnackBar(content: Text("Coming Soon"),duration: Duration(seconds: 1),));
+          _showSortDialog(context);
+        },
+      ),
+      IconButton(
+        icon: Icon(
+          Icons.search,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: null,
+      ),
+    ]);
+  }
+
+  Future<void> _showSortDialog(context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Sort List Data'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Select Order: '),
+                ToggleSwitch(
+                  cornerRadius: 20.0,
+                  activeBgColor: Colors.cyan,
+                  activeFgColor: Colors.white,
+                  inactiveBgColor: Colors.grey,
+                  inactiveFgColor: Colors.white,
+                  initialLabelIndex: 1,
+                  labels: ['Ascending', 'Descending'],
+                  icons: [Icons.arrow_drop_up, Icons.arrow_drop_down],
+                  onToggle: (index) {
+                    print('switched to: $index');
+                    if (index == 0) {
+                      _selectedDesc = false;
+                    } else {
+                      _selectedDesc = true;
+                    }
+                  },
+                ),
+                Divider(color: Colors.blue,),
+                Text("Select Attribute: "),
+                //postFields { timestamp,postName,deadline,priority}
+                ListTile(
+                  title: const Text('Entry Name'),
+                  leading: Radio(
+                    value: postFields.postName,
+                    groupValue: _selectedPostField,
+                    onChanged: (postFields value) {
+                      setState(() {
+                        _selectedPostField = value;
+                        Navigator.of(context).pop();
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Deadline Date'),
+                  leading: Radio(
+                    value: postFields.deadline,
+                    groupValue: _selectedPostField,
+                    onChanged: (postFields value) {
+                      setState(() {
+                        _selectedPostField = value;
+                        Navigator.of(context).pop();
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Entry Creation Time'),
+                  leading: Radio(
+                    value: postFields.timestamp,
+                    groupValue: _selectedPostField,
+                    onChanged: (postFields value) {
+                      setState(() {
+                        _selectedPostField = value;
+                        Navigator.of(context).pop();
+                      });
+                    },
+                  ),
+                ),
+                ListTile(
+                  title: const Text('Priority'),
+                  leading: Radio(
+                    value: postFields.priority,
+                    groupValue: _selectedPostField,
+                    onChanged: (postFields value) {
+                      setState(() {
+                        _selectedPostField = value;
+                        Navigator.of(context).pop();
+                      });
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  List<Widget> contextActions(context) {
+    return List<Widget>.from([
+      IconButton(
+        icon: Icon(
+          Icons.delete_forever,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: null,
+      ),
+      IconButton(
+        icon: Icon(
+          Icons.select_all,
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
+        onPressed: selectAll,
+      ),
+    ]);
   }
 
   Future<void> _signOutDialog() async {
@@ -371,24 +501,33 @@ class _HomePageState extends State<HomePage>
 
   AnimatedBottomNavigationBar _animatedBottomNavigationBar() {
     return AnimatedBottomNavigationBar(
-      icons: [
-        Icons.dashboard,
-        Icons.archive,
-      ],
-      backgroundColor: Colors.white,
-      activeIndex: _bottomNavIndex,
-      activeColor: Theme
-          .of(context)
-          .accentColor,
-      splashColor: Hexcolor('#998abd'),
-      inactiveColor: Colors.grey,
-      notchAndCornersAnimation: animation,
-      splashSpeedInMilliseconds: 300,
-      notchSmoothness: NotchSmoothness.defaultEdge,
-      gapLocation: GapLocation.center,
-      leftCornerRadius: 32,
-      rightCornerRadius: 32,
-      onTap: (index) => setState(() => _bottomNavIndex = index),
+        icons: [
+          Icons.dashboard,
+          Icons.archive,
+        ],
+        backgroundColor: Colors.white,
+        activeIndex: 0,
+        activeColor: Theme
+            .of(context)
+            .accentColor,
+        splashColor: Hexcolor('#998abd'),
+        inactiveColor: Colors.grey,
+        notchAndCornersAnimation: animation,
+        splashSpeedInMilliseconds: 300,
+        notchSmoothness: NotchSmoothness.defaultEdge,
+        gapLocation: GapLocation.center,
+        leftCornerRadius: 32,
+        rightCornerRadius: 32,
+        onTap: (index) {
+          _bottomNavIndex = index;
+          if (index == 1) {
+            Navigator.pushNamed(context, '/archive');
+          } else {
+            setState(() {
+              // Refresh State
+            });
+          }
+        }
     );
   }
 
@@ -432,15 +571,11 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> deleteEntry(BuildContext context, String postId) {
-    return postReference
-        .doc(postId)
-        .delete()
-        .then((value) {
+    return postReference.doc(postId).delete().then((value) {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text("Entry Deleted")));
-      print("Entry Deleted");
-    })
-        .catchError((error) {
+      print("$postId :: ${postId.runtimeType} Deleted");
+    }).catchError((error) {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text("Err:: $error")));
       print("Failed to delete user: $error");
@@ -448,18 +583,72 @@ class _HomePageState extends State<HomePage>
   }
 
   Future<void> archiveEntry(BuildContext context, String postId) {
-    return postReference
-        .doc(postId)
-        .update({'archive': true})
-        .then((value) {
+    return postReference.doc(postId).update({'archive': true}).then((value) {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text("Entry Archived")));
-      print("Entry Archived");
-    })
-        .catchError((error) {
+      print("$postId :: ${postId.runtimeType} Archived");
+    }).catchError((error) {
       Scaffold.of(context)
           .showSnackBar(SnackBar(content: Text("Err:: $error")));
       print("Failed to archive entry: $error");
     });
   }
+}
+
+Widget editBackground() {
+  return Container(
+    color: Colors.green,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          SizedBox(
+            width: 20,
+          ),
+          Icon(
+            Icons.edit,
+            color: Colors.white,
+          ),
+          Text(
+            " Edit",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerLeft,
+    ),
+  );
+}
+
+Widget deleteSecondaryBackground() {
+  return Container(
+    color: Colors.red,
+    child: Align(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: <Widget>[
+          Icon(
+            Icons.delete,
+            color: Colors.white,
+          ),
+          Text(
+            " Delete",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w700,
+            ),
+            textAlign: TextAlign.right,
+          ),
+          SizedBox(
+            width: 20,
+          ),
+        ],
+      ),
+      alignment: Alignment.centerRight,
+    ),
+  );
 }

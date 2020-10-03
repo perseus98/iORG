@@ -15,6 +15,8 @@ import 'package:statusbar/statusbar.dart';
 
 import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/extension.dart';
 
+import 'ControllerExample.dart';
+
 /// Requires that a Firestore emulator is running locally.
 /// See https://firebase.flutter.dev/docs/firestore/usage#emulator-usage
 bool usingEmulator = false;
@@ -79,6 +81,7 @@ class MyApp extends StatelessWidget {
         '/archive': (BuildContext context) => ArchivePage(),
         '/create': (BuildContext context) => CreatePostPage(),
         '/experiment': (BuildContext context) => ExperimentPage(),
+        '/controller': (BuildContext context) => ControllerExample(),
       },
     );
   }
