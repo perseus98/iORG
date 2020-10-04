@@ -26,6 +26,7 @@ class _InitPageState extends State<InitPage> {
   void initState() {
     super.initState();
     check();
+    print("Init-init");
   }
 
   Future<void> check() async {
@@ -73,6 +74,7 @@ class _InitPageState extends State<InitPage> {
   Widget build(BuildContext context) {
     // error = something
     // loading = _initLoading
+    print("Init-build");
     return FutureBuilder(
       future: _initialization,
       builder: (context, snapshot) {

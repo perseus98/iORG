@@ -12,14 +12,16 @@ import 'package:uuid/uuid.dart';
 import 'HomePage.dart';
 
 class CreatePostPage extends StatefulWidget {
+      CreatePostPage({Key key}):super(key:key);
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
 }
 
 class _CreatePostPageState extends State<CreatePostPage>
     with AutomaticKeepAliveClientMixin<CreatePostPage> {
+  final GlobalKey<ScaffoldState> _createPageGlobalKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FormBuilderState> _createFormBuilderGlobalKey = GlobalKey<FormBuilderState>();
   bool get wantKeepAlive => true;
-  final GlobalKey<FormBuilderState> _fbKey = GlobalKey<FormBuilderState>();
   final ValueChanged _onChanged = (val) => print(val);
   final _nameController =
   TextEditingController(text: 'ENTRY_${DateTime
@@ -30,7 +32,7 @@ class _CreatePostPageState extends State<CreatePostPage>
           .now()
           .microsecondsSinceEpoch}');
   var _priority = 1.0;
-  double _progressBarValue = 0;
+  // double _progressBarValue = 0;
   String postId = Uuid().v4();
   User _currentUserAuth;
   bool _uploading;
@@ -41,6 +43,7 @@ class _CreatePostPageState extends State<CreatePostPage>
     super.initState();
     _uploading = false;
     _currentUserAuth = FirebaseAuth.instance.currentUser;
+    print("Create-init");
   }
 
   Stream<StorageTaskEvent> uploadImage(Uri imgFile) {
@@ -50,7 +53,7 @@ class _CreatePostPageState extends State<CreatePostPage>
     return storageUploadTask.events;
   }
 
-  double _bytesTransferred(StorageTaskSnapshot snapshot) {
+  double _bytesTransferredInPercentage(StorageTaskSnapshot snapshot) {
     return snapshot.bytesTransferred.toDouble() /
         snapshot.totalByteCount.toDouble() *
         100;
@@ -59,13 +62,21 @@ class _CreatePostPageState extends State<CreatePostPage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    print("Create-build");
     return _uploading
         ? _buildUploadingScreen()
         : Scaffold(
+            key: _createPageGlobalKey,
             backgroundColor: Colors.white,
             appBar: AppBar(
-              automaticallyImplyLeading: true,
-              title: Text("CREATE POST"),
+              leading: IconButton(
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+              ),
+              title: Text("CREATE ENTRY"),
               backgroundColor: Hexcolor("#775fad"),
               actions: [
                 IconButton(
@@ -74,7 +85,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    _fbKey.currentState.reset();
+                    _createFormBuilderGlobalKey.currentState.reset();
                   },
                 ),
                 IconButton(
@@ -83,18 +94,13 @@ class _CreatePostPageState extends State<CreatePostPage>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    if (_fbKey.currentState.saveAndValidate())
+                    if (_createFormBuilderGlobalKey.currentState.saveAndValidate())
                       mapData = new Map<String, dynamic>.from(
-                          _fbKey.currentState.value);
-                    // mapData.forEach((key, value) {
-                    //   print("New $key :: New $value");
-                    // });
-                    // _fbKey.currentState.value.map((key, value) => null)
-                    // _imgFilePath = _fbKey.currentState.value["image"][0].uri;
+                          _createFormBuilderGlobalKey.currentState.value);
+
                     setState(() {
                       _uploading = true;
                     });
-                    // print("TYpe::");
                     print("Check clicked");
                   },
                 ),
@@ -107,7 +113,9 @@ class _CreatePostPageState extends State<CreatePostPage>
     return StreamBuilder(
       stream: uploadImage(mapData["image"][0].uri),
       builder: (context, AsyncSnapshot<StorageTaskEvent> asyncSnapshot) {
-        Widget subtitle = Text("Uploading, Please wait...");
+        double _uploadProgress = 0.0;
+        String _uploadDetails = "Uploading, Please wait...";
+        // Widget subtitle = Text("");
         if (asyncSnapshot.hasError) {
           return buildUploadErrorHandler(asyncSnapshot.error);
         }
@@ -120,8 +128,10 @@ class _CreatePostPageState extends State<CreatePostPage>
                 // setState(() {
                 //   _progressBarValue = _bytesTransferred(snapshot);
                 // });
-                _progressBarValue = _bytesTransferred(snapshot);
-                print("uploadProgress::::$_progressBarValue");
+                // _progressBarValue = _bytesTransferred(snapshot);
+                _uploadProgress = _bytesTransferredInPercentage(snapshot);
+                _uploadDetails = "Upload Progress : $_uploadProgress %";
+                print("uploadProgress::::$_uploadProgress");
               }
               break;
             case StorageTaskEventType.failure:
@@ -148,10 +158,10 @@ class _CreatePostPageState extends State<CreatePostPage>
                           'archive': false,
                         })
                         .then((value) => print("Post Added"))
-                        .catchError(
-                            (error) => print("Failed to add post: $error"));
+                        .catchError((error) => print("Failed to add post: $error"));
                   });
                   print("Cloud Save executed");
+
                   return HomePage();
                 }
               }
@@ -159,34 +169,44 @@ class _CreatePostPageState extends State<CreatePostPage>
             default:
           }
         } else {
-          subtitle = Text('Starting...');
+          _uploadDetails = "Starting Upload Process";
+          // subtitle = Text('Starting...');
         }
-        return Container(
-          height: MediaQuery
-              .of(context)
-              .size
-              .height,
-          width: MediaQuery
-              .of(context)
-              .size
-              .width,
-          decoration: BoxDecoration(
-            color: Color.fromARGB(200, 255, 255, 255),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              CircularProgressIndicator(
-                // value: _progressBarValue,
-                valueColor: AlwaysStoppedAnimation(Colors.blue),
-                backgroundColor: Colors.grey,
-                strokeWidth: 3.0,
-              ),
-              Flexible(
-                child: subtitle,
-              ),
-            ],
+        return Scaffold(
+          body: Container(
+            height: MediaQuery
+                .of(context)
+                .size
+                .height,
+            width: MediaQuery
+                .of(context)
+                .size
+                .width,
+            decoration: BoxDecoration(
+              color: Color.fromARGB(200, 255, 255, 255),
+            ),
+            alignment: Alignment.center,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(
+                  // value: _progressBarValue,
+                  valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                  backgroundColor: Colors.grey,
+                  strokeWidth: 3.0,
+                ),
+                Flexible(
+                  child: Text(
+                      _uploadDetails,
+                    style: TextStyle(
+                      color: Theme.of(context).accentColor,
+                      fontSize: 30.0,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -201,7 +221,7 @@ class _CreatePostPageState extends State<CreatePostPage>
           .width * 0.05),
       children: <Widget>[
         FormBuilder(
-          key: _fbKey,
+          key: _createFormBuilderGlobalKey,
           readOnly: false,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -215,8 +235,10 @@ class _CreatePostPageState extends State<CreatePostPage>
                 imageWidth: MediaQuery.of(context).size.width * 0.90,
                 imageQuality: 10,
                 labelText: 'Pick a document:',
-                defaultImage: NetworkImage(
-                  'https://cohenwoodworking.com/wp-content/uploads/2016/09/image-placeholder-500x500.jpg',
+                defaultImage:
+                AssetImage(
+                  'images/image-placeholder.jpg'
+                  // 'https://cohenwoodworking.com/wp-content/uploads/2016/09/image-placeholder-500x500.jpg',
                 ),
                 maxImages: 1,
                 validators: [
@@ -237,7 +259,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                   labelText: 'Name:',
                 ),
                 onChanged: (val) {
-                  print(val);
+                  // print(val);
                 },
                 validators: [
                   FormBuilderValidators.required(),

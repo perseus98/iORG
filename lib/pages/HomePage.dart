@@ -11,7 +11,6 @@ import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/PreviewImage.dart';
 import 'package:iorg_flutter/widgets/PostWidget.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
-import 'package:multi_select_item/multi_select_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -26,14 +25,13 @@ enum postFields { timestamp, postName, deadline, priority }
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+  GlobalKey<ScaffoldState> _homePageGlobalKey = GlobalKey<ScaffoldState>();
+
   DateTime backButtonPressedTime;
-  int _bottomNavIndex = 0;
   User _currentAuthUser;
   AnimationController _animationController;
   Animation<double> animation;
   CurvedAnimation curve;
-  GlobalKey<ScaffoldState> _homePageGlobalKey = GlobalKey();
-  MultiSelectController multiSelectController = new MultiSelectController();
   postFields _selectedPostField = postFields.timestamp;
   bool _selectedDesc = true;
 
@@ -41,12 +39,8 @@ class _HomePageState extends State<HomePage>
   void initState() {
     super.initState();
     _currentAuthUser = FirebaseAuth.instance.currentUser;
-
-    multiSelectController.disableEditingWhenNoneSelected = true;
-
     _animationController = AnimationController(
       duration: Duration(seconds: 1),
-      vsync: this,
     );
     curve = CurvedAnimation(
       parent: _animationController,
@@ -64,16 +58,12 @@ class _HomePageState extends State<HomePage>
       Duration(seconds: 1),
       () => _animationController.forward(),
     );
-  }
-
-  void selectAll() {
-    setState(() {
-      multiSelectController.toggleAll();
-    });
+    print("Home-init");
   }
 
   @override
   Widget build(BuildContext context) {
+    print("Home-build");
     Query query = postReference
         .where('ownerId', isEqualTo: _currentAuthUser.uid)
         .where('archive', isEqualTo: false);
@@ -99,9 +89,9 @@ class _HomePageState extends State<HomePage>
         key: _homePageGlobalKey,
         appBar: _appBar(context),
         drawer: _drawer(context),
-        floatingActionButton: _scaleTransition(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: _animatedBottomNavigationBar(),
+        // floatingActionButton: _scaleTransition(),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        // bottomNavigationBar: _animatedBottomNavigationBar(),
         body: StreamBuilder<QuerySnapshot>(
           // key: UniqueKey(),
           stream: query.snapshots(),
@@ -117,7 +107,7 @@ class _HomePageState extends State<HomePage>
               return ListView.builder(
                 itemCount: querySnapshot.size,
                 itemBuilder: (context, index) {
-                  multiSelectController.set(querySnapshot.size);
+                  // multiSelectController.set(querySnapshot.size);
                   return Dismissible(
                     key: ObjectKey(querySnapshot.docs[index]),
                     direction: DismissDirection.horizontal,
@@ -146,7 +136,7 @@ class _HomePageState extends State<HomePage>
                         print("${querySnapshot.docs[index].id} clicked");
                       },
                       child: PostWidget(querySnapshot.docs[index],
-                          multiSelectController.isSelected(index)),
+                          false),
                     ),
                   )
                   // )
@@ -168,23 +158,68 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  Widget editBackground() {
+    return Container(
+      color: Colors.green,
+      child: Align(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: <Widget>[
+            SizedBox(
+              width: 20,
+            ),
+            Icon(
+              Icons.archive,
+              color: Colors.white,
+            ),
+            Text(
+              " Archive ",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.left,
+            ),
+          ],
+        ),
+        alignment: Alignment.centerLeft,
+      ),
+    );
+  }
+
+  Widget deleteSecondaryBackground() {
+    return Container(
+      color: Colors.red,
+      child: Align(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: <Widget>[
+            Icon(
+              Icons.delete,
+              color: Colors.white,
+            ),
+            Text(
+              " Delete",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w700,
+              ),
+              textAlign: TextAlign.right,
+            ),
+            SizedBox(
+              width: 20,
+            ),
+          ],
+        ),
+        alignment: Alignment.centerRight,
+      ),
+    );
+  }
+
   AppBar _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
-      leading: multiSelectController.isSelecting
-          ? IconButton(
-          icon: Icon(
-            Icons.clear,
-            color: Theme
-                .of(context)
-                .accentColor,
-          ),
-          onPressed: () {
-            setState(() {
-              multiSelectController.deselectAll();
-            });
-          })
-          : GestureDetector(
+      leading: GestureDetector(
         onTap: () => _homePageGlobalKey.currentState.openDrawer(),
         child: Container(
           height: (AppBar().preferredSize.height / 2),
@@ -208,17 +243,12 @@ class _HomePageState extends State<HomePage>
           ),
         ),
       ),
-      title: Text(
-        multiSelectController.isSelecting
-            ? ' ${multiSelectController.selectedIndexes.length} Selected '
-            : getApplicationTitle(),
+      title: Text( getApplicationTitle(),
         style: TextStyle(color: Theme
             .of(context)
             .accentColor),
       ),
-      actions: multiSelectController.isSelecting
-          ? contextActions(context)
-          : normalActions(context),
+      actions: normalActions(context),
     );
   }
 
@@ -241,54 +271,22 @@ class _HomePageState extends State<HomePage>
               ),
             ),
           ),
-          ListTile(
-            leading: Icon(
-              Icons.message,
-              color: Theme
-                  .of(context)
-                  .accentColor,
-            ),
-            title: Text(
-              'Messages',
-              style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .accentColor,
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.account_circle,
-              color: Theme
-                  .of(context)
-                  .accentColor,
-            ),
-            title: Text(
-              'Profile',
-              style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .accentColor,
-              ),
-            ),
-          ),
-          ListTile(
-            leading: Icon(
-              Icons.settings,
-              color: Theme
-                  .of(context)
-                  .accentColor,
-            ),
-            title: Text(
-              'Settings',
-              style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .accentColor,
-              ),
-            ),
-            onTap: () => Navigator.pushNamed(context, '/controller'),
+
+          _listTile(Icon(Icons.border_color),'Bottom Bar Example','/bottomBarExample'),
+          _listTile(Icon(Icons.image),'Image Preview Example','/controller'),
+          AboutListTile(
+            icon: Icon(Icons.info_outline),
+            applicationIcon: Image.asset('images/logo.png',),
+            applicationName: 'iORG',
+            applicationVersion: '0.1.3',
+            applicationLegalese: ' Copyright @ sud3shi',
+            aboutBoxChildren: [
+              Text("This application is developed under the name of sud3shi,", style: TextStyle(fontSize: 10.0),),
+              Text("Credits:", style: TextStyle(fontSize: 10.0),),
+              Text("Mulchand Sahu(layout)", style: TextStyle(fontSize: 10.0),),
+              Text("Pramod Vishwakarma(research)", style: TextStyle(fontSize: 10.0),),
+              Text("Prashant Maharana(app dev)", style: TextStyle(fontSize: 10.0),),
+            ],
           ),
           ListTile(
             leading: Icon(Icons.exit_to_app),
@@ -303,6 +301,26 @@ class _HomePageState extends State<HomePage>
             onTap: _signOutDialog,
           )
         ],
+      ),
+    );
+  }
+
+  ListTile _listTile(Icon icon,String _name,String _path){
+    return ListTile(
+      leading: IconButton(
+        icon : icon,
+        color: Theme
+            .of(context)
+            .accentColor,
+        onPressed: () => Navigator.pushNamed(context, _path),
+      ),
+      title: Text(
+        _name,
+        style: TextStyle(
+          color: Theme
+              .of(context)
+              .accentColor,
+        ),
       ),
     );
   }
@@ -443,7 +461,7 @@ class _HomePageState extends State<HomePage>
               .of(context)
               .accentColor,
         ),
-        onPressed: selectAll,
+        onPressed: null,
       ),
     ]);
   }
@@ -480,56 +498,55 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  ScaleTransition _scaleTransition() {
-    return ScaleTransition(
-      scale: animation,
-      child: FloatingActionButton(
-        elevation: 8,
-        backgroundColor: Colors.white,
-        child: Icon(
-          Icons.add_photo_alternate,
-          color: Theme
-              .of(context)
-              .accentColor,
-        ),
-        onPressed: () {
-          Navigator.pushNamed(context, '/create');
-        },
-      ),
-    );
-  }
+  // ScaleTransition _scaleTransition() {
+  //   return ScaleTransition(
+  //     scale: animation,
+  //     child: FloatingActionButton(
+  //       elevation: 8,
+  //       backgroundColor: Colors.white,
+  //       child: Icon(
+  //         Icons.add_photo_alternate,
+  //         color: Theme
+  //             .of(context)
+  //             .accentColor,
+  //       ),
+  //       onPressed: () {
+  //         Navigator.pushNamed(context, '/create');
+  //       },
+  //     ),
+  //   );
+  // }
 
-  AnimatedBottomNavigationBar _animatedBottomNavigationBar() {
-    return AnimatedBottomNavigationBar(
-        icons: [
-          Icons.dashboard,
-          Icons.archive,
-        ],
-        backgroundColor: Colors.white,
-        activeIndex: 0,
-        activeColor: Theme
-            .of(context)
-            .accentColor,
-        splashColor: Hexcolor('#998abd'),
-        inactiveColor: Colors.grey,
-        notchAndCornersAnimation: animation,
-        splashSpeedInMilliseconds: 300,
-        notchSmoothness: NotchSmoothness.defaultEdge,
-        gapLocation: GapLocation.center,
-        leftCornerRadius: 32,
-        rightCornerRadius: 32,
-        onTap: (index) {
-          _bottomNavIndex = index;
-          if (index == 1) {
-            Navigator.pushNamed(context, '/archive');
-          } else {
-            setState(() {
-              // Refresh State
-            });
-          }
-        }
-    );
-  }
+  // AnimatedBottomNavigationBar _animatedBottomNavigationBar() {
+  //   return AnimatedBottomNavigationBar(
+  //       icons: [
+  //         Icons.dashboard,
+  //         Icons.archive,
+  //       ],
+  //       backgroundColor: Colors.white,
+  //       activeIndex: 0,
+  //       activeColor: Theme
+  //           .of(context)
+  //           .accentColor,
+  //       splashColor: Hexcolor('#998abd'),
+  //       inactiveColor: Colors.grey,
+  //       notchAndCornersAnimation: animation,
+  //       splashSpeedInMilliseconds: 300,
+  //       notchSmoothness: NotchSmoothness.defaultEdge,
+  //       gapLocation: GapLocation.center,
+  //       leftCornerRadius: 32,
+  //       rightCornerRadius: 32,
+  //       onTap: (index) {
+  //         if (index == 1) {
+  //           Navigator.pushNamed(context, '/archive');
+  //         } else {
+  //           setState(() {
+  //             // Refresh State
+  //           });
+  //         }
+  //       }
+  //   );
+  // }
 
   Future<bool> onWillPop() async {
     DateTime currentTime = DateTime.now();
@@ -566,7 +583,6 @@ class _HomePageState extends State<HomePage>
 
   void changePage(int index) {
     setState(() {
-      _bottomNavIndex = index;
     });
   }
 
@@ -595,60 +611,3 @@ class _HomePageState extends State<HomePage>
   }
 }
 
-Widget editBackground() {
-  return Container(
-    color: Colors.green,
-    child: Align(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            width: 20,
-          ),
-          Icon(
-            Icons.edit,
-            color: Colors.white,
-          ),
-          Text(
-            " Edit",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.left,
-          ),
-        ],
-      ),
-      alignment: Alignment.centerLeft,
-    ),
-  );
-}
-
-Widget deleteSecondaryBackground() {
-  return Container(
-    color: Colors.red,
-    child: Align(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Icon(
-            Icons.delete,
-            color: Colors.white,
-          ),
-          Text(
-            " Delete",
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.w700,
-            ),
-            textAlign: TextAlign.right,
-          ),
-          SizedBox(
-            width: 20,
-          ),
-        ],
-      ),
-      alignment: Alignment.centerRight,
-    ),
-  );
-}

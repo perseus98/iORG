@@ -35,12 +35,11 @@ dependencies:
   cupertino_icons: ^1.0.0
   fluttertoast: ^7.1.1
   hexcolor: ^1.0.4
-  flutter_form_builder: ^3.13.6
+  flutter_form_builder: ^3.14.0
   statusbar: ^1.1.0
   animated_bottom_navigation_bar: ^0.1.2+2
   circular_reveal_animation: ^1.1.5
   flutter_phoenix: ^0.1.0
-  multi_select_item: ^1.0.3
   photo_view: ^0.10.2
   toggle_switch: ^0.1.8
 
@@ -58,6 +57,7 @@ flutter:
   assets:
     - images/logo.png
     - images/title.png
+    - images/image-placeholder.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:iorg_flutter/experiment.dart';
+import 'package:iorg_flutter/BottomAnimatedBarExample.dart';
 import 'package:iorg_flutter/pages/ArchivePage.dart';
 import 'package:iorg_flutter/pages/CreatePostPage.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
         '/home': (BuildContext context) => HomePage(),
         '/archive': (BuildContext context) => ArchivePage(),
         '/create': (BuildContext context) => CreatePostPage(),
-        '/experiment': (BuildContext context) => ExperimentPage(),
+        // '/bottomBarExample': (BuildContext context) => BottomAnimatedBarExamplePage(),
         '/controller': (BuildContext context) => ControllerExample(),
       },
     );
