@@ -41,7 +41,7 @@ class _ArchivePageState extends State<ArchivePage> {
         stream: query.snapshots(),
         builder: (context, stream) {
           if (stream.connectionState == ConnectionState.waiting) {
-            return Center(child: progressIndicator());
+            return Center(child: progressWidget());
           }
           if (stream.hasError) {
             return Center(child: Text(stream.error.toString()));
@@ -56,7 +56,8 @@ class _ArchivePageState extends State<ArchivePage> {
                   direction: DismissDirection.horizontal,
                   onDismissed: (direction) {
                     if (direction == DismissDirection.startToEnd) {
-                      unarchiveEntry(context,querySnapshot.docs[index]['postId']);
+                      unarchiveEntry(
+                          context, querySnapshot.docs[index]['postId']);
                     }
                     if (direction == DismissDirection.endToStart) {
                       String _tmpId = querySnapshot.docs[index]['postId'];
@@ -95,6 +96,7 @@ class _ArchivePageState extends State<ArchivePage> {
       ),
     );
   }
+
   Future<void> unarchiveEntry(BuildContext context, String postId) {
     return postReference.doc(postId).update({'archive': false}).then((value) {
       Scaffold.of(context).showSnackBar(
@@ -112,23 +114,17 @@ class _ArchivePageState extends State<ArchivePage> {
       leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Theme
-                .of(context)
-                .accentColor,
+            color: Theme.of(context).accentColor,
           ),
-          onPressed: () => Navigator.pop(context)
-      ),
+          onPressed: () => Navigator.pop(context)),
       backgroundColor: Colors.white,
       title: Text(
         "Archive",
-        style: TextStyle(color: Theme
-            .of(context)
-            .accentColor),
+        style: TextStyle(color: Theme.of(context).accentColor),
       ),
       actions: [
         Icon(Icons.unarchive),
       ],
-
     );
   }
 
@@ -201,5 +197,4 @@ class _ArchivePageState extends State<ArchivePage> {
       print("Failed to delete user: $error");
     });
   }
-
 }

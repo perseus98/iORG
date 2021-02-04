@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-progressIndicator(
+progressWidget(
     {bool circular = true,
     Color color = Colors.white,
     Color bgColor = Colors.grey}) {

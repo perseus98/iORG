@@ -27,8 +27,8 @@ dependencies:
   geolocator: 5.0.1
   uuid: ^2.2.2
   path_provider: ^1.6.18
-  font_awesome_flutter: ^8.8.1
   flutter_signin_button: ^1.1.0
+  font_awesome_flutter: ^8.11.0
   shared_preferences: ^0.5.12
   age: ^0.0.1
   intro_slider: ^2.3.3

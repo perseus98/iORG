@@ -12,25 +12,24 @@ import 'package:uuid/uuid.dart';
 import 'HomePage.dart';
 
 class CreatePostPage extends StatefulWidget {
-      CreatePostPage({Key key}):super(key:key);
+  CreatePostPage({Key key}) : super(key: key);
   @override
   _CreatePostPageState createState() => _CreatePostPageState();
 }
 
 class _CreatePostPageState extends State<CreatePostPage>
     with AutomaticKeepAliveClientMixin<CreatePostPage> {
-  final GlobalKey<ScaffoldState> _createPageGlobalKey = GlobalKey<ScaffoldState>();
-  final GlobalKey<FormBuilderState> _createFormBuilderGlobalKey = GlobalKey<FormBuilderState>();
+  final GlobalKey<ScaffoldState> _createPageGlobalKey =
+      GlobalKey<ScaffoldState>();
+  final GlobalKey<FormBuilderState> _createFormBuilderGlobalKey =
+      GlobalKey<FormBuilderState>();
   bool get wantKeepAlive => true;
   final ValueChanged _onChanged = (val) => print(val);
-  final _nameController =
-  TextEditingController(text: 'ENTRY_${DateTime
-      .now()
-      .microsecondsSinceEpoch}');
+  final _nameController = TextEditingController(
+      text: 'ENTRY_${DateTime.now().microsecondsSinceEpoch}');
   final _detailsController = TextEditingController(
-      text: 'This entry was created on ${DateTime
-          .now()
-          .microsecondsSinceEpoch}');
+      text:
+          'This entry was created on ${DateTime.now().microsecondsSinceEpoch}');
   var _priority = 1.0;
   // double _progressBarValue = 0;
   String postId = Uuid().v4();
@@ -70,11 +69,11 @@ class _CreatePostPageState extends State<CreatePostPage>
             backgroundColor: Colors.white,
             appBar: AppBar(
               leading: IconButton(
-                  icon: Icon(
-                    Icons.arrow_back,
-                    color: Colors.white,
-                  ),
-                  onPressed: () => Navigator.pop(context),
+                icon: Icon(
+                  Icons.arrow_back,
+                  color: Colors.white,
+                ),
+                onPressed: () => Navigator.pop(context),
               ),
               title: Text("CREATE ENTRY"),
               backgroundColor: Hexcolor("#775fad"),
@@ -94,7 +93,8 @@ class _CreatePostPageState extends State<CreatePostPage>
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    if (_createFormBuilderGlobalKey.currentState.saveAndValidate())
+                    if (_createFormBuilderGlobalKey.currentState
+                        .saveAndValidate())
                       mapData = new Map<String, dynamic>.from(
                           _createFormBuilderGlobalKey.currentState.value);
 
@@ -158,11 +158,11 @@ class _CreatePostPageState extends State<CreatePostPage>
                           'archive': false,
                         })
                         .then((value) => print("Post Added"))
-                        .catchError((error) => print("Failed to add post: $error"));
+                        .catchError(
+                            (error) => print("Failed to add post: $error"));
                   });
                   print("Cloud Save executed");
-
-                  return HomePage();
+                  return HomePage(_currentUserAuth);
                 }
               }
               break;
@@ -174,14 +174,8 @@ class _CreatePostPageState extends State<CreatePostPage>
         }
         return Scaffold(
           body: Container(
-            height: MediaQuery
-                .of(context)
-                .size
-                .height,
-            width: MediaQuery
-                .of(context)
-                .size
-                .width,
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
               color: Color.fromARGB(200, 255, 255, 255),
             ),
@@ -192,13 +186,14 @@ class _CreatePostPageState extends State<CreatePostPage>
               children: [
                 CircularProgressIndicator(
                   // value: _progressBarValue,
-                  valueColor: AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                  valueColor:
+                      AlwaysStoppedAnimation(Theme.of(context).accentColor),
                   backgroundColor: Colors.grey,
                   strokeWidth: 3.0,
                 ),
                 Flexible(
                   child: Text(
-                      _uploadDetails,
+                    _uploadDetails,
                     style: TextStyle(
                       color: Theme.of(context).accentColor,
                       fontSize: 30.0,
@@ -215,10 +210,7 @@ class _CreatePostPageState extends State<CreatePostPage>
 
   buildForm() {
     return ListView(
-      padding: EdgeInsets.all(MediaQuery
-          .of(context)
-          .size
-          .width * 0.05),
+      padding: EdgeInsets.all(MediaQuery.of(context).size.width * 0.05),
       children: <Widget>[
         FormBuilder(
           key: _createFormBuilderGlobalKey,
@@ -228,18 +220,13 @@ class _CreatePostPageState extends State<CreatePostPage>
             children: <Widget>[
               FormBuilderImagePicker(
                 attribute: 'image',
-                imageHeight: MediaQuery
-                    .of(context)
-                    .size
-                    .width * 0.90,
+                imageHeight: MediaQuery.of(context).size.width * 0.90,
                 imageWidth: MediaQuery.of(context).size.width * 0.90,
                 imageQuality: 10,
                 labelText: 'Pick a document:',
-                defaultImage:
-                AssetImage(
-                  'images/image-placeholder.jpg'
-                  // 'https://cohenwoodworking.com/wp-content/uploads/2016/09/image-placeholder-500x500.jpg',
-                ),
+                defaultImage: AssetImage('images/image-placeholder.jpg'
+                    // 'https://cohenwoodworking.com/wp-content/uploads/2016/09/image-placeholder-500x500.jpg',
+                    ),
                 maxImages: 1,
                 validators: [
                   FormBuilderValidators.required(),
@@ -324,12 +311,9 @@ class _CreatePostPageState extends State<CreatePostPage>
       body: Center(
         child: Expanded(
             child: Text(
-              "UploadErr::::$err",
-              style: TextStyle(
-                  fontSize: 50,
-                  color: Colors.white
-              ),
-            )),
+          "UploadErr::::$err",
+          style: TextStyle(fontSize: 50, color: Colors.white),
+        )),
       ),
     );
   }

@@ -13,18 +13,14 @@ import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
 import 'package:statusbar/statusbar.dart';
 
-import 'file:///C:/Users/pmhrn/AndroidStudioProjects/iorg_flutter/lib/utility/extension.dart';
-
 import 'ControllerExample.dart';
 
-/// Requires that a Firestore emulator is running locally.
-/// See https://firebase.flutter.dev/docs/firestore/usage#emulator-usage
 bool usingEmulator = false;
 final StorageReference storageReference =
     FirebaseStorage.instance.ref().child("Posted Pictures");
 final postReference = FirebaseFirestore.instance.collection("posts");
 final userReference = FirebaseFirestore.instance.collection("users");
-
+DateTime backButtonPressedTime;
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (usingEmulator) {
@@ -36,6 +32,7 @@ void main() {
     systemNavigationBarIconBrightness: Brightness.light,
     statusBarColor: Hexcolor(getAccentColorHexVal()),
   ));
+
   runApp(
     Phoenix(
       child: MyApp(),
@@ -51,16 +48,16 @@ class MyApp extends StatelessWidget {
       title: getApplicationTitle(),
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: Theme.of(context).colorScheme.myAccentColor,
+        scaffoldBackgroundColor: myAccentColor,
         dialogBackgroundColor: Colors.white,
         primarySwatch: Colors.blueGrey,
         cardColor: Colors.white70,
-        accentColor: Theme.of(context).colorScheme.myAccentColor,
+        accentColor: myAccentColor,
         textTheme: TextTheme(
           button: TextStyle(
             fontSize: 15.0,
             // color: Colors.white,
-            color: Theme.of(context).colorScheme.myAccentColor,
+            color: myAccentColor,
           ),
           headline5: TextStyle(
             fontSize: 30.0,
@@ -77,7 +74,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/init',
       routes: <String, WidgetBuilder>{
         '/init': (BuildContext context) => InitPage(),
-        '/home': (BuildContext context) => HomePage(),
+        // '/home': (BuildContext context) => HomePage(),
         '/archive': (BuildContext context) => ArchivePage(),
         '/create': (BuildContext context) => CreatePostPage(),
         // '/bottomBarExample': (BuildContext context) => BottomAnimatedBarExamplePage(),
@@ -98,6 +95,40 @@ String getAccentColorHexVal() {
 returnPriorityColor(double val) {
   return val == 1
       ? Colors.green[200]
-      : val == 2 ? Colors.yellow[200] : val == 3 ? Colors.red[200] : Colors
-      .grey[200];
+      : val == 2
+          ? Colors.yellow[200]
+          : val == 3
+              ? Colors.red[200]
+              : Colors.grey[200];
 }
+
+Color get success => const Color(0xFF28a745);
+
+Color get info => const Color(0xFF17a2b8);
+
+Color get warning => const Color(0xFFffc107);
+
+Color get danger => const Color(0xFFdc3545);
+
+Color get mySixtyNineColor => const Color.fromARGB(255, 105, 105, 105);
+
+Color get myAccentColor => const Color.fromARGB(255, 135, 119, 172);
+
+TextStyle get error => const TextStyle(
+    decoration: TextDecoration.lineThrough,
+    fontSize: 20.0,
+    color: Colors.blue,
+    fontWeight: FontWeight.bold);
+
+TextStyle get myLinkBodyTextStyle => const TextStyle(
+    color: Colors.white, fontSize: 13.0, fontWeight: FontWeight.bold);
+
+TextStyle get myLinkTextStyle => const TextStyle(
+      color: Colors.blue,
+    );
+
+TextStyle get subBodyTitle => const TextStyle(
+      color: Colors.white,
+      fontSize: 13.0,
+      fontWeight: FontWeight.bold,
+    );

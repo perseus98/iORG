@@ -1,4 +1,3 @@
-import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -15,8 +14,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
-
+  final User user;
+  HomePage(this.user, {Key key}) : super(key: key);
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -41,6 +40,7 @@ class _HomePageState extends State<HomePage>
     _currentAuthUser = FirebaseAuth.instance.currentUser;
     _animationController = AnimationController(
       duration: Duration(seconds: 1),
+      vsync: this,
     );
     curve = CurvedAnimation(
       parent: _animationController,
@@ -97,7 +97,7 @@ class _HomePageState extends State<HomePage>
           stream: query.snapshots(),
           builder: (context, stream) {
             if (stream.connectionState == ConnectionState.waiting) {
-              return Center(child: progressIndicator());
+              return Center(child: progressWidget());
             }
             if (stream.hasError) {
               return Center(child: Text(stream.error.toString()));
@@ -135,11 +135,10 @@ class _HomePageState extends State<HomePage>
                         );
                         print("${querySnapshot.docs[index].id} clicked");
                       },
-                      child: PostWidget(querySnapshot.docs[index],
-                          false),
+                      child: PostWidget(querySnapshot.docs[index], false),
                     ),
                   )
-                  // )
+                      // )
                       ;
                 },
               );
@@ -147,9 +146,7 @@ class _HomePageState extends State<HomePage>
             return Center(
               child: Text(
                 "Create data to see, currently cloud is empty",
-                style: TextStyle(
-                    color: Colors.red
-                ),
+                style: TextStyle(color: Colors.red),
               ),
             );
           },
@@ -226,27 +223,24 @@ class _HomePageState extends State<HomePage>
           width: (AppBar().preferredSize.height / 2),
           decoration: BoxDecoration(
             color: Color(0xff7c94b6),
-            image: DecorationImage(
-              image: NetworkImage(
-                _currentAuthUser.photoURL,
-              ),
-              fit: BoxFit.scaleDown,
-            ),
+            // image: DecorationImage(
+            //   image: NetworkImage(
+            //     _currentAuthUser.photoURL,
+            //   ),
+            //   fit: BoxFit.scaleDown,
+            // ),
             borderRadius: BorderRadius.all(
                 Radius.circular((AppBar().preferredSize.height / 4))),
             border: Border.all(
-              color: Theme
-                  .of(context)
-                  .accentColor,
+              color: Theme.of(context).accentColor,
               width: 4.0,
             ),
           ),
         ),
       ),
-      title: Text( getApplicationTitle(),
-        style: TextStyle(color: Theme
-            .of(context)
-            .accentColor),
+      title: Text(
+        getApplicationTitle(),
+        style: TextStyle(color: Theme.of(context).accentColor),
       ),
       actions: normalActions(context),
     );
@@ -259,9 +253,7 @@ class _HomePageState extends State<HomePage>
         children: [
           DrawerHeader(
             decoration: BoxDecoration(
-              color: Theme
-                  .of(context)
-                  .accentColor,
+              color: Theme.of(context).accentColor,
             ),
             child: Text(
               getApplicationTitle(),
@@ -271,21 +263,38 @@ class _HomePageState extends State<HomePage>
               ),
             ),
           ),
-
-          _listTile(Icon(Icons.border_color),'Bottom Bar Example','/bottomBarExample'),
-          _listTile(Icon(Icons.image),'Image Preview Example','/controller'),
+          _listTile(Icon(Icons.border_color), 'Bottom Bar Example',
+              '/bottomBarExample'),
+          _listTile(Icon(Icons.image), 'Image Preview Example', '/controller'),
           AboutListTile(
             icon: Icon(Icons.info_outline),
-            applicationIcon: Image.asset('images/logo.png',),
+            applicationIcon: Image.asset(
+              'images/logo.png',
+            ),
             applicationName: 'iORG',
             applicationVersion: '0.1.3',
             applicationLegalese: ' Copyright @ sud3shi',
             aboutBoxChildren: [
-              Text("This application is developed under the name of sud3shi,", style: TextStyle(fontSize: 10.0),),
-              Text("Credits:", style: TextStyle(fontSize: 10.0),),
-              Text("Mulchand Sahu(layout)", style: TextStyle(fontSize: 10.0),),
-              Text("Pramod Vishwakarma(research)", style: TextStyle(fontSize: 10.0),),
-              Text("Prashant Maharana(app dev)", style: TextStyle(fontSize: 10.0),),
+              Text(
+                "This application is developed under the name of sud3shi,",
+                style: TextStyle(fontSize: 10.0),
+              ),
+              Text(
+                "Credits:",
+                style: TextStyle(fontSize: 10.0),
+              ),
+              Text(
+                "Mulchand Sahu(layout)",
+                style: TextStyle(fontSize: 10.0),
+              ),
+              Text(
+                "Pramod Vishwakarma(research)",
+                style: TextStyle(fontSize: 10.0),
+              ),
+              Text(
+                "Prashant Maharana(app dev)",
+                style: TextStyle(fontSize: 10.0),
+              ),
             ],
           ),
           ListTile(
@@ -293,9 +302,7 @@ class _HomePageState extends State<HomePage>
             title: Text(
               "Sign Out",
               style: TextStyle(
-                color: Theme
-                    .of(context)
-                    .accentColor,
+                color: Theme.of(context).accentColor,
               ),
             ),
             onTap: _signOutDialog,
@@ -305,21 +312,17 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  ListTile _listTile(Icon icon,String _name,String _path){
+  ListTile _listTile(Icon icon, String _name, String _path) {
     return ListTile(
       leading: IconButton(
-        icon : icon,
-        color: Theme
-            .of(context)
-            .accentColor,
+        icon: icon,
+        color: Theme.of(context).accentColor,
         onPressed: () => Navigator.pushNamed(context, _path),
       ),
       title: Text(
         _name,
         style: TextStyle(
-          color: Theme
-              .of(context)
-              .accentColor,
+          color: Theme.of(context).accentColor,
         ),
       ),
     );
@@ -330,9 +333,7 @@ class _HomePageState extends State<HomePage>
       IconButton(
         icon: Icon(
           Icons.sort,
-          color: Theme
-              .of(context)
-              .accentColor,
+          color: Theme.of(context).accentColor,
         ),
         onPressed: () {
           // _homePageGlobalKey.currentState.showSnackBar(SnackBar(content: Text("Coming Soon"),duration: Duration(seconds: 1),));
@@ -342,9 +343,7 @@ class _HomePageState extends State<HomePage>
       IconButton(
         icon: Icon(
           Icons.search,
-          color: Theme
-              .of(context)
-              .accentColor,
+          color: Theme.of(context).accentColor,
         ),
         onPressed: null,
       ),
@@ -380,7 +379,9 @@ class _HomePageState extends State<HomePage>
                     }
                   },
                 ),
-                Divider(color: Colors.blue,),
+                Divider(
+                  color: Colors.blue,
+                ),
                 Text("Select Attribute: "),
                 //postFields { timestamp,postName,deadline,priority}
                 ListTile(
@@ -448,18 +449,14 @@ class _HomePageState extends State<HomePage>
       IconButton(
         icon: Icon(
           Icons.delete_forever,
-          color: Theme
-              .of(context)
-              .accentColor,
+          color: Theme.of(context).accentColor,
         ),
         onPressed: null,
       ),
       IconButton(
         icon: Icon(
           Icons.select_all,
-          color: Theme
-              .of(context)
-              .accentColor,
+          color: Theme.of(context).accentColor,
         ),
         onPressed: null,
       ),
@@ -478,11 +475,11 @@ class _HomePageState extends State<HomePage>
             FlatButton(
               child: Text('Yes'),
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                prefs.remove('authAvail');
-                prefs.remove('authStrings');
+                // final prefs = await SharedPreferences.getInstance();
+                // prefs.remove('authAvail');
+                // prefs.remove('authStrings');
                 await FirebaseAuth.instance.signOut();
-                await GoogleSignIn().signOut();
+                // await GoogleSignIn().signOut();
                 Navigator.pushNamed(context, '/init');
               },
             ),
@@ -582,8 +579,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void changePage(int index) {
-    setState(() {
-    });
+    setState(() {});
   }
 
   Future<void> deleteEntry(BuildContext context, String postId) {
@@ -610,4 +606,3 @@ class _HomePageState extends State<HomePage>
     });
   }
 }
-
