@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:iorg_flutter/utilities/system_methods.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'account_setup_google.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -73,23 +72,46 @@ class AccountSetup extends StatelessWidget {
                         thickness: 1.0,
                         color: Colors.white70,
                       ),
-                      Container(
-                        width: MediaQuery.of(context).size.width,
-                        alignment: Alignment.center,
-                        child: IconButton(
-                          icon: FaIcon(
-                            FontAwesomeIcons.google,
-                            color: Colors.white,
-                          ),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        AccountSetupGoogle()));
-                          },
-                        ),
-                      ),
+                      Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              fit: FlexFit.loose,
+                              flex: 1,
+                              child: IconButton(
+                                icon: FaIcon(
+                                  FontAwesomeIcons.google,
+                                  color: Colors.white,
+                                  semanticLabel: 'Google sign-in',
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              AccountSetupGoogle()));
+                                },
+                              ),
+                            ),
+                            Flexible(
+                              fit: FlexFit.loose,
+                              flex: 1,
+                              child: IconButton(
+                                icon: FaIcon(
+                                  FontAwesomeIcons.ghost,
+                                  color: Colors.white,
+                                  semanticLabel: "Anonymous",
+                                ),
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              AccountSetupGoogle()));
+                                },
+                              ),
+                            ),
+                          ]),
                     ],
                   ),
                 );

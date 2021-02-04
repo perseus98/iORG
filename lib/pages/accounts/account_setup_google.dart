@@ -6,17 +6,18 @@ import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
 
 class AccountSetupGoogle extends StatelessWidget {
-  Future<User> signInWithGoogle() async {
+  Future<UserCredential> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    print('googleUser :: $googleUser');
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
+    print('googleAuth :: $googleAuth');
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    final UserCredential userCredential =
-        await FirebaseAuth.instance.signInWithCredential(credential);
-    return userCredential.user;
+    print('credential :: $credential');
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   @override
@@ -25,21 +26,37 @@ class AccountSetupGoogle extends StatelessWidget {
         body: SafeArea(
       top: true,
       bottom: true,
-      child: FutureBuilder<User>(
+      child: FutureBuilder<UserCredential>(
         future: signInWithGoogle(),
         builder: (context, userSnapshot) {
           Widget tempWidget = Text(' none ');
           if (userSnapshot.hasError) {
             tempWidget = Text("AuthErr ${userSnapshot.error}");
           }
+          switch (userSnapshot.connectionState) {
+            case ConnectionState.none:
+              print('switch none :: ${userSnapshot.data}');
+              break;
+            case ConnectionState.waiting:
+              print('switch waiting :: ${userSnapshot.data}');
+              break;
+            case ConnectionState.active:
+              print('switch active :: ${userSnapshot.data}');
+              break;
+            case ConnectionState.done:
+              print('switch done :: ${userSnapshot.data}');
+              break;
+          }
           if (userSnapshot.connectionState == ConnectionState.waiting) {
             tempWidget = Text('Google sign-in authenticating...');
           } else {
             if (userSnapshot.hasData) {
               print("userSnapshot.data ==> ${userSnapshot.data}");
-              return HomePage(userSnapshot.data);
+              tempWidget = Text('userSnapshot.data ==> ${userSnapshot.data}');
+              // return HomePage(userSnapshot.data);
             } else {
               tempWidget = Text(' no user found ');
+              print("userSnapshot.data ==> ${userSnapshot.data}");
             }
           }
           return Center(
