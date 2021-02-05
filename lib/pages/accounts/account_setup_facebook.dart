@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:iorg_flutter/pages/accounts/account_setup.dart';
 
-class AccountSetupGoogle extends StatelessWidget {
-  Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    print('googleUser :: $googleUser');
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-    print('googleAuth :: $googleAuth');
-    final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    print('credential :: $credential');
-    return await FirebaseAuth.instance.signInWithCredential(credential);
+import 'account_setup.dart';
+
+class AccountSetupFacebook extends StatelessWidget {
+  Future<UserCredential> signInWithFacebook() async {
+    // Trigger the sign-in flow
+    final AccessToken accessToken = await FacebookAuth.instance
+        .login(loginBehavior: LoginBehavior.NATIVE_WITH_FALLBACK);
+
+    // Create a credential from the access token
+    final FacebookAuthCredential facebookAuthCredential =
+        FacebookAuthProvider.credential(accessToken.toString());
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance
+        .signInWithCredential(facebookAuthCredential);
   }
 
   @override
@@ -26,7 +27,7 @@ class AccountSetupGoogle extends StatelessWidget {
       top: true,
       bottom: true,
       child: FutureBuilder<UserCredential>(
-        future: signInWithGoogle(),
+        future: signInWithFacebook(),
         builder: (context, userSnapshot) {
           Widget tempWidget = Text(' none ');
           if (userSnapshot.hasError) {
@@ -38,7 +39,7 @@ class AccountSetupGoogle extends StatelessWidget {
                 break;
               case ConnectionState.waiting:
                 print('switch waiting :: ${userSnapshot.data}');
-                tempWidget = Text('Google sign-in authenticating...');
+                tempWidget = Text('Facebook sign-in authenticating...');
                 break;
               case ConnectionState.active:
               case ConnectionState.done:

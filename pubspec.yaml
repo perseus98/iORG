@@ -18,6 +18,7 @@ dependencies:
   firebase_messaging: ^7.0.2
   firebase_storage: ^4.0.1
   firebase_core: ^0.5.0
+  flutter_facebook_auth: "^1.0.0"
   #UTILITY
   image: ^2.1.18
   animator: 0.1.4

@@ -5,6 +5,7 @@ import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
 import 'account_setup_google.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'account_setup_facebook.dart';
 
 class AccountSetup extends StatelessWidget {
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -98,16 +99,16 @@ class AccountSetup extends StatelessWidget {
                               flex: 1,
                               child: IconButton(
                                 icon: FaIcon(
-                                  FontAwesomeIcons.ghost,
+                                  FontAwesomeIcons.facebookF,
                                   color: Colors.white,
-                                  semanticLabel: "Anonymous",
+                                  semanticLabel: "Facebook",
                                 ),
                                 onPressed: () {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              AccountSetupGoogle()));
+                                              AccountSetupFacebook()));
                                 },
                               ),
                             ),
