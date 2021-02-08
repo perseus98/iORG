@@ -5,13 +5,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/BottomAnimatedBarExample.dart';
 import 'package:iorg_flutter/pages/ArchivePage.dart';
 import 'package:iorg_flutter/pages/CreatePostPage.dart';
 import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/pages/InitPage.dart';
-import 'package:statusbar/statusbar.dart';
 
 import 'ControllerExample.dart';
 
@@ -28,9 +26,9 @@ void main() {
         host: 'localhost:8080', sslEnabled: false, persistenceEnabled: false);
   }
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Hexcolor(getAccentColorHexVal()),
+    systemNavigationBarColor: Color.fromARGB(255, 135, 119, 172),
     systemNavigationBarIconBrightness: Brightness.light,
-    statusBarColor: Hexcolor(getAccentColorHexVal()),
+    statusBarColor: Color.fromARGB(255, 135, 119, 172),
   ));
 
   runApp(
@@ -43,9 +41,8 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    StatusBar.color(Hexcolor(getAccentColorHexVal()));
     return MaterialApp(
-      title: getApplicationTitle(),
+      title: 'iORG',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: myAccentColor,
@@ -82,14 +79,6 @@ class MyApp extends StatelessWidget {
       },
     );
   }
-}
-
-String getApplicationTitle() {
-  return "iORG";
-}
-
-String getAccentColorHexVal() {
-  return "#8777ac";
 }
 
 returnPriorityColor(double val) {

@@ -1,21 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:iorg_flutter/pages/accounts/account_setup.dart';
 
 class AccountSetupGoogle extends StatelessWidget {
   Future<UserCredential> signInWithGoogle() async {
     final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-    print('googleUser :: $googleUser');
     final GoogleSignInAuthentication googleAuth =
         await googleUser.authentication;
-    print('googleAuth :: $googleAuth');
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-    print('credential :: $credential');
     return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
@@ -30,7 +26,7 @@ class AccountSetupGoogle extends StatelessWidget {
         builder: (context, userSnapshot) {
           Widget tempWidget = Text(' none ');
           if (userSnapshot.hasError) {
-            tempWidget = Text("AuthErr ${userSnapshot.error}");
+            tempWidget = Text("AuthErr :: ${userSnapshot.error}");
           } else {
             switch (userSnapshot.connectionState) {
               case ConnectionState.none:

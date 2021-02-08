@@ -3,9 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/PreviewImage.dart';
 import 'package:iorg_flutter/widgets/PostWidget.dart';
@@ -83,16 +80,16 @@ class _HomePageState extends State<HomePage>
         break;
     }
 
-    return WillPopScope(
-      onWillPop: onWillPop,
-      child: Scaffold(
-        key: _homePageGlobalKey,
-        appBar: _appBar(context),
-        drawer: _drawer(context),
-        // floatingActionButton: _scaleTransition(),
-        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        // bottomNavigationBar: _animatedBottomNavigationBar(),
-        body: StreamBuilder<QuerySnapshot>(
+    return Scaffold(
+      key: _homePageGlobalKey,
+      appBar: _appBar(context),
+      drawer: _drawer(context),
+      // floatingActionButton: _scaleTransition(),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // bottomNavigationBar: _animatedBottomNavigationBar(),
+      body: WillPopScope(
+        onWillPop: () => onWillPop(_homePageGlobalKey),
+        child: StreamBuilder<QuerySnapshot>(
           // key: UniqueKey(),
           stream: query.snapshots(),
           builder: (context, stream) {
@@ -239,7 +236,7 @@ class _HomePageState extends State<HomePage>
         ),
       ),
       title: Text(
-        getApplicationTitle(),
+        'iORG',
         style: TextStyle(color: Theme.of(context).accentColor),
       ),
       actions: normalActions(context),
@@ -256,7 +253,7 @@ class _HomePageState extends State<HomePage>
               color: Theme.of(context).accentColor,
             ),
             child: Text(
-              getApplicationTitle(),
+              'iORG',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 24,
@@ -545,33 +542,17 @@ class _HomePageState extends State<HomePage>
   //   );
   // }
 
-  Future<bool> onWillPop() async {
+  Future<bool> onWillPop(GlobalKey<ScaffoldState> scaffoldKey) async {
     DateTime currentTime = DateTime.now();
 
     bool backButton = backButtonPressedTime == null ||
         currentTime.difference(backButtonPressedTime) > Duration(seconds: 3);
 
-    //block app from quitting when selecting
-    // if (multiSelectController.isSelecting) {
-    //   setState(() {
-    //     multiSelectController.deselectAll();
-    //   });
-    //   return false;
-    // }
-
-    // var before = !multiSelectController.isSelecting;
-    // setState(() {
-    //   multiSelectController.deselectAll();
-    // });
-    // return before;
-
     if (backButton) {
       backButtonPressedTime = currentTime;
-      Fluttertoast.showToast(
-        msg: "Double Click to exit app",
-        backgroundColor: Colors.white,
-        textColor: Hexcolor(getAccentColorHexVal()),
-      );
+      scaffoldKey.currentState.showSnackBar(SnackBar(
+        content: Text('Press back again to exit'),
+      ));
       return false;
     }
     SystemNavigator.pop();

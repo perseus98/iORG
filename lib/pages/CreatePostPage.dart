@@ -5,7 +5,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
-import 'package:hexcolor/hexcolor.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:uuid/uuid.dart';
 
@@ -76,7 +75,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                 onPressed: () => Navigator.pop(context),
               ),
               title: Text("CREATE ENTRY"),
-              backgroundColor: Hexcolor("#775fad"),
+              backgroundColor: Color.fromARGB(255, 135, 119, 172),
               actions: [
                 IconButton(
                   icon: Icon(
