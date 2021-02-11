@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:iorg_flutter/pages/accounts/account_setup.dart';
+
+import 'account_setup.dart';
 
 class AccountSetupGoogle extends StatelessWidget {
   Future<UserCredential> signInWithGoogle() async {
@@ -26,6 +27,7 @@ class AccountSetupGoogle extends StatelessWidget {
         builder: (context, userSnapshot) {
           Widget tempWidget = Text(' none ');
           if (userSnapshot.hasError) {
+            print("AuthErr :: ${userSnapshot.error}");
             tempWidget = Text("AuthErr :: ${userSnapshot.error}");
           } else {
             switch (userSnapshot.connectionState) {

@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/PreviewImage.dart';
+import 'package:iorg_flutter/pages/profile_page.dart';
 import 'package:iorg_flutter/widgets/PostWidget.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
 class HomePage extends StatefulWidget {
@@ -84,9 +84,9 @@ class _HomePageState extends State<HomePage>
       key: _homePageGlobalKey,
       appBar: _appBar(context),
       drawer: _drawer(context),
-      // floatingActionButton: _scaleTransition(),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      // bottomNavigationBar: _animatedBottomNavigationBar(),
+      floatingActionButton: _scaleTransition(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: _animatedBottomNavigationBar(),
       body: WillPopScope(
         onWillPop: () => onWillPop(_homePageGlobalKey),
         child: StreamBuilder<QuerySnapshot>(
@@ -213,28 +213,12 @@ class _HomePageState extends State<HomePage>
   AppBar _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
-      leading: GestureDetector(
-        onTap: () => _homePageGlobalKey.currentState.openDrawer(),
-        child: Container(
-          height: (AppBar().preferredSize.height / 2),
-          width: (AppBar().preferredSize.height / 2),
-          decoration: BoxDecoration(
-            color: Color(0xff7c94b6),
-            // image: DecorationImage(
-            //   image: NetworkImage(
-            //     _currentAuthUser.photoURL,
-            //   ),
-            //   fit: BoxFit.scaleDown,
-            // ),
-            borderRadius: BorderRadius.all(
-                Radius.circular((AppBar().preferredSize.height / 4))),
-            border: Border.all(
-              color: Theme.of(context).accentColor,
-              width: 4.0,
-            ),
+      leading: IconButton(
+          icon: Icon(
+            Icons.menu_outlined,
+            color: Theme.of(context).accentColor,
           ),
-        ),
-      ),
+          onPressed: () => _homePageGlobalKey.currentState.openDrawer()),
       title: Text(
         'iORG',
         style: TextStyle(color: Theme.of(context).accentColor),
@@ -260,9 +244,7 @@ class _HomePageState extends State<HomePage>
               ),
             ),
           ),
-          _listTile(Icon(Icons.border_color), 'Bottom Bar Example',
-              '/bottomBarExample'),
-          _listTile(Icon(Icons.image), 'Image Preview Example', '/controller'),
+          _listTile(Icons.person, 'Profile', ProfilePage()),
           AboutListTile(
             icon: Icon(Icons.info_outline),
             applicationIcon: Image.asset(
@@ -309,12 +291,11 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  ListTile _listTile(Icon icon, String _name, String _path) {
+  ListTile _listTile(IconData iconData, String _name, Widget temp) {
     return ListTile(
-      leading: IconButton(
-        icon: icon,
+      leading: Icon(
+        iconData,
         color: Theme.of(context).accentColor,
-        onPressed: () => Navigator.pushNamed(context, _path),
       ),
       title: Text(
         _name,
@@ -322,6 +303,10 @@ class _HomePageState extends State<HomePage>
           color: Theme.of(context).accentColor,
         ),
       ),
+      onTap: () {
+        print('bttn predded');
+        Navigator.push(context, MaterialPageRoute(builder: (context) => temp));
+      },
     );
   }
 
@@ -492,55 +477,65 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // ScaleTransition _scaleTransition() {
-  //   return ScaleTransition(
-  //     scale: animation,
-  //     child: FloatingActionButton(
-  //       elevation: 8,
-  //       backgroundColor: Colors.white,
-  //       child: Icon(
-  //         Icons.add_photo_alternate,
-  //         color: Theme
-  //             .of(context)
-  //             .accentColor,
-  //       ),
-  //       onPressed: () {
-  //         Navigator.pushNamed(context, '/create');
-  //       },
-  //     ),
-  //   );
-  // }
+  ScaleTransition _scaleTransition() {
+    return ScaleTransition(
+      scale: animation,
+      child: FloatingActionButton(
+        elevation: 8,
+        backgroundColor: Colors.white,
+        child: Icon(
+          Icons.add_photo_alternate,
+          color: Theme.of(context).accentColor,
+        ),
+        onPressed: () {
+          Navigator.pushNamed(context, '/create');
+        },
+      ),
+    );
+  }
 
-  // AnimatedBottomNavigationBar _animatedBottomNavigationBar() {
-  //   return AnimatedBottomNavigationBar(
-  //       icons: [
-  //         Icons.dashboard,
-  //         Icons.archive,
-  //       ],
-  //       backgroundColor: Colors.white,
-  //       activeIndex: 0,
-  //       activeColor: Theme
-  //           .of(context)
-  //           .accentColor,
-  //       splashColor: Hexcolor('#998abd'),
-  //       inactiveColor: Colors.grey,
-  //       notchAndCornersAnimation: animation,
-  //       splashSpeedInMilliseconds: 300,
-  //       notchSmoothness: NotchSmoothness.defaultEdge,
-  //       gapLocation: GapLocation.center,
-  //       leftCornerRadius: 32,
-  //       rightCornerRadius: 32,
-  //       onTap: (index) {
-  //         if (index == 1) {
-  //           Navigator.pushNamed(context, '/archive');
-  //         } else {
-  //           setState(() {
-  //             // Refresh State
-  //           });
-  //         }
-  //       }
-  //   );
-  // }
+  Widget _animatedBottomNavigationBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        IconButton(
+            icon: Icon(Icons.dashboard), onPressed: () => setState(() {})),
+        IconButton(
+            icon: Icon(
+              Icons.archive,
+            ),
+            onPressed: () => Navigator.pushNamed(context, '/archive')),
+      ],
+    );
+    // return AnimatedBottomNavigationBar(
+    //     icons: [
+    //       Icons.dashboard,
+    //       Icons.archive,
+    //     ],
+    //     backgroundColor: Colors.white,
+    //     activeIndex: 0,
+    //     activeColor: Theme
+    //         .of(context)
+    //         .accentColor,
+    //     splashColor: Hexcolor('#998abd'),
+    //     inactiveColor: Colors.grey,
+    //     notchAndCornersAnimation: animation,
+    //     splashSpeedInMilliseconds: 300,
+    //     notchSmoothness: NotchSmoothness.defaultEdge,
+    //     gapLocation: GapLocation.center,
+    //     leftCornerRadius: 32,
+    //     rightCornerRadius: 32,
+    //     onTap: (index) {
+    //       if (index == 1) {
+    //         Navigator.pushNamed(context, '/archive');
+    //       } else {
+    //         setState(() {
+    //           // Refresh State
+    //         });
+    //       }
+    //     }
+    // );
+  }
 
   Future<bool> onWillPop(GlobalKey<ScaffoldState> scaffoldKey) async {
     DateTime currentTime = DateTime.now();

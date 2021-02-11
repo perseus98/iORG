@@ -1,11 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:iorg_flutter/pages/HomePage.dart';
 import 'package:iorg_flutter/utilities/system_methods.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
-import 'package:iorg_flutter/pages/HomePage.dart';
+
 import 'account_setup_google.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'account_setup_facebook.dart';
 
 class AccountSetup extends StatelessWidget {
   final scaffoldKey = GlobalKey<ScaffoldState>();
@@ -94,24 +94,24 @@ class AccountSetup extends StatelessWidget {
                                 },
                               ),
                             ),
-                            Flexible(
-                              fit: FlexFit.loose,
-                              flex: 1,
-                              child: IconButton(
-                                icon: FaIcon(
-                                  FontAwesomeIcons.facebookF,
-                                  color: Colors.white,
-                                  semanticLabel: "Facebook",
-                                ),
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              AccountSetupFacebook()));
-                                },
-                              ),
-                            ),
+                            // Flexible(
+                            //   fit: FlexFit.loose,
+                            //   flex: 1,
+                            //   child: IconButton(
+                            //     icon: FaIcon(
+                            //       FontAwesomeIcons.facebookF,
+                            //       color: Colors.white,
+                            //       semanticLabel: "Facebook",
+                            //     ),
+                            //     onPressed: () {
+                            //       Navigator.push(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //               builder: (context) =>
+                            //                   AccountSetupFacebook()));
+                            //     },
+                            //   ),
+                            // ),
                           ]),
                     ],
                   ),
