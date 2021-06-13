@@ -14,7 +14,7 @@ import 'package:iorg_flutter/pages/InitPage.dart';
 import 'ControllerExample.dart';
 
 bool usingEmulator = false;
-final StorageReference storageReference =
+final storageReference =
     FirebaseStorage.instance.ref().child("Posted Pictures");
 final postReference = FirebaseFirestore.instance.collection("posts");
 final userReference = FirebaseFirestore.instance.collection("users");

@@ -7,8 +7,8 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:uuid/uuid.dart';
-
 import 'HomePage.dart';
+import 'package:form_builder_image_picker/form_builder_image_picker.dart';
 
 class CreatePostPage extends StatefulWidget {
   CreatePostPage({Key key}) : super(key: key);
@@ -44,14 +44,14 @@ class _CreatePostPageState extends State<CreatePostPage>
     print("Create-init");
   }
 
-  Stream<StorageTaskEvent> uploadImage(Uri imgFile) {
+  Stream<TaskSnapshot> uploadImage(Uri imgFile) {
     File _tempFile = new File.fromUri(imgFile);
-    StorageUploadTask storageUploadTask =
+    UploadTask storageUploadTask =
         storageReference.child("post_$postId.jpg").putFile(_tempFile);
-    return storageUploadTask.events;
+    return storageUploadTask.snapshotEvents;
   }
 
-  double _bytesTransferredInPercentage(StorageTaskSnapshot snapshot) {
+  double _bytesTransferredInPercentage(var snapshot) {
     return snapshot.bytesTransferred.toDouble() /
         snapshot.totalByteCount.toDouble() *
         100;
@@ -111,7 +111,7 @@ class _CreatePostPageState extends State<CreatePostPage>
   _buildUploadingScreen() {
     return StreamBuilder(
       stream: uploadImage(mapData["image"][0].uri),
-      builder: (context, AsyncSnapshot<StorageTaskEvent> asyncSnapshot) {
+      builder: (context, AsyncSnapshot<TaskSnapshot> asyncSnapshot) {
         double _uploadProgress = 0.0;
         String _uploadDetails = "Uploading, Please wait...";
         // Widget subtitle = Text("");
@@ -119,29 +119,29 @@ class _CreatePostPageState extends State<CreatePostPage>
           return buildUploadErrorHandler(asyncSnapshot.error);
         }
         if (asyncSnapshot.hasData) {
-          final StorageTaskEvent event = asyncSnapshot.data;
-          final StorageTaskSnapshot snapshot = event.snapshot;
-          switch (event.type) {
-            case StorageTaskEventType.progress:
+          final TaskSnapshot event = asyncSnapshot.data;
+          final snapshot = event.state;
+          switch (event.state) {
+            case TaskState.running:
               {
                 // setState(() {
                 //   _progressBarValue = _bytesTransferred(snapshot);
                 // });
                 // _progressBarValue = _bytesTransferred(snapshot);
-                _uploadProgress = _bytesTransferredInPercentage(snapshot);
-                _uploadDetails = "Upload Progress : $_uploadProgress %";
-                print("uploadProgress::::$_uploadProgress");
+                // _uploadProgress = _bytesTransferredInPercentage(snapshot);
+                // _uploadDetails = "Upload Progress : $_uploadProgress %";
+                // print("uploadProgress::::$_uploadProgress");
               }
               break;
-            case StorageTaskEventType.failure:
+            case TaskState.error:
               print("uploadTaskFailed");
               break;
-            case StorageTaskEventType.success:
+            case TaskState.success:
               {
                 if (mapData.isEmpty) {
                   print(" mapDAta :: null");
                 } else {
-                  snapshot.ref.getDownloadURL().then((downloadURL) {
+                  event.ref.getDownloadURL().then((downloadURL) {
                     print('picUrl == $downloadURL');
                     postReference
                         .doc(postId)
@@ -213,33 +213,33 @@ class _CreatePostPageState extends State<CreatePostPage>
       children: <Widget>[
         FormBuilder(
           key: _createFormBuilderGlobalKey,
-          readOnly: false,
+          // readOnly: false,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               FormBuilderImagePicker(
-                attribute: 'image',
-                imageHeight: MediaQuery.of(context).size.width * 0.90,
-                imageWidth: MediaQuery.of(context).size.width * 0.90,
+                name: 'image',
+                maxHeight: MediaQuery.of(context).size.width * 0.90,
+                maxWidth: MediaQuery.of(context).size.width * 0.90,
                 imageQuality: 10,
-                labelText: 'Pick a document:',
-                defaultImage: AssetImage('images/image-placeholder.jpg'
-                    // 'https://cohenwoodworking.com/wp-content/uploads/2016/09/image-placeholder-500x500.jpg',
-                    ),
+                // labelText: 'Pick a document:',
+                // defaultImage: AssetImage('images/image-placeholder.jpg'
+                //     // 'https://cohenwoodworking.com/wp-content/uploads/2016/09/image-placeholder-500x500.jpg',
+                //     ),
                 maxImages: 1,
-                validators: [
-                  FormBuilderValidators.required(),
-                  (images) {
-                    if (images.length <= 0) {
-                      return 'Image required.';
-                    }
-                    return null;
-                  }
-                ],
+                // validator: [
+                //   FormBuilderValidators.required(),
+                //   (images) {
+                //     if (images.length <= 0) {
+                //       return 'Image required.';
+                //     }
+                //     return null;
+                //   }
+                // ],
               ),
               SizedBox(height: 15),
               FormBuilderTextField(
-                attribute: 'name',
+                name: 'name',
                 controller: _nameController,
                 decoration: InputDecoration(
                   labelText: 'Name:',
@@ -247,14 +247,11 @@ class _CreatePostPageState extends State<CreatePostPage>
                 onChanged: (val) {
                   // print(val);
                 },
-                validators: [
-                  FormBuilderValidators.required(),
-                ],
                 keyboardType: TextInputType.text,
               ),
               SizedBox(height: 15),
               FormBuilderDateTimePicker(
-                attribute: 'deadline',
+                name: 'deadline',
                 onChanged: _onChanged,
                 inputType: InputType.both,
                 decoration: const InputDecoration(
@@ -266,7 +263,7 @@ class _CreatePostPageState extends State<CreatePostPage>
               ),
               SizedBox(height: 15),
               FormBuilderSlider(
-                attribute: 'priority',
+                name: 'priority',
                 decoration: const InputDecoration(
                   labelText: 'Set Priority:',
                 ),
@@ -286,7 +283,7 @@ class _CreatePostPageState extends State<CreatePostPage>
               ),
               SizedBox(height: 15),
               FormBuilderTextField(
-                attribute: 'details',
+                name: 'details',
                 // autovalidate: true,
                 controller: _detailsController,
                 maxLines: 8,

@@ -55,12 +55,10 @@ class _HomePageState extends State<HomePage>
       Duration(seconds: 1),
       () => _animationController.forward(),
     );
-    print("Home-init");
   }
 
   @override
   Widget build(BuildContext context) {
-    print("Home-build");
     Query query = postReference
         .where('ownerId', isEqualTo: _currentAuthUser.uid)
         .where('archive', isEqualTo: false);
@@ -345,7 +343,7 @@ class _HomePageState extends State<HomePage>
                 Text('Select Order: '),
                 ToggleSwitch(
                   cornerRadius: 20.0,
-                  activeBgColor: Colors.cyan,
+                  // activeBgColor: Colors.cyan,
                   activeFgColor: Colors.white,
                   inactiveBgColor: Colors.grey,
                   inactiveFgColor: Colors.white,
@@ -495,17 +493,20 @@ class _HomePageState extends State<HomePage>
   }
 
   Widget _animatedBottomNavigationBar() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        IconButton(
-            icon: Icon(Icons.dashboard), onPressed: () => setState(() {})),
-        IconButton(
-            icon: Icon(
-              Icons.archive,
-            ),
-            onPressed: () => Navigator.pushNamed(context, '/archive')),
-      ],
+    return Container(
+      decoration: BoxDecoration(color: Colors.greenAccent),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          IconButton(
+              icon: Icon(Icons.dashboard), onPressed: () => setState(() {})),
+          IconButton(
+              icon: Icon(
+                Icons.archive,
+              ),
+              onPressed: () => Navigator.pushNamed(context, '/archive')),
+        ],
+      ),
     );
     // return AnimatedBottomNavigationBar(
     //     icons: [

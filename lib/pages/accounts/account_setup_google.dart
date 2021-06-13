@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:iorg_flutter/pages/HomePage.dart';
 
 import 'account_setup.dart';
 
@@ -43,8 +44,9 @@ class AccountSetupGoogle extends StatelessWidget {
                 print('switch done :: ${userSnapshot.data}');
                 if (userSnapshot.hasData) {
                   print("userSnapshot.data ==> ${userSnapshot.data}");
-                  tempWidget =
-                      Text('userSnapshot.data ==> ${userSnapshot.data}');
+                  // tempWidget =
+                  //     Text('userSnapshot.data ==> ${userSnapshot.data}');
+                  return HomePage(userSnapshot.data.user);
                 } else {
                   tempWidget = Column(children: [
                     Text(' no user found '),
