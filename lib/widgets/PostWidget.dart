@@ -23,7 +23,7 @@ class PostWidget extends StatelessWidget {
 
   Widget buildMiniVersion(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(3.0),
+      margin: EdgeInsets.all(5.0),
       padding: EdgeInsets.all(5.0),
       decoration: BoxDecoration(
         color:
@@ -45,11 +45,8 @@ class PostWidget extends StatelessWidget {
           Text("  "),
           Flexible(
             flex: 3,
-            child: Container(
-                height: 100.0,
-                color: Colors.white,
-                child: postBody
-            ),
+            child:
+                Container(height: 100.0, color: Colors.white, child: postBody),
           ),
         ],
       ),
@@ -62,13 +59,12 @@ class PostWidget extends StatelessWidget {
       fit: BoxFit.fill,
       loadingBuilder: (BuildContext context, Widget child,
           ImageChunkEvent loadingProgress) {
-        if (loadingProgress == null)
-          return child;
+        if (loadingProgress == null) return child;
         return Center(
           child: CircularProgressIndicator(
             value: loadingProgress.expectedTotalBytes != null
                 ? loadingProgress.cumulativeBytesLoaded /
-                loadingProgress.expectedTotalBytes
+                    loadingProgress.expectedTotalBytes
                 : null,
           ),
         );
@@ -83,7 +79,9 @@ class PostWidget extends StatelessWidget {
 
     String priorityLevel = (post['priority'] == 1)
         ? 'Low'
-        : (post['priority'] == 2) ? 'Medium' : 'High';
+        : (post['priority'] == 2)
+            ? 'Medium'
+            : 'High';
     String dateDeadline = DateFormat.yMd().add_Hms().format(deadline.toDate());
     return Container(
       padding: EdgeInsets.only(left: 10.0),
@@ -100,4 +98,3 @@ class PostWidget extends StatelessWidget {
     );
   }
 }
-

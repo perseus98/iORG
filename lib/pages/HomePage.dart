@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:iorg_flutter/generated/assets.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/PreviewImage.dart';
 import 'package:iorg_flutter/pages/profile_page.dart';
@@ -12,7 +13,9 @@ import 'package:toggle_switch/toggle_switch.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
+
   HomePage(this.user, {Key key}) : super(key: key);
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -77,76 +80,182 @@ class _HomePageState extends State<HomePage>
         query = query.orderBy('priority', descending: _selectedDesc);
         break;
     }
-
+    // Widget temp = ;
+    // _homePageGlobalKey.currentState.openDrawer();
     return Scaffold(
+      backgroundColor: Colors.white,
       key: _homePageGlobalKey,
-      appBar: _appBar(context),
+      // appBar: _appBar(context),
       drawer: _drawer(context),
       floatingActionButton: _scaleTransition(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _animatedBottomNavigationBar(),
       body: WillPopScope(
-        onWillPop: () => onWillPop(_homePageGlobalKey),
-        child: StreamBuilder<QuerySnapshot>(
-          // key: UniqueKey(),
-          stream: query.snapshots(),
-          builder: (context, stream) {
-            if (stream.connectionState == ConnectionState.waiting) {
-              return Center(child: progressWidget());
-            }
-            if (stream.hasError) {
-              return Center(child: Text(stream.error.toString()));
-            }
-            if (stream.hasData) {
-              QuerySnapshot querySnapshot = stream.data;
-              return ListView.builder(
-                itemCount: querySnapshot.size,
-                itemBuilder: (context, index) {
-                  // multiSelectController.set(querySnapshot.size);
-                  return Dismissible(
-                    key: ObjectKey(querySnapshot.docs[index]),
-                    direction: DismissDirection.horizontal,
-                    onDismissed: (direction) {
-                      if (direction == DismissDirection.startToEnd) {
-                        archiveEntry(
-                            context, querySnapshot.docs[index]['postId']);
-                      }
-                      if (direction == DismissDirection.endToStart) {
-                        deleteEntry(
-                            context, querySnapshot.docs[index]['postId']);
-                      }
-                    },
-                    background: editBackground(),
-                    secondaryBackground: deleteSecondaryBackground(),
-                    child: InkWell(
-                      splashColor: Colors.purple[300],
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => PreviewImage(
-                                    snapshot: querySnapshot.docs[index],
-                                  )),
-                        );
-                        print("${querySnapshot.docs[index].id} clicked");
-                      },
-                      child: PostWidget(querySnapshot.docs[index], false),
-                    ),
-                  )
-                      // )
-                      ;
-                },
-              );
-            }
-            return Center(
-              child: Text(
-                "Create data to see, currently cloud is empty",
-                style: TextStyle(color: Colors.red),
+          onWillPop: () => onWillPop(_homePageGlobalKey),
+          child: ListView(
+            children: [
+              Material(
+                elevation: 15.0,
+                child: Container(
+                  height: MediaQuery.of(context).size.height * 0.3,
+                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
+                    BoxShadow(color: Colors.black12),
+                  ]),
+                  alignment: Alignment.center,
+                  child: Column(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 50.0, left: 40.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "iORG",
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 107, 107, 107),
+                                    fontSize: 44.0,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Text(
+                                  "Documentation Hanlder",
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 107, 107, 107),
+                                    fontSize: 12.0,
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 10.0, right: 25.0),
+                            child: Material(
+                              borderRadius: BorderRadius.circular(20.0),
+                              elevation: 5.0,
+                              child: Container(
+                                height: 45.0,
+                                width: 120.0,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(50.0),
+                                  // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 50.0)],
+                                ),
+                                // alignment: Alignment.center,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                  children: [
+                                    Icon(Icons.sort),
+                                    Icon(Icons.menu)
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Padding(
+                        padding:
+                            EdgeInsets.only(right: 25.0, left: 25.0, top: 50.0),
+                        child: Material(
+                          borderRadius: BorderRadius.circular(10.0),
+                          elevation: 4.0,
+                          child: Container(
+                              height: 50.0,
+                              padding: EdgeInsets.only(left: 15.0),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(50.0),
+                                // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 50.0)],
+                              ),
+                              alignment: Alignment.center,
+                              child: TextFormField(
+                                decoration: InputDecoration(
+                                  labelText: "Search",
+                                  labelStyle: TextStyle(color: Colors.grey),
+                                  suffixIcon: Icon(Icons.search),
+                                  border: InputBorder.none,
+                                ),
+                              )),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            );
-          },
-        ),
-      ),
+              // Container(
+              //   child: ,
+              // ),
+              Container(
+                height: MediaQuery.of(context).size.height * 0.62,
+                child: StreamBuilder<QuerySnapshot>(
+                  // key: UniqueKey(),
+                  stream: query.snapshots(),
+                  builder: (context, stream) {
+                    if (stream.connectionState == ConnectionState.waiting) {
+                      return Center(child: progressWidget());
+                    }
+                    if (stream.hasError) {
+                      return Center(child: Text(stream.error.toString()));
+                    }
+                    if (stream.hasData) {
+                      QuerySnapshot querySnapshot = stream.data;
+                      return ListView.builder(
+                        itemCount: querySnapshot.size,
+                        itemBuilder: (context, index) {
+                          // multiSelectController.set(querySnapshot.size);
+                          return Dismissible(
+                            key: ObjectKey(querySnapshot.docs[index]),
+                            direction: DismissDirection.horizontal,
+                            onDismissed: (direction) {
+                              if (direction == DismissDirection.startToEnd) {
+                                archiveEntry(context,
+                                    querySnapshot.docs[index]['postId']);
+                              }
+                              if (direction == DismissDirection.endToStart) {
+                                deleteEntry(context,
+                                    querySnapshot.docs[index]['postId']);
+                              }
+                            },
+                            background: editBackground(),
+                            secondaryBackground: deleteSecondaryBackground(),
+                            child: InkWell(
+                              splashColor: Colors.purple[300],
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => PreviewImage(
+                                            snapshot: querySnapshot.docs[index],
+                                          )),
+                                );
+                                print(
+                                    "${querySnapshot.docs[index].id} clicked");
+                              },
+                              child:
+                                  PostWidget(querySnapshot.docs[index], false),
+                            ),
+                          )
+                              // )
+                              ;
+                        },
+                      );
+                    }
+                    return Center(
+                      child: Text(
+                        "Create data to see, currently cloud is empty",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          )),
     );
   }
 
@@ -230,81 +339,185 @@ class _HomePageState extends State<HomePage>
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
-            decoration: BoxDecoration(
-              color: Theme.of(context).accentColor,
-            ),
-            child: Text(
-              'iORG',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 24,
+          Container(
+            height: MediaQuery.of(context).size.height * 0.45,
+            decoration: BoxDecoration(color: Colors.white, boxShadow: [
+              BoxShadow(color: Colors.black12, blurRadius: 10.0)
+            ]),
+            child: Container(
+              padding: EdgeInsets.only(top: 50.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 50.0, left: 30.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "iORG",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 107, 107, 107),
+                            fontSize: 32.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          "Documentation",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 107, 107, 107),
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        Text(
+                          "Handler",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 107, 107, 107),
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(bottom: 30.0),
+                    child: RichText(
+                        text: TextSpan(children: [
+                      TextSpan(
+                        text: "Presented By",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12.0,
+                          fontWeight: FontWeight.w100,
+                        ),
+                      ),
+                      TextSpan(
+                        text: "sud3shi",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ])),
+                  ),
+                ],
               ),
             ),
           ),
-          _listTile(Icons.person, 'Profile', ProfilePage()),
-          AboutListTile(
-            icon: Icon(Icons.info_outline),
-            applicationIcon: Image.asset(
-              'images/logo.png',
+          GestureDetector(
+            onTap: () => Navigator.push(context,
+                MaterialPageRoute(builder: (context) => ProfilePage())),
+            child: Container(
+              margin: EdgeInsets.only(top: 25.0, left: 25.0, right: 25.0),
+              padding: EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(12.0)),
+              child: Row(
+                children: [
+                  Icon(Icons.person_outline_outlined),
+                  // Image.asset(Assets.logoLogoPerson),
+                  SizedBox(
+                    child: Text(""),
+                    width: 10.0,
+                  ),
+                  Text(
+                    'Profile',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
             ),
-            applicationName: 'iORG',
-            applicationVersion: '0.1.3',
-            applicationLegalese: ' Copyright @ sud3shi',
-            aboutBoxChildren: [
-              Text(
-                "This application is developed under the name of sud3shi,",
-                style: TextStyle(fontSize: 10.0),
-              ),
-              Text(
-                "Credits:",
-                style: TextStyle(fontSize: 10.0),
-              ),
-              Text(
-                "Mulchand Sahu(layout)",
-                style: TextStyle(fontSize: 10.0),
-              ),
-              Text(
-                "Pramod Vishwakarma(research)",
-                style: TextStyle(fontSize: 10.0),
-              ),
-              Text(
-                "Prashant Maharana(app dev)",
-                style: TextStyle(fontSize: 10.0),
-              ),
-            ],
           ),
-          ListTile(
-            leading: Icon(Icons.exit_to_app),
-            title: Text(
-              "Sign Out",
-              style: TextStyle(
-                color: Theme.of(context).accentColor,
-              ),
-            ),
+          GestureDetector(
             onTap: _signOutDialog,
-          )
+            child: Container(
+              margin: EdgeInsets.only(top: 25.0, left: 25.0, right: 25.0),
+              padding: EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(12.0)),
+              child: Row(
+                children: [
+                  Icon(Icons.logout),
+                  // Image.asset(Assets.logoSignout),
+                  SizedBox(
+                    child: Text(""),
+                    width: 10.0,
+                  ),
+                  Text(
+                    'Sign Out',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => SystemNavigator.pop(),
+            child: Container(
+              margin: EdgeInsets.only(top: 25.0, left: 25.0, right: 25.0),
+              padding: EdgeInsets.all(20.0),
+              decoration: BoxDecoration(
+                  color: Colors.black12,
+                  borderRadius: BorderRadius.circular(12.0)),
+              child: Row(
+                children: [
+                  Icon(Icons.exit_to_app),
+                  // Image.asset(Assets.logoExit),
+                  SizedBox(
+                    child: Text(""),
+                    width: 10.0,
+                  ),
+                  Text(
+                    'Exit',
+                    style: TextStyle(fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // AboutListTile(
+          //   // icon: Icon(Icons.info_outline),
+          //   applicationIcon: Image.asset(
+          //     'images/logo.png',
+          //     height: 100.0,
+          //     width: 100.0,
+          //   ),
+          //   applicationName: 'iORG',
+          //   applicationVersion: '0.1.3',
+          //   applicationLegalese: ' Copyright @ sud3shi',
+          //   aboutBoxChildren: [
+          //     Text(
+          //       "This application is developed under the name of sud3shi,",
+          //       style: TextStyle(fontSize: 10.0),
+          //     ),
+          //     Text(
+          //       "Credits:",
+          //       style: TextStyle(fontSize: 10.0),
+          //     ),
+          //     Text(
+          //       "Mulchand Sahu(layout)",
+          //       style: TextStyle(fontSize: 10.0),
+          //     ),
+          //     Text(
+          //       "Pramod Vishwakarma(research)",
+          //       style: TextStyle(fontSize: 10.0),
+          //     ),
+          //     Text(
+          //       "Prashant Maharana(app dev)",
+          //       style: TextStyle(fontSize: 10.0),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
-    );
-  }
-
-  ListTile _listTile(IconData iconData, String _name, Widget temp) {
-    return ListTile(
-      leading: Icon(
-        iconData,
-        color: Theme.of(context).accentColor,
-      ),
-      title: Text(
-        _name,
-        style: TextStyle(
-          color: Theme.of(context).accentColor,
-        ),
-      ),
-      onTap: () {
-        print('bttn predded');
-        Navigator.push(context, MaterialPageRoute(builder: (context) => temp));
-      },
     );
   }
 
@@ -343,6 +556,7 @@ class _HomePageState extends State<HomePage>
                 Text('Select Order: '),
                 ToggleSwitch(
                   cornerRadius: 20.0,
+                  totalSwitches: 2,
                   // activeBgColor: Colors.cyan,
                   activeFgColor: Colors.white,
                   inactiveBgColor: Colors.grey,
@@ -452,7 +666,7 @@ class _HomePageState extends State<HomePage>
           title: Text('Sign Out?'),
           content: Text('Do you want to sign out now?'),
           actions: <Widget>[
-            FlatButton(
+            TextButton(
               child: Text('Yes'),
               onPressed: () async {
                 // final prefs = await SharedPreferences.getInstance();
@@ -463,7 +677,7 @@ class _HomePageState extends State<HomePage>
                 Navigator.pushNamed(context, '/init');
               },
             ),
-            FlatButton(
+            TextButton(
               child: Text('No'),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -478,33 +692,81 @@ class _HomePageState extends State<HomePage>
   ScaleTransition _scaleTransition() {
     return ScaleTransition(
       scale: animation,
-      child: FloatingActionButton(
-        elevation: 8,
-        backgroundColor: Colors.white,
-        child: Icon(
-          Icons.add_photo_alternate,
-          color: Theme.of(context).accentColor,
-        ),
-        onPressed: () {
+      child: GestureDetector(
+        onTap: () {
           Navigator.pushNamed(context, '/create');
         },
+        child: Material(
+          borderRadius: BorderRadius.circular(50.0),
+          elevation: 10.0,
+          child: Container(
+            height: 70.0,
+            width: 70.0,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                  color: Color.fromARGB(255, 107, 107, 107), width: 5.0),
+              borderRadius: BorderRadius.circular(50.0),
+              // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 50.0)],
+            ),
+            // alignment: Alignment.center,
+            child: Icon(Icons.add),
+          ),
+        ),
       ),
+      // FloatingActionButton(
+      //   elevation: 8,
+      //   backgroundColor: Colors.white,
+      //   child: ,
+      //   onPressed: () {
+      //     Navigator.pushNamed(context, '/create');
+      //   },
+      // ),
     );
   }
 
   Widget _animatedBottomNavigationBar() {
     return Container(
-      decoration: BoxDecoration(color: Colors.greenAccent),
+      height: 60.0,
+      padding: EdgeInsets.only(top: 10.0),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10.0)],
+      ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          IconButton(
-              icon: Icon(Icons.dashboard), onPressed: () => setState(() {})),
-          IconButton(
-              icon: Icon(
-                Icons.archive,
-              ),
-              onPressed: () => Navigator.pushNamed(context, '/archive')),
+          GestureDetector(
+            onTap: () => setState(() {}),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.dashboard_customize,
+                  size: 20.0,
+                ),
+                Text(
+                  "Dashboard",
+                  style: TextStyle(fontSize: 10.0),
+                )
+              ],
+            ),
+          ),
+          Text(""),
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/archive'),
+            child: Column(
+              children: [
+                Icon(
+                  Icons.archive_outlined,
+                  size: 20.0,
+                ),
+                Text(
+                  "Archive",
+                  style: TextStyle(fontSize: 10.0),
+                )
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -546,7 +808,7 @@ class _HomePageState extends State<HomePage>
 
     if (backButton) {
       backButtonPressedTime = currentTime;
-      scaffoldKey.currentState.showSnackBar(SnackBar(
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Press back again to exit'),
       ));
       return false;
@@ -561,11 +823,11 @@ class _HomePageState extends State<HomePage>
 
   Future<void> deleteEntry(BuildContext context, String postId) {
     return postReference.doc(postId).delete().then((value) {
-      Scaffold.of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Entry Deleted")));
       print("$postId :: ${postId.runtimeType} Deleted");
     }).catchError((error) {
-      Scaffold.of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Err:: $error")));
       print("Failed to delete user: $error");
     });
@@ -573,11 +835,11 @@ class _HomePageState extends State<HomePage>
 
   Future<void> archiveEntry(BuildContext context, String postId) {
     return postReference.doc(postId).update({'archive': true}).then((value) {
-      Scaffold.of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Entry Archived")));
       print("$postId :: ${postId.runtimeType} Archived");
     }).catchError((error) {
-      Scaffold.of(context)
+      ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Err:: $error")));
       print("Failed to archive entry: $error");
     });

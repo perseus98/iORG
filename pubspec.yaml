@@ -53,9 +53,10 @@ dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/
     - images/logo.png
     - images/title.png
-    - images/image-placeholder.jpg
+    - images/imagePlaceholder.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
