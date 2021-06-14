@@ -19,6 +19,7 @@ final storageReference =
 final postReference = FirebaseFirestore.instance.collection("posts");
 final userReference = FirebaseFirestore.instance.collection("users");
 DateTime backButtonPressedTime;
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   if (usingEmulator) {
@@ -26,9 +27,9 @@ void main() {
         host: 'localhost:8080', sslEnabled: false, persistenceEnabled: false);
   }
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Color.fromARGB(255, 135, 119, 172),
+    systemNavigationBarColor: Color.fromARGB(255, 255, 255, 255),
     systemNavigationBarIconBrightness: Brightness.light,
-    statusBarColor: Color.fromARGB(255, 135, 119, 172),
+    statusBarColor: Color.fromARGB(255, 255, 255, 255),
   ));
 
   runApp(
@@ -45,16 +46,17 @@ class MyApp extends StatelessWidget {
       title: 'iORG',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        scaffoldBackgroundColor: myAccentColor,
+        scaffoldBackgroundColor: Colors.white,
         dialogBackgroundColor: Colors.white,
         primarySwatch: Colors.blueGrey,
+        primaryColor: myGrey,
         cardColor: Colors.white70,
         accentColor: myAccentColor,
         textTheme: TextTheme(
           button: TextStyle(
             fontSize: 15.0,
             // color: Colors.white,
-            color: myAccentColor,
+            color: Colors.grey,
           ),
           headline5: TextStyle(
             fontSize: 30.0,
@@ -99,9 +101,10 @@ Color get warning => const Color(0xFFffc107);
 
 Color get danger => const Color(0xFFdc3545);
 
-Color get mySixtyNineColor => const Color.fromARGB(255, 105, 105, 105);
+Color get myGrey => const Color.fromARGB(255, 107, 107, 107);
 
-Color get myAccentColor => const Color.fromARGB(255, 135, 119, 172);
+// Color get myAccentColor => const Color.fromARGB(255, 135, 119, 172);
+Color get myAccentColor => Colors.white;
 
 TextStyle get error => const TextStyle(
     decoration: TextDecoration.lineThrough,

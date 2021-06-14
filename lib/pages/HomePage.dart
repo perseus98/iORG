@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:iorg_flutter/generated/assets.dart';
 import 'package:iorg_flutter/main.dart';
 import 'package:iorg_flutter/pages/PreviewImage.dart';
@@ -10,6 +11,8 @@ import 'package:iorg_flutter/pages/profile_page.dart';
 import 'package:iorg_flutter/widgets/PostWidget.dart';
 import 'package:iorg_flutter/widgets/ProgressWidgets.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+
+import 'accounts/account_setup_google.dart';
 
 class HomePage extends StatefulWidget {
   final User user;
@@ -33,6 +36,7 @@ class _HomePageState extends State<HomePage>
   CurvedAnimation curve;
   postFields _selectedPostField = postFields.timestamp;
   bool _selectedDesc = true;
+  TextEditingController searchEditingController = TextEditingController();
 
   @override
   void initState() {
@@ -66,6 +70,10 @@ class _HomePageState extends State<HomePage>
         .where('ownerId', isEqualTo: _currentAuthUser.uid)
         .where('archive', isEqualTo: false);
 
+    if (searchEditingController.text != '') {
+      query = query.where("postName", arrayContainsAny: ['entry', 'it']);
+    }
+
     switch (_selectedPostField) {
       case postFields.postName:
         query = query.orderBy('postName', descending: _selectedDesc);
@@ -80,6 +88,7 @@ class _HomePageState extends State<HomePage>
         query = query.orderBy('priority', descending: _selectedDesc);
         break;
     }
+    print("String value = ${searchEditingController.text == '' ? '1' : '0'}");
     // Widget temp = ;
     // _homePageGlobalKey.currentState.openDrawer();
     return Scaffold(
@@ -90,174 +99,221 @@ class _HomePageState extends State<HomePage>
       floatingActionButton: _scaleTransition(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _animatedBottomNavigationBar(),
-      body: WillPopScope(
-          onWillPop: () => onWillPop(_homePageGlobalKey),
-          child: ListView(
+      body: SafeArea(
+        child: WillPopScope(
+            onWillPop: () => onWillPop(_homePageGlobalKey),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                headerSection(),
+                Container(
+                  height: MediaQuery.of(context).size.height * 0.59,
+                  // height: MediaQuery.of(context).size.height -
+                  // (MediaQuery.of(context).size.height * 0.41),
+
+                  child: StreamBuilder<QuerySnapshot>(
+                    // key: UniqueKey(),
+                    stream: query.snapshots(),
+                    builder: (context, stream) {
+                      if (stream.connectionState == ConnectionState.waiting) {
+                        return Center(child: progressWidget());
+                      }
+                      if (stream.hasError) {
+                        return Center(child: Text(stream.error.toString()));
+                      }
+                      if (stream.hasData) {
+                        QuerySnapshot querySnapshot = stream.data;
+                        print("size : ${querySnapshot.size}");
+                        if (querySnapshot.size > 0)
+                          return ListView.builder(
+                            itemCount: querySnapshot.size,
+                            itemBuilder: (context, index) {
+                              // multiSelectController.set(querySnapshot.size);
+                              return Dismissible(
+                                key: ObjectKey(querySnapshot.docs[index]),
+                                direction: DismissDirection.horizontal,
+                                onDismissed: (direction) {
+                                  if (direction ==
+                                      DismissDirection.startToEnd) {
+                                    archiveEntry(context,
+                                        querySnapshot.docs[index]['postId']);
+                                  }
+                                  if (direction ==
+                                      DismissDirection.endToStart) {
+                                    deleteEntry(context,
+                                        querySnapshot.docs[index]['postId']);
+                                  }
+                                },
+                                background: editBackground(),
+                                secondaryBackground:
+                                    deleteSecondaryBackground(),
+                                child: InkWell(
+                                  splashColor: Colors.purple[300],
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PreviewImage(
+                                                snapshot:
+                                                    querySnapshot.docs[index],
+                                              )),
+                                    );
+                                    print(
+                                        "${querySnapshot.docs[index].id} clicked");
+                                  },
+                                  child: PostWidget(
+                                      querySnapshot.docs[index], false),
+                                ),
+                              )
+                                  // )
+                                  ;
+                            },
+                          );
+                        return Center(
+                          child: Text(
+                            "Create data to see, currently cloud is empty",
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor),
+                          ),
+                        );
+                      }
+                      return Center(
+                        child: Text(
+                          "Create data to see, currently cloud is empty",
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            )),
+      ),
+    );
+  }
+
+  Widget headerSection() => Container(
+        height: MediaQuery.of(context).size.height * 0.3,
+        // decoration: BoxDecoration(color: Colors.white, boxShadow: [
+        //   BoxShadow(color: Colors.black12, blurRadius: 30.0),
+        // ]),
+        alignment: Alignment.center,
+        child: Card(
+          // shape: RoundedRectangleBorder(
+          //   borderRadius: BorderRadius.only(10.0),
+          // ),
+          elevation: 5.0,
+          color: Colors.white,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Material(
-                elevation: 15.0,
-                child: Container(
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    BoxShadow(color: Colors.black12),
-                  ]),
-                  alignment: Alignment.center,
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: EdgeInsets.only(top: 50.0, left: 40.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "iORG",
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 107, 107, 107),
-                                    fontSize: 44.0,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  "Documentation Hanlder",
-                                  style: TextStyle(
-                                    color: Color.fromARGB(255, 107, 107, 107),
-                                    fontSize: 12.0,
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ],
-                            ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 30.0, left: 40.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "iORG",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 107, 107, 107),
+                            fontSize: 44.0,
+                            fontWeight: FontWeight.bold,
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 10.0, right: 25.0),
-                            child: Material(
-                              borderRadius: BorderRadius.circular(20.0),
-                              elevation: 5.0,
-                              child: Container(
-                                height: 45.0,
-                                width: 120.0,
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(50.0),
-                                  // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 50.0)],
-                                ),
-                                // alignment: Alignment.center,
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    Icon(Icons.sort),
-                                    Icon(Icons.menu)
-                                  ],
-                                ),
-                              ),
-                            ),
+                        ),
+                        Text(
+                          "Documentation Hanlder",
+                          style: TextStyle(
+                            color: Color.fromARGB(255, 107, 107, 107),
+                            fontSize: 12.0,
+                            fontWeight: FontWeight.normal,
                           ),
-                        ],
-                      ),
-                      Padding(
-                        padding:
-                            EdgeInsets.only(right: 25.0, left: 25.0, top: 50.0),
-                        child: Material(
-                          borderRadius: BorderRadius.circular(10.0),
-                          elevation: 4.0,
-                          child: Container(
-                              height: 50.0,
-                              padding: EdgeInsets.only(left: 15.0),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(50.0),
-                                // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 50.0)],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10.0, right: 25.0),
+                    child: Material(
+                      borderRadius: BorderRadius.circular(20.0),
+                      elevation: 5.0,
+                      child: Container(
+                        height: 35.0,
+                        width: 100.0,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(50.0),
+                          // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 50.0)],
+                        ),
+                        // alignment: Alignment.center,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            IconButton(
+                              icon: Icon(
+                                Icons.sort,
+                                size: 20.0,
                               ),
-                              alignment: Alignment.center,
-                              child: TextFormField(
-                                decoration: InputDecoration(
-                                  labelText: "Search",
-                                  labelStyle: TextStyle(color: Colors.grey),
-                                  suffixIcon: Icon(Icons.search),
-                                  border: InputBorder.none,
-                                ),
-                              )),
+                              onPressed: () {
+                                _showSortDialog(context);
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(
+                                Icons.menu,
+                                size: 20.0,
+                              ),
+                              onPressed: () {
+                                _homePageGlobalKey.currentState.openDrawer();
+                              },
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
+                  ),
+                ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(right: 25.0, left: 25.0, bottom: 25.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(10.0),
+                  elevation: 4.0,
+                  child: Container(
+                    height: 45.0,
+                    padding: EdgeInsets.only(left: 15.0),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(50.0),
+                      // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 50.0)],
+                    ),
+                    alignment: Alignment.center,
+                    child: GestureDetector(
+                      onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("to be implemented"))),
+                      child: TextFormField(
+                        controller: searchEditingController,
+                        enabled: false,
+                        decoration: InputDecoration(
+                          labelText: "Search",
+                          labelStyle: TextStyle(color: Colors.grey),
+                          suffixIcon: IconButton(
+                              onPressed: () => print("icon pressed"),
+                              icon: Icon(Icons.search)),
+                          border: InputBorder.none,
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
-              // Container(
-              //   child: ,
-              // ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.62,
-                child: StreamBuilder<QuerySnapshot>(
-                  // key: UniqueKey(),
-                  stream: query.snapshots(),
-                  builder: (context, stream) {
-                    if (stream.connectionState == ConnectionState.waiting) {
-                      return Center(child: progressWidget());
-                    }
-                    if (stream.hasError) {
-                      return Center(child: Text(stream.error.toString()));
-                    }
-                    if (stream.hasData) {
-                      QuerySnapshot querySnapshot = stream.data;
-                      return ListView.builder(
-                        itemCount: querySnapshot.size,
-                        itemBuilder: (context, index) {
-                          // multiSelectController.set(querySnapshot.size);
-                          return Dismissible(
-                            key: ObjectKey(querySnapshot.docs[index]),
-                            direction: DismissDirection.horizontal,
-                            onDismissed: (direction) {
-                              if (direction == DismissDirection.startToEnd) {
-                                archiveEntry(context,
-                                    querySnapshot.docs[index]['postId']);
-                              }
-                              if (direction == DismissDirection.endToStart) {
-                                deleteEntry(context,
-                                    querySnapshot.docs[index]['postId']);
-                              }
-                            },
-                            background: editBackground(),
-                            secondaryBackground: deleteSecondaryBackground(),
-                            child: InkWell(
-                              splashColor: Colors.purple[300],
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PreviewImage(
-                                            snapshot: querySnapshot.docs[index],
-                                          )),
-                                );
-                                print(
-                                    "${querySnapshot.docs[index].id} clicked");
-                              },
-                              child:
-                                  PostWidget(querySnapshot.docs[index], false),
-                            ),
-                          )
-                              // )
-                              ;
-                        },
-                      );
-                    }
-                    return Center(
-                      child: Text(
-                        "Create data to see, currently cloud is empty",
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    );
-                  },
-                ),
-              ),
             ],
-          )),
-    );
-  }
+          ),
+        ),
+      );
 
   Widget editBackground() {
     return Container(
@@ -317,23 +373,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  AppBar _appBar(BuildContext context) {
-    return AppBar(
-      backgroundColor: Colors.white,
-      leading: IconButton(
-          icon: Icon(
-            Icons.menu_outlined,
-            color: Theme.of(context).accentColor,
-          ),
-          onPressed: () => _homePageGlobalKey.currentState.openDrawer()),
-      title: Text(
-        'iORG',
-        style: TextStyle(color: Theme.of(context).accentColor),
-      ),
-      actions: normalActions(context),
-    );
-  }
-
   Drawer _drawer(BuildContext context) {
     return Drawer(
       child: ListView(
@@ -388,7 +427,7 @@ class _HomePageState extends State<HomePage>
                     child: RichText(
                         text: TextSpan(children: [
                       TextSpan(
-                        text: "Presented By",
+                        text: "Presented By ",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 12.0,
@@ -396,7 +435,7 @@ class _HomePageState extends State<HomePage>
                         ),
                       ),
                       TextSpan(
-                        text: "sud3shi",
+                        text: " sud3shi",
                         style: TextStyle(
                           color: Colors.black,
                           fontSize: 14.0,
@@ -521,27 +560,29 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  List<Widget> normalActions(context) {
-    return List<Widget>.from([
-      IconButton(
-        icon: Icon(
-          Icons.sort,
-          color: Theme.of(context).accentColor,
-        ),
-        onPressed: () {
-          // _homePageGlobalKey.currentState.showSnackBar(SnackBar(content: Text("Coming Soon"),duration: Duration(seconds: 1),));
-          _showSortDialog(context);
-        },
-      ),
-      IconButton(
-        icon: Icon(
-          Icons.search,
-          color: Theme.of(context).accentColor,
-        ),
-        onPressed: null,
-      ),
-    ]);
-  }
+  // List<Widget> normalActions(context) {
+  //   return List<Widget>.from([
+  //     IconButton(
+  //       icon: Icon(
+  //         Icons.sort,
+  //         color: Theme.of(context).accentColor,
+  //       ),
+  //       onPressed: () {
+  //         // _homePageGlobalKey.currentState.showSnackBar(SnackBar(content: Text("Coming Soon"),duration: Duration(seconds: 1),));
+  //         _showSortDialog(context);
+  //       },
+  //     ),
+  //     IconButton(
+  //       icon: Icon(
+  //         Icons.search,
+  //         color: Theme.of(context).accentColor,
+  //       ),
+  //       onPressed: null,
+  //     ),
+  //   ]);
+  // }
+
+  static int initialValue = 0;
 
   Future<void> _showSortDialog(context) async {
     return showDialog<void>(
@@ -554,25 +595,74 @@ class _HomePageState extends State<HomePage>
             child: ListBody(
               children: <Widget>[
                 Text('Select Order: '),
+                // Container(
+                //   height: 50.0,
+                //   child: Row(
+                //     children: [
+                //       Text("Order in descending : "),
+                //       Switch(
+                //         value: _selectedDesc,
+                //         onChanged: (newValue) =>
+                //             setState(() => _selectedDesc = newValue),
+                //       ),
+                //     ],
+                //   ),
+                // ),
                 ToggleSwitch(
-                  cornerRadius: 20.0,
+                  initialLabelIndex: initialValue,
                   totalSwitches: 2,
-                  // activeBgColor: Colors.cyan,
-                  activeFgColor: Colors.white,
-                  inactiveBgColor: Colors.grey,
-                  inactiveFgColor: Colors.white,
-                  initialLabelIndex: 1,
-                  labels: ['Ascending', 'Descending'],
-                  icons: [Icons.arrow_drop_up, Icons.arrow_drop_down],
-                  onToggle: (index) {
-                    print('switched to: $index');
-                    if (index == 0) {
-                      _selectedDesc = false;
-                    } else {
-                      _selectedDesc = true;
+                  minWidth: 100.0,
+                  onToggle: (newValue) {
+                    initialValue = newValue;
+                    switch (newValue) {
+                      case 0:
+                        _selectedDesc = false;
+                        break;
+                      case 1:
+                        _selectedDesc = true;
+                        break;
                     }
                   },
-                ),
+                  labels: ["Ascending", "Descending"],
+                )
+                // GestureDetector(
+                //   onTap: () => setState(() => _selectedDesc = !_selectedDesc),
+                //   child: Container(
+                //     height: 50.0,
+                //     // decoration: BoxDecoration(color: Colors.greenAccent),
+                //     alignment: Alignment.center,
+                //     child: Row(
+                //       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                //       children: [
+                //         Container(
+                //           // width: double.maxFinite,
+                //           decoration: BoxDecoration(
+                //             color:
+                //                 _selectedDesc ? Colors.black38 : Colors.black12,
+                //             borderRadius: BorderRadius.only(
+                //                 topLeft: Radius.circular(20.0),
+                //                 bottomLeft: Radius.circular(20.0)),
+                //           ),
+                //           alignment: Alignment.center,
+                //           child: Text("Ascending"),
+                //         ),
+                //         Container(
+                //           // width: double.maxFinite,
+                //           decoration: BoxDecoration(
+                //             color:
+                //                 _selectedDesc ? Colors.black12 : Colors.black38,
+                //             borderRadius: BorderRadius.only(
+                //                 topRight: Radius.circular(20.0),
+                //                 bottomRight: Radius.circular(20.0)),
+                //           ),
+                //           alignment: Alignment.center,
+                //           child: Text("Descending"),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // ),
+                ,
                 Divider(
                   color: Colors.blue,
                 ),
@@ -638,24 +728,24 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  List<Widget> contextActions(context) {
-    return List<Widget>.from([
-      IconButton(
-        icon: Icon(
-          Icons.delete_forever,
-          color: Theme.of(context).accentColor,
-        ),
-        onPressed: null,
-      ),
-      IconButton(
-        icon: Icon(
-          Icons.select_all,
-          color: Theme.of(context).accentColor,
-        ),
-        onPressed: null,
-      ),
-    ]);
-  }
+  // List<Widget> contextActions(context) {
+  //   return List<Widget>.from([
+  //     IconButton(
+  //       icon: Icon(
+  //         Icons.delete_forever,
+  //         color: Theme.of(context).accentColor,
+  //       ),
+  //       onPressed: null,
+  //     ),
+  //     IconButton(
+  //       icon: Icon(
+  //         Icons.select_all,
+  //         color: Theme.of(context).accentColor,
+  //       ),
+  //       onPressed: null,
+  //     ),
+  //   ]);
+  // }
 
   Future<void> _signOutDialog() async {
     return showDialog<void>(
@@ -673,7 +763,7 @@ class _HomePageState extends State<HomePage>
                 // prefs.remove('authAvail');
                 // prefs.remove('authStrings');
                 await FirebaseAuth.instance.signOut();
-                // await GoogleSignIn().signOut();
+                await googleUser.signOut();
                 Navigator.pushNamed(context, '/init');
               },
             ),

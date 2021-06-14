@@ -5,11 +5,13 @@ import 'package:iorg_flutter/pages/HomePage.dart';
 
 import 'account_setup.dart';
 
+GoogleSignIn googleUser = GoogleSignIn();
+
 class AccountSetupGoogle extends StatelessWidget {
   Future<UserCredential> signInWithGoogle() async {
-    final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
+    GoogleSignInAccount googleUserAccount = await googleUser.signIn();
     final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
+        await googleUserAccount.authentication;
     final GoogleAuthCredential credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
@@ -29,7 +31,19 @@ class AccountSetupGoogle extends StatelessWidget {
           Widget tempWidget = Text(' none ');
           if (userSnapshot.hasError) {
             print("AuthErr :: ${userSnapshot.error}");
-            tempWidget = Text("AuthErr :: ${userSnapshot.error}");
+            tempWidget = Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text("AuthErr :: ${userSnapshot.error}"),
+                RaisedButton.icon(
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AccountSetup())),
+                    icon: Icon(Icons.replay_circle_filled),
+                    label: Text('Restart Auth'))
+              ],
+            );
           } else {
             switch (userSnapshot.connectionState) {
               case ConnectionState.none:

@@ -36,6 +36,7 @@ class _ArchivePageState extends State<ArchivePage> {
     return Scaffold(
       key: _archivePageGlobalKey,
       appBar: _appBar(),
+      backgroundColor: Colors.white,
       body: StreamBuilder<QuerySnapshot>(
         // key: UniqueKey(),
         stream: query.snapshots(),
@@ -114,13 +115,13 @@ class _ArchivePageState extends State<ArchivePage> {
       leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: Theme.of(context).accentColor,
+            color: Colors.grey,
           ),
           onPressed: () => Navigator.pop(context)),
       backgroundColor: Colors.white,
       title: Text(
         "Archive",
-        style: TextStyle(color: Theme.of(context).accentColor),
+        style: TextStyle(color: Colors.grey),
       ),
       actions: [
         Icon(Icons.unarchive),

@@ -75,7 +75,7 @@ class _CreatePostPageState extends State<CreatePostPage>
                 onPressed: () => Navigator.pop(context),
               ),
               title: Text("CREATE ENTRY"),
-              backgroundColor: Color.fromARGB(255, 135, 119, 172),
+              backgroundColor: Theme.of(context).primaryColor,
               actions: [
                 IconButton(
                   icon: Icon(
@@ -186,15 +186,16 @@ class _CreatePostPageState extends State<CreatePostPage>
                 CircularProgressIndicator(
                   // value: _progressBarValue,
                   valueColor:
-                      AlwaysStoppedAnimation(Theme.of(context).accentColor),
+                      AlwaysStoppedAnimation(Theme.of(context).primaryColor),
                   backgroundColor: Colors.grey,
                   strokeWidth: 3.0,
                 ),
+                Text("   "),
                 Flexible(
                   child: Text(
                     _uploadDetails,
                     style: TextStyle(
-                      color: Theme.of(context).accentColor,
+                      color: Theme.of(context).primaryColor,
                       fontSize: 30.0,
                     ),
                   ),

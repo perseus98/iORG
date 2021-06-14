@@ -23,32 +23,43 @@ class PostWidget extends StatelessWidget {
 
   Widget buildMiniVersion(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(5.0),
-      padding: EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        color:
-            isSelected ? Colors.black : returnPriorityColor(post['priority']),
-      ),
-      // foregroundDecoration:  isSelected ? BoxDecoration(color: Colors.black) : new BoxDecoration(),
-      child: Row(
-        children: [
-          Flexible(
-            flex: 1,
-            child: Container(
-              color: Colors.white,
-              padding: EdgeInsets.all(5.0),
-              height: 100.0,
-              width: 100.0,
-              child: postImage,
-            ),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(50.0)),
+      padding: EdgeInsets.only(left: 10.0, right: 15.0, top: 5.0, bottom: 5.0),
+      child: Card(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        color: Colors.white,
+        elevation: 3.0,
+        child: Container(
+          padding:
+              EdgeInsets.only(left: 10.0, right: 15.0, top: 20.0, bottom: 20.0),
+          child: Row(
+            children: [
+              Flexible(
+                flex: 2,
+                child: Container(
+                  clipBehavior: Clip.hardEdge,
+                  margin: EdgeInsets.only(left: 10.0),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      color: Colors.black,
+                      border: Border.all(color: Colors.black, width: 1.0)),
+                  padding: EdgeInsets.all(1.0),
+                  height: 100.0,
+                  width: 150.0,
+                  child: postImage,
+                ),
+              ),
+              Text("  "),
+              Flexible(
+                flex: 4,
+                child: Container(
+                    height: 100.0, color: Colors.white, child: postBody),
+              ),
+            ],
           ),
-          Text("  "),
-          Flexible(
-            flex: 3,
-            child:
-                Container(height: 100.0, color: Colors.white, child: postBody),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -89,10 +100,23 @@ class PostWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Name: ${post['postName']}'),
+          Text(
+            post['postName'],
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 18.0),
+          ),
           Text('Deadline: $dateDeadline'),
-          Text('Priority Level: $priorityLevel'),
-          Text('Created: ${timeago.format(postDate.toDate())}'),
+          Text("Priority: ${post['priority'].round()}"),
+          Text(
+            'Created: ${timeago.format(postDate.toDate())}',
+            style: TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                fontSize: 14.0),
+          ),
         ],
       ),
     );

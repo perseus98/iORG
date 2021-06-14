@@ -61,16 +61,17 @@ class _PreviewImageState extends State<PreviewImage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 107, 107, 107),
       appBar: AppBar(
         leading: IconButton(
             icon: Icon(
               Icons.arrow_back,
-              color: Theme.of(context).accentColor,
+              color: Theme.of(context).primaryColor,
             ),
             onPressed: () => Navigator.pop(context)),
         title: Text(
           post['postName'],
-          style: TextStyle(color: Theme.of(context).accentColor),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         backgroundColor: Colors.white,
       ),
@@ -126,11 +127,12 @@ class _PreviewImageState extends State<PreviewImage> {
       children: <Widget>[
         Text(
           "Rotation ${value.rotation}",
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-              activeTrackColor: Colors.white, thumbColor: Colors.white),
+              activeTrackColor: Theme.of(context).primaryColor,
+              thumbColor: Theme.of(context).primaryColor),
           child: Slider(
             value: value.rotation.clamp(min, max),
             min: min,
@@ -142,12 +144,12 @@ class _PreviewImageState extends State<PreviewImage> {
         ),
         Text(
           "Scale ${value.scale}",
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: Colors.white,
-            thumbColor: Colors.white,
+            activeTrackColor: Theme.of(context).primaryColor,
+            thumbColor: Theme.of(context).primaryColor,
           ),
           child: Slider(
             value: value.scale.clamp(minScale, maxScale),
@@ -160,12 +162,12 @@ class _PreviewImageState extends State<PreviewImage> {
         ),
         Text(
           "Position ${value.position.dx}",
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(color: Theme.of(context).primaryColor),
         ),
         SliderTheme(
           data: SliderTheme.of(context).copyWith(
-            activeTrackColor: Colors.white,
-            thumbColor: Colors.white,
+            activeTrackColor: Theme.of(context).primaryColor,
+            thumbColor: Theme.of(context).primaryColor,
           ),
           child: Slider(
             value: value.position.dx,

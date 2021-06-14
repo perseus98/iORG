@@ -16,6 +16,7 @@ class AccountSetup extends StatelessWidget {
       onWillPop: () async => onWillPop(scaffoldKey),
       child: Scaffold(
         key: scaffoldKey,
+        backgroundColor: Theme.of(context).primaryColor,
         body: StreamBuilder<User>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, AsyncSnapshot<User> userSnapshot) {

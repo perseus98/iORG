@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:iorg_flutter/main.dart';
 
-progressWidget(
-    {bool circular = true,
-    Color color = Colors.white,
-    Color bgColor = Colors.grey}) {
+progressWidget({bool circular = true, Color bgColor = Colors.grey}) {
   return Container(
     alignment: Alignment.center,
     padding: EdgeInsets.only(top: 12.0),
@@ -12,11 +10,11 @@ progressWidget(
             strokeWidth: 5.0,
             semanticsValue: "loading",
             semanticsLabel: "Loading...",
-            backgroundColor: bgColor,
-            valueColor: AlwaysStoppedAnimation(color),
+            backgroundColor: myGrey,
+            valueColor: AlwaysStoppedAnimation(myGrey),
           )
         : LinearProgressIndicator(
-            valueColor: AlwaysStoppedAnimation(color),
+            valueColor: AlwaysStoppedAnimation(myGrey),
           ),
   );
 }
